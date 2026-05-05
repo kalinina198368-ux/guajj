@@ -48,7 +48,7 @@ export default async function TelegramPage({
   });
 
   const webhookUrl = config
-    ? `https://fast.mynatapp.cc/api/tg/webhook/${config.webhookSecret}`
+    ? `https://guajj.top/api/tg/webhook/${config.webhookSecret}`
     : "保存配置后生成";
 
   return (
