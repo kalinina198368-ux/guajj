@@ -1,3 +1,4 @@
+import type { Prisma } from "@/lib/generated/prisma";
 import { PostStatus } from "@/lib/generated/prisma";
 import { prisma } from "@/lib/prisma";
 
@@ -9,6 +10,29 @@ export const postInclude = {
 export async function getPublishedPosts() {
   return prisma.post.findMany({
     where: { status: PostStatus.PUBLISHED },
+    include: postInclude,
+    orderBy: [{ isPinned: "desc" }, { publishedAt: "desc" }, { views: "desc" }]
+  });
+}
+
+/** 前台首页关键词搜索（标题 / 摘要 / 正文 / 分类 / 标签） */
+export async function searchPublishedPosts(q: string) {
+  const trimmed = q.trim();
+  if (!trimmed) return getPublishedPosts();
+
+  const where: Prisma.PostWhereInput = {
+    status: PostStatus.PUBLISHED,
+    OR: [
+      { title: { contains: trimmed } },
+      { summary: { contains: trimmed } },
+      { body: { contains: trimmed } },
+      { category: { name: { contains: trimmed } } },
+      { tags: { some: { tag: { name: { contains: trimmed } } } } }
+    ]
+  };
+
+  return prisma.post.findMany({
+    where,
     include: postInclude,
     orderBy: [{ isPinned: "desc" }, { publishedAt: "desc" }, { views: "desc" }]
   });

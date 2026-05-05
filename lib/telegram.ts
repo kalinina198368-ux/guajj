@@ -112,14 +112,31 @@ function resolveImportStatus(config: TelegramConfig, message: TelegramMessage): 
   return config.defaultStatus;
 }
 
+/** 与 forwardPrefix() 写入的正文首行一致：仅标记来源，不作为标题 */
+function isForwardAttributionLine(line: string): boolean {
+  const t = line.trim();
+  return t.startsWith("【转自") && t.endsWith("】");
+}
+
 export function parseTelegramContent(text: string) {
   const lines = text.split(/\r?\n/).map((line) => line.trim()).filter(Boolean);
-  const title = (lines[0] || "来自 Telegram 的新吃瓜").slice(0, 80);
-  const summary = (lines[1] || lines[0] || "频道自动采集内容，进入后台可继续编辑标题、热度和正文。").slice(0, 140);
+  const substantive = lines.filter((line) => !isForwardAttributionLine(line));
+
+  const defaultTitle = "佳佳吃瓜新吃瓜";
+  const defaultSummary = "频道自动采集内容，进入后台可继续编辑标题、热度和正文。";
+
+  const firstLine = substantive[0];
+  const title = (firstLine || defaultTitle).slice(0, 80);
+  const summary = (
+    substantive[1] ??
+    (firstLine ? firstLine.slice(0, 140) : null) ??
+    defaultSummary
+  ).slice(0, 140);
+
   return {
     title,
     summary,
-    body: text || summary
+    body: text.trim() || summary
   };
 }
 

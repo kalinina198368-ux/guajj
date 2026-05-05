@@ -1,96 +1,214 @@
 import Link from "next/link";
-import { getPublishedPosts } from "@/lib/posts";
+import { H5HeroCarousel } from "@/components/h5-hero-carousel";
+import { formatRelativeTime } from "@/lib/format-relative-time";
+import { getPublishedPosts, searchPublishedPosts } from "@/lib/posts";
 
 function formatDate(date?: Date | null) {
   if (!date) return "刚刚";
   return new Intl.DateTimeFormat("zh-CN", { month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit" }).format(date);
 }
 
-export default async function HomePage({ searchParams }: { searchParams: Promise<{ error?: string }> }) {
+function tagToneClass(name: string): string {
+  const n = name.length % 3;
+  if (n === 0) return "h5-rank-tag--a";
+  if (n === 1) return "h5-rank-tag--b";
+  return "h5-rank-tag--c";
+}
+
+function rankBadgeClass(index: number): string {
+  if (index === 0) return "h5-rank-num--gold";
+  if (index === 1) return "h5-rank-num--purple";
+  if (index === 2) return "h5-rank-num--blue";
+  return "";
+}
+
+export default async function HomePage({ searchParams }: { searchParams: Promise<{ error?: string; q?: string }> }) {
   const params = await searchParams;
-  const posts = await getPublishedPosts();
-  const hero = posts[0];
+  const qRaw = typeof params.q === "string" ? params.q : "";
+  const q = qRaw.trim();
+  const hasQuery = q.length > 0;
+
+  const posts = hasQuery ? await searchPublishedPosts(q) : await getPublishedPosts();
+
+  const carouselSlides = posts.slice(0, 3).map((p) => ({
+    id: p.id,
+    title: p.title,
+    summary: p.summary,
+    coverUrl: p.coverUrl,
+    categoryName: p.category.name
+  }));
+
   const ranks = [...posts].sort((a, b) => b.views - a.views).slice(0, 6);
   const latest = posts.slice(1);
 
   return (
-    <main className="site-shell">
+    <main className="site-shell h5-home">
       {params.error ? (
-        <div className="container" style={{ paddingTop: 12 }}>
-          <p style={{ color: "var(--brand)", fontWeight: 700, margin: 0 }}>
-            登录未完成：{params.error}
-          </p>
+        <div className="h5-container h5-flash-wrap">
+          <p className="h5-flash-err">登录未完成：{params.error}</p>
         </div>
       ) : null}
-      <header className="topbar">
-        <div className="topbar-inner">
-          <Link href="/" className="brand">吃瓜网</Link>
-          <nav className="nav">
-            <a href="#latest">最新</a>
-            <a href="#rank">热榜</a>
-            <Link href="/vip">其他</Link>
-          </nav>
+
+      <header className="h5-top">
+        <div className="h5-top-row">
+          <Link href="/" className="h5-brand-block">
+            <div className="h5-brand-line">
+              <span className="h5-brand-flame" aria-hidden>
+                🔥
+              </span>
+              <span className="h5-brand-title">吃瓜网</span>
+            </div>
+            <p className="h5-brand-sub">吃最新鲜的瓜 · 看最劲爆的料</p>
+          </Link>
+          <details className="h5-search-details">
+            <summary className="h5-search-trigger" aria-label="搜索">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" aria-hidden>
+                <circle cx="11" cy="11" r="7" />
+                <path d="M20 20l-4.2-4.2" />
+              </svg>
+            </summary>
+            <form className="h5-search-form" method="get" action="/">
+              <input
+                type="search"
+                name="q"
+                defaultValue={qRaw}
+                placeholder="输入关键词搜索标题、正文…"
+                className="h5-search-input"
+                autoComplete="off"
+                enterKeyHint="search"
+              />
+              <button type="submit" className="h5-search-submit">
+                搜索
+              </button>
+            </form>
+          </details>
         </div>
       </header>
 
-      <div className="container">
-        {hero ? (
-          <section className="hero-grid">
-            <Link className="hero-card" href={`/post/${hero.id}`}>
-              <img src={hero.coverUrl} alt={hero.title} />
-              <div className="hero-copy">
-                <span className="kicker">置顶热瓜 · {hero.category.name}</span>
-                <h1>{hero.title}</h1>
-                <p>{hero.summary}</p>
-              </div>
-            </Link>
-
-            <aside className="rank-panel" id="rank">
-              <div className="section-title" style={{ marginTop: 0 }}>
-                <h2>热度榜</h2>
-                <span className="heat">实时</span>
-              </div>
-              <div className="rank-list">
-                {ranks.map((post, index) => (
-                  <Link className="rank-item" href={`/post/${post.id}`} key={post.id}>
-                    <span className="rank-num">{String(index + 1).padStart(2, "0")}</span>
-                    <span className="rank-title">{post.title}</span>
-                    <span className="heat">{post.views}</span>
+      <div className="h5-container">
+        {hasQuery ? (
+          <section className="h5-section h5-search-results" aria-labelledby="search-results-title">
+            <div className="h5-search-result-head">
+              <h2 id="search-results-title" className="h5-section-title">
+                搜索结果
+                <span className="h5-search-meta">
+                  「{q}」· 共 {posts.length} 条
+                </span>
+              </h2>
+              <Link href="/" className="h5-clear-link">
+                返回全部
+              </Link>
+            </div>
+            {posts.length === 0 ? (
+              <p className="h5-empty">没有找到相关内容，换个关键词试试。</p>
+            ) : (
+              <div className="h5-story-grid">
+                {posts.map((post) => (
+                  <Link href={`/post/${post.id}`} className="h5-story-card" key={post.id}>
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img src={post.coverUrl} alt="" className="h5-story-img" />
+                    <div className="h5-story-body">
+                      <div className="h5-story-meta">
+                        <span className={`h5-rank-tag ${tagToneClass(post.category.name)}`}>{post.category.name}</span>
+                        <span>{formatRelativeTime(post.publishedAt)}</span>
+                        <span className="h5-story-heat">🔥 {post.views}</span>
+                      </div>
+                      <h3 className="h5-story-heading">{post.title}</h3>
+                      <p className="h5-story-sum">{post.summary}</p>
+                    </div>
                   </Link>
                 ))}
               </div>
-            </aside>
+            )}
           </section>
-        ) : null}
+        ) : (
+          <>
+            {carouselSlides.length > 0 ? <H5HeroCarousel items={carouselSlides} /> : null}
 
-        <section id="latest">
-          <div className="section-title">
-            <h2>最新吃瓜</h2>
-            <span className="chip">图文 · 图集 · 时间线</span>
-          </div>
-          <div className="story-grid">
-            {latest.map((post) => (
-              <Link href={`/post/${post.id}`} className="story-card" key={post.id}>
-                <img src={post.coverUrl} alt={post.title} />
-                <div className="story-body">
-                  <div className="story-meta">
-                    <span>{post.category.name}</span>
-                    <span>{formatDate(post.publishedAt)}</span>
-                    <span>热度 {post.views}</span>
-                  </div>
-                  <h3>{post.title}</h3>
-                  <p>{post.summary}</p>
-                </div>
-              </Link>
-            ))}
-          </div>
-        </section>
+            <section className="h5-section h5-rank-section" id="rank" aria-labelledby="rank-title">
+              <div className="h5-section-head">
+                <h2 id="rank-title" className="h5-section-title-row">
+                  <span className="h5-section-icon" aria-hidden>
+                    🔥
+                  </span>
+                  热度榜
+                </h2>
+                <span className="h5-live-pill">
+                  <span className="h5-live-dot" aria-hidden />
+                  实时更新
+                </span>
+              </div>
+              <div className="h5-rank-list">
+                {ranks.map((post, index) => (
+                  <Link href={`/post/${post.id}`} className="h5-rank-row" key={post.id}>
+                    <span className={`h5-rank-num ${rankBadgeClass(index)}`}>{String(index + 1).padStart(2, "0")}</span>
+                    <div className="h5-rank-main">
+                      <div className="h5-rank-title">{post.title}</div>
+                      <div className="h5-rank-sub">
+                        <span className={`h5-rank-tag ${tagToneClass(post.category.name)}`}>{post.category.name}</span>
+                        <span className="h5-rank-time">{formatRelativeTime(post.publishedAt)}</span>
+                      </div>
+                    </div>
+                    <span className="h5-rank-heat">
+                      <span aria-hidden>🔥</span>
+                      {post.views}
+                    </span>
+                  </Link>
+                ))}
+              </div>
+            </section>
+
+            <section className="h5-section" id="latest">
+              <div className="h5-section-head">
+                <h2 className="h5-section-title-row">
+                  <span className="h5-section-icon" aria-hidden>
+                    📰
+                  </span>
+                  最新吃瓜
+                </h2>
+                <span className="h5-chip-sub">图文 · 图集 · 时间线</span>
+              </div>
+              <div className="h5-story-grid">
+                {latest.map((post) => (
+                  <Link href={`/post/${post.id}`} className="h5-story-card" key={post.id}>
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img src={post.coverUrl} alt="" className="h5-story-img" />
+                    <div className="h5-story-body">
+                      <div className="h5-story-meta">
+                        <span className={`h5-rank-tag ${tagToneClass(post.category.name)}`}>{post.category.name}</span>
+                        <span>{formatDate(post.publishedAt)}</span>
+                        <span className="h5-story-heat">🔥 {post.views}</span>
+                      </div>
+                      <h3 className="h5-story-heading">{post.title}</h3>
+                      <p className="h5-story-sum">{post.summary}</p>
+                    </div>
+                  </Link>
+                ))}
+              </div>
+            </section>
+          </>
+        )}
       </div>
 
-      <nav className="mobile-tabs">
-        <a href="#latest">最新</a>
-        <a href="#rank">热榜</a>
-        <Link href="/vip">其他</Link>
+      <nav className="mobile-tabs h5-bottom-tabs" aria-label="首页导航">
+        <a href="#latest">
+          <span className="h5-tab-icon" aria-hidden>
+            ⌂
+          </span>
+          最新
+        </a>
+        <a href="#rank">
+          <span className="h5-tab-icon" aria-hidden>
+            🔥
+          </span>
+          热榜
+        </a>
+        <Link href="/vip">
+          <span className="h5-tab-icon" aria-hidden>
+            ▦
+          </span>
+          其他
+        </Link>
       </nav>
     </main>
   );

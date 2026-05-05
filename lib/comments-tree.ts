@@ -36,6 +36,25 @@ export function commentRowToNode(row: CommentWithAuthor): CommentTreeNode {
   return { ...row, children: [] };
 }
 
+/**
+ * 抖音式评论区：同一楼主下仅两级视觉缩进。
+ * 根评论一层；其下所有回复（含「回复的回复」）同级展示，更深层级通过 @被回复者 区分。
+ * 顺序：对根下的子树做前序 DFS。
+ */
+export function flattenDouyinThread(root: CommentTreeNode): Array<{ node: CommentTreeNode; atNickname?: string }> {
+  const out: Array<{ node: CommentTreeNode; atNickname?: string }> = [];
+  function walk(n: CommentTreeNode, at?: string) {
+    out.push({ node: n, atNickname: at });
+    for (const ch of n.children) {
+      walk(ch, n.author.nickname);
+    }
+  }
+  for (const c of root.children) {
+    walk(c, undefined);
+  }
+  return out;
+}
+
 function insertUnderParent(node: CommentTreeNode, parentId: string, insert: CommentTreeNode): CommentTreeNode {
   if (node.id === parentId) {
     return { ...node, children: [...node.children, insert] };

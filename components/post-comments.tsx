@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useFormStatus } from "react-dom";
-import type { CommentTreeNode } from "@/lib/comments-tree";
+import { flattenDouyinThread, type CommentTreeNode } from "@/lib/comments-tree";
 import { SUYANW_LOGIN_TYPES } from "@/lib/suyanw-oauth";
 
 const LOGIN_LABEL: Record<string, string> = {
@@ -63,44 +63,72 @@ function CommentSubmitButton({ idleLabel }: { idleLabel: string }) {
   );
 }
 
-function CommentBranch({
+/** 单条评论卡片（根评论或楼主下的扁平回复，可选 @ 前缀） */
+function CommentSingleCard({
   node,
-  depth,
+  atNickname,
   onReply,
   showReplyButton
 }: {
   node: CommentTreeNode;
-  depth: number;
+  atNickname?: string;
   onReply: (id: string, nickname: string) => void;
   showReplyButton: boolean;
 }) {
   return (
-    <div className={`comment-branch ${depth > 0 ? "comment-branch-nested" : ""}`}>
-      <div className="comment-card">
-        <div className="comment-avatar">
-          {node.author.faceimg ? (
-            <img src={node.author.faceimg} alt="" width={40} height={40} />
-          ) : (
-            <span className="comment-avatar-fallback">{node.author.nickname.slice(0, 1)}</span>
-          )}
-        </div>
-        <div className="comment-main">
-          <div className="comment-meta">
-            <span className="comment-name">{node.author.nickname}</span>
-            <span className="comment-type">{LOGIN_LABEL[node.author.loginType] || node.author.loginType}</span>
-            <span className="comment-time">{formatTime(node.createdAt)}</span>
-          </div>
-          <p className="comment-body">{node.body}</p>
-          {showReplyButton ? (
-            <button type="button" className="comment-reply-btn" onClick={() => onReply(node.id, node.author.nickname)}>
-              回复
-            </button>
-          ) : null}
-        </div>
+    <div className="comment-card">
+      <div className="comment-avatar">
+        {node.author.faceimg ? (
+          <img src={node.author.faceimg} alt="" width={40} height={40} />
+        ) : (
+          <span className="comment-avatar-fallback">{node.author.nickname.slice(0, 1)}</span>
+        )}
       </div>
-      {node.children.map((child) => (
-        <CommentBranch key={child.id} node={child} depth={depth + 1} onReply={onReply} showReplyButton={showReplyButton} />
-      ))}
+      <div className="comment-main">
+        <div className="comment-meta">
+          <span className="comment-name">{node.author.nickname}</span>
+          <span className="comment-type">{LOGIN_LABEL[node.author.loginType] || node.author.loginType}</span>
+          <span className="comment-time">{formatTime(node.createdAt)}</span>
+        </div>
+        <p className="comment-body">
+          {atNickname ? (
+            <>
+              <span className="comment-at">@{atNickname}</span>{" "}
+            </>
+          ) : null}
+          {node.body}
+        </p>
+        {showReplyButton ? (
+          <button type="button" className="comment-reply-btn" onClick={() => onReply(node.id, node.author.nickname)}>
+            回复
+          </button>
+        ) : null}
+      </div>
+    </div>
+  );
+}
+
+/** 抖音式：每个楼主一层缩进，楼下回复单层列表 + @ */
+function CommentThreadDouyin({
+  root,
+  onReply,
+  showReplyButton
+}: {
+  root: CommentTreeNode;
+  onReply: (id: string, nickname: string) => void;
+  showReplyButton: boolean;
+}) {
+  const flat = flattenDouyinThread(root);
+  return (
+    <div className="comment-thread-root">
+      <CommentSingleCard node={root} onReply={onReply} showReplyButton={showReplyButton} />
+      {flat.length > 0 ? (
+        <div className="comment-thread-replies">
+          {flat.map(({ node, atNickname }) => (
+            <CommentSingleCard key={node.id} node={node} atNickname={atNickname} onReply={onReply} showReplyButton={showReplyButton} />
+          ))}
+        </div>
+      ) : null}
     </div>
   );
 }
@@ -110,19 +138,22 @@ export default function PostComments({
   initialTree,
   currentUser,
   commentFlash,
-  allowAnonymousComments
+  allowAnonymousComments,
+  variant = "default"
 }: {
   postId: string;
   initialTree: CommentTreeNode[];
   currentUser: PostCommentsUser | null;
   commentFlash: CommentFlash | null;
   allowAnonymousComments: boolean;
+  variant?: "default" | "h5";
 }) {
   const router = useRouter();
   const composeRef = useRef<HTMLDivElement>(null);
   const [activeUser, setActiveUser] = useState<PostCommentsUser | null>(currentUser);
   const [replyTarget, setReplyTarget] = useState<{ id: string; nickname: string } | null>(null);
   const [loggingOut, setLoggingOut] = useState(false);
+  const [successToastVisible, setSuccessToastVisible] = useState(false);
 
   const returnPath = useMemo(() => `/post/${postId}`, [postId]);
   const canComment = Boolean(activeUser) || allowAnonymousComments;
@@ -163,6 +194,21 @@ export default function PostComments({
     composeRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
   }, [replyTarget]);
 
+  /** 评论发表成功：弹层约 2 秒后去掉 URL 参数并刷新，不在表单上方常驻文案 */
+  useEffect(() => {
+    if (commentFlash?.kind !== "ok") return;
+    setSuccessToastVisible(true);
+    const t = window.setTimeout(() => {
+      setSuccessToastVisible(false);
+      router.replace(`/post/${postId}`, { scroll: false });
+      router.refresh();
+    }, 2000);
+    return () => {
+      window.clearTimeout(t);
+      setSuccessToastVisible(false);
+    };
+  }, [commentFlash, postId, router]);
+
   const loginUrl = useCallback(
     (type: string) => `/api/auth/social/start?type=${encodeURIComponent(type)}&return=${encodeURIComponent(returnPath)}`,
     [returnPath]
@@ -197,11 +243,11 @@ export default function PostComments({
   const parentHiddenValue = replyTarget?.id ?? "";
 
   return (
-    <section className="comment-section">
+    <section id="comments" className={`comment-section${variant === "h5" ? " h5-comment-section" : ""}`}>
       <div className="section-title comment-section-title">
         <h2>评论区</h2>
         <span className="chip">
-          {allowAnonymousComments ? "匿名可评 · 可选聚合登录 · 楼中楼" : "仅登录可评 · 楼中楼"}
+          {allowAnonymousComments ? "匿名可评 " : "仅登录可评"}
         </span>
       </div>
 
@@ -223,8 +269,8 @@ export default function PostComments({
         <div className="comment-login-panel">
           <p className="comment-login-tip">
             {allowAnonymousComments
-              ? "未登录将以「匿名」发表评论。可选聚合登录以显示第三方昵称与头像（本站不保存密码）。"
-              : "本站已关闭匿名评论，仅登录用户可发表评论。请选择一种方式登录（本站不保存密码）。"}
+              ? "未登录将以「匿名」发表评论。可选聚合登录以显示第三方昵称与头像"
+              : "本站已关闭匿名评论，仅登录用户可发表评论。请选择一种方式登录"}
           </p>
           <div className="comment-login-grid">
             {SUYANW_LOGIN_TYPES.map((type) => (
@@ -241,26 +287,12 @@ export default function PostComments({
           <p className="comment-empty">还没有评论，快来抢沙发～</p>
         ) : (
           initialTree.map((node) => (
-            <CommentBranch
-              key={node.id}
-              node={node}
-              depth={0}
-              onReply={onReply}
-              showReplyButton={canComment}
-            />
+            <CommentThreadDouyin key={node.id} root={node} onReply={onReply} showReplyButton={canComment} />
           ))
         )}
       </div>
 
       <div ref={composeRef}>
-        {commentFlash?.kind === "ok" ? (
-          <p style={{ color: "var(--brand-2)", fontWeight: 700, margin: "0 0 8px" }}>
-            评论已发布。
-            <Link href={`/post/${postId}`} style={{ marginLeft: 10, fontWeight: 700 }}>
-              关闭提示
-            </Link>
-          </p>
-        ) : null}
         {commentFlash?.kind === "error" ? (
           <p className="comment-error" style={{ marginBottom: 8 }}>
             {commentFlash.message}
@@ -271,9 +303,13 @@ export default function PostComments({
         ) : null}
 
         {canComment ? (
-        <form className="comment-compose comment-compose-footer" action={submitCommentAction}>
+        <form
+          className="comment-compose comment-compose-footer"
+          action={submitCommentAction.bind(null, replyTarget?.id ?? "")}
+        >
           <input type="hidden" name="postId" value={postId} />
-          <input type="hidden" name="parentId" key={parentHiddenKey} defaultValue={parentHiddenValue} />
+          {/* 受控隐藏域：与 bind 双保险，避免仅 defaultValue 时提交丢失 parentId */}
+          <input type="hidden" name="parentId" value={parentHiddenValue} readOnly aria-hidden />
 
           {replyTarget ? (
             <div className="comment-reply-banner">
@@ -307,6 +343,7 @@ export default function PostComments({
           )}
 
           <textarea
+            id="post-comment-body"
             className={`comment-textarea${replyTarget ? " comment-textarea--reply" : ""}`}
             name="body"
             key={parentHiddenKey}

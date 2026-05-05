@@ -1,19 +1,40 @@
-import Link from "next/link";
 import { notFound } from "next/navigation";
 import PostComments from "@/components/post-comments";
-
-/** 确保发表评论后 router.refresh 会重新拉取评论列表 */
-export const dynamic = "force-dynamic";
+import { PostDetailBottomBar } from "@/components/post-detail-bottom-bar";
+import { PostDetailHeader } from "@/components/post-detail-header";
+import { PostDetailInteractRow } from "@/components/post-detail-interact-row";
+import { PostRelatedH5 } from "@/components/post-related-h5";
 import { PostArticleMedia } from "@/components/post-article-media";
 import { buildCommentTree } from "@/lib/comments-tree";
+import { PostStatus } from "@/lib/generated/prisma";
 import { getLoggedInSocialUser } from "@/lib/social-user";
 import { prisma } from "@/lib/prisma";
 import { getPost } from "@/lib/posts";
 import { getSiteSettings } from "@/lib/site-settings";
 
+/** 确保发表评论后 router.refresh 会重新拉取评论列表 */
+export const dynamic = "force-dynamic";
+
 function firstQuery(value: string | string[] | undefined): string | undefined {
   if (value === undefined) return undefined;
   return Array.isArray(value) ? value[0] : value;
+}
+
+function shuffleTake<T>(items: T[], n: number): T[] {
+  const a = [...items];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a.slice(0, n);
+}
+
+function pad2(n: number) {
+  return String(n).padStart(2, "0");
+}
+
+function formatDetailTime(d: Date) {
+  return `${d.getFullYear()}-${pad2(d.getMonth() + 1)}-${pad2(d.getDate())} ${pad2(d.getHours())}:${pad2(d.getMinutes())}`;
 }
 
 export default async function PostDetailPage({
@@ -47,12 +68,21 @@ export default async function PostDetailPage({
 
   await prisma.post.update({ where: { id: post.id }, data: { views: { increment: 1 } } });
 
-  const [related, commentRows, socialUser, siteSettings] = await Promise.all([
+  const heatDisplay = post.views + 1;
+  const timeSource = post.publishedAt ?? post.createdAt;
+  const timeLabel = formatDetailTime(timeSource);
+
+  const [relatedPool, commentRows, socialUser, siteSettings] = await Promise.all([
     prisma.post.findMany({
-      where: { status: "PUBLISHED", id: { not: post.id }, categoryId: post.categoryId },
-      take: 4,
+      where: { status: PostStatus.PUBLISHED, id: { not: post.id }, categoryId: post.categoryId },
+      take: 32,
       orderBy: { views: "desc" },
-      include: { category: true }
+      select: {
+        id: true,
+        title: true,
+        views: true,
+        category: { select: { name: true } }
+      }
     }),
     prisma.comment.findMany({
       where: { postId: post.id },
@@ -63,6 +93,7 @@ export default async function PostDetailPage({
     getSiteSettings()
   ]);
 
+  const relatedInitial = shuffleTake(relatedPool, 4);
   const commentTree = buildCommentTree(commentRows);
   const currentUser = socialUser
     ? {
@@ -73,69 +104,77 @@ export default async function PostDetailPage({
       }
     : null;
 
+  const tagLine =
+    post.tags.length > 0
+      ? post.tags.map(({ tag }) => tag.name).join(" · ")
+      : "欢迎投稿";
+
   return (
-    <main className="site-shell">
-      <header className="topbar">
-        <div className="topbar-inner">
-          <Link href="/" className="brand">吃瓜网</Link>
-          <nav className="nav">
-            <Link href="/">首页</Link>
-            <Link href="/admin">管理后台</Link>
-          </nav>
-        </div>
-      </header>
-      <div className="container detail-layout">
-        <article className="article">
-          <PostArticleMedia post={post} />
-          <div className="article-body">
-            <span className="chip">{post.category.name}</span>
-            <h1>{post.title}</h1>
-            <div className="story-meta">
-              <span>热度 {post.views + 1}</span>
-              {post.tags.map(({ tag }) => <span key={tag.id}>#{tag.name}</span>)}
+    <main className="site-shell h5-detail-page">
+      <PostDetailHeader postId={post.id} />
+
+      <div className="h5-detail-main">
+        <article className="h5-detail-card">
+          <span className="h5-detail-cat-pill">{post.category.name}</span>
+
+          <div className="h5-detail-media">
+            <PostArticleMedia post={post} />
+          </div>
+
+          <div className="h5-detail-card-inner">
+            <h1 className="h5-detail-title">{post.title}</h1>
+
+            <div className="h5-detail-meta">
+              <span className="h5-detail-meta-heat">
+                <span aria-hidden>🔥</span> 热度 {heatDisplay}
+              </span>
+              <span className="h5-detail-meta-time">{timeLabel}</span>
             </div>
-            {post.type === "VIDEO" && !post.videoUrl ? (
-              <p>当前标记为视频类型但未填写可播放地址。请在后台「视频地址」填入 MP4 / WebM / MOV 的站内路径（如 /uploads/…）。</p>
-            ) : null}
-            <p>{post.body}</p>
+
+            <div className="h5-detail-quote" lang="zh-Hans">
+              <span className="h5-detail-quote-mark" aria-hidden>
+                “
+              </span>
+              {post.type === "VIDEO" && !post.videoUrl ? (
+                <p className="h5-detail-quote-warn">当前标记为视频类型但未填写可播放地址。请在后台「视频地址」填入 MP4 / WebM / MOV 的站内路径（如 /uploads/…）。</p>
+              ) : null}
+              <p className="h5-detail-quote-body">{post.body}</p>
+            </div>
+
+            <div className="h5-detail-contrib">
+              <div className="h5-detail-contrib-avatar" aria-hidden>
+                🐣
+              </div>
+              <div className="h5-detail-contrib-text">
+                <div>投稿来自 匿名吃瓜群众</div>
+                <div className="h5-detail-contrib-sub">{post.summary.slice(0, 24)}{post.summary.length > 24 ? "…" : ""}</div>
+              </div>
+            </div>
+
+            <p className="h5-detail-card-foot">
+              😂 {post.category.name} | 🧨 {tagLine}
+            </p>
+
+            <PostDetailInteractRow heat={heatDisplay} commentCount={commentRows.length} postTitle={post.title} />
           </div>
         </article>
 
-        <aside>
-          <div className="rank-panel">
-            <div className="section-title" style={{ marginTop: 0 }}>
-              <h2>同类推荐</h2>
-            </div>
-            <div className="rank-list">
-              {related.map((item, index) => (
-                <Link className="rank-item" href={`/post/${item.id}`} key={item.id}>
-                  <span className="rank-num">{String(index + 1).padStart(2, "0")}</span>
-                  <span className="rank-title">{item.title}</span>
-                  <span className="heat">{item.views}</span>
-                </Link>
-              ))}
-            </div>
-          </div>
-        </aside>
+        <PostRelatedH5 postId={post.id} initialItems={relatedInitial} />
+
+        <div className="h5-detail-comments-wrap">
+          <PostComments
+            key={post.id}
+            postId={post.id}
+            initialTree={commentTree}
+            currentUser={currentUser}
+            commentFlash={commentFlash}
+            allowAnonymousComments={siteSettings.allowAnonymousComments}
+            variant="h5"
+          />
+        </div>
       </div>
 
-      <div className="container" style={{ marginTop: 28, marginBottom: 40 }}>
-        <PostComments
-          key={post.id}
-          postId={post.id}
-          initialTree={commentTree}
-          currentUser={currentUser}
-          commentFlash={commentFlash}
-          allowAnonymousComments={siteSettings.allowAnonymousComments}
-        />
-      </div>
-
-      <nav className="mobile-tabs">
-        <Link href="/">首页</Link>
-        <Link href="/#latest">最新</Link>
-
-        <Link href="/vip">其他</Link>
-      </nav>
+      <PostDetailBottomBar postId={post.id} heat={heatDisplay} postTitle={post.title} />
     </main>
   );
 }
