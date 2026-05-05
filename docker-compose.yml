@@ -1,0 +1,19 @@
+# 宿主机项目根目录创建 .env，至少包含：
+# DATABASE_URL="file:/data/prod.db"
+# （与下方 volume 挂载的 /data 一致）
+
+services:
+  web:
+    build: .
+    ports:
+      - "3000:3000"
+    env_file:
+      - .env
+    volumes:
+      # SQLite 与上传文件持久化在宿主机目录
+      - ./docker-data:/data
+      - ./docker-uploads:/app/public/uploads
+    # 首次/更新表结构；再启动 Next
+    command: >
+      sh -c "npx prisma db push && exec npx next start --hostname 0.0.0.0 -p 3000"
+    restart: unless-stopped

@@ -1,0 +1,36 @@
+{
+  "name": "chigua-web",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "dev:poll": "cross-env NEXT_DEV_POLL=1 next dev",
+    "dev:lan": "next dev --hostname 0.0.0.0",
+    "dev:lan:poll": "cross-env NEXT_DEV_POLL=1 next dev --hostname 0.0.0.0",
+    "dev:direct": "node scripts/dev-server.js",
+    "build": "prisma generate && next build",
+    "start": "next start",
+    "db:push": "prisma db push",
+    "db:seed": "node prisma/seed.js",
+    "setup": "prisma generate && node scripts/init-db.js",
+    "db:migrate-local": "prisma generate && node scripts/migrate-db.js"
+  },
+  "dependencies": {
+    "@prisma/client": "^6.18.0",
+    "next": "^16.0.0",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.2",
+    "@types/react": "^19.0.2",
+    "@types/react-dom": "^19.0.2",
+    "cross-env": "7.0.3",
+    "prisma": "^6.18.0",
+    "sql.js": "^1.14.1",
+    "typescript": "^5.7.2"
+  },
+  "prisma": {
+    "seed": "node prisma/seed.js"
+  }
+}

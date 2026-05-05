@@ -1,0 +1,178 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../lib/generated/prisma"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+enum PostType {
+  ARTICLE
+  VIDEO
+  GALLERY
+}
+
+enum PostStatus {
+  DRAFT
+  PUBLISHED
+  ARCHIVED
+}
+
+enum MediaType {
+  IMAGE
+  VIDEO
+  OTHER
+}
+
+model AdminUser {
+  id           String   @id @default(cuid())
+  username     String   @unique
+  passwordHash String
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+/** 全站单行配置（id 固定为 main） */
+model SiteSettings {
+  id                     String   @id @default("main")
+  allowAnonymousComments Boolean  @default(true)
+  updatedAt              DateTime @updatedAt
+}
+
+model Category {
+  id        String   @id @default(cuid())
+  name      String   @unique
+  slug      String   @unique
+  posts     Post[]
+  createdAt DateTime @default(now())
+}
+
+model Tag {
+  id        String   @id @default(cuid())
+  name      String   @unique
+  slug      String   @unique
+  posts     PostTag[]
+  createdAt DateTime @default(now())
+}
+
+model PostTag {
+  postId String
+  tagId  String
+  post   Post   @relation(fields: [postId], references: [id], onDelete: Cascade)
+  tag    Tag    @relation(fields: [tagId], references: [id], onDelete: Cascade)
+
+  @@id([postId, tagId])
+}
+
+model Post {
+  id               String     @id @default(cuid())
+  title            String
+  summary          String
+  body             String
+  type             PostType   @default(ARTICLE)
+  status           PostStatus @default(DRAFT)
+  coverUrl         String
+  videoUrl         String?
+  /** JSON array of extra image URLs (same-origin paths) after coverUrl, for TG multi-photo albums */
+  galleryImageUrls String?
+  isPinned         Boolean    @default(false)
+  heat             Int        @default(100)
+  views            Int        @default(0)
+  publishedAt      DateTime?
+  categoryId       String
+  category         Category   @relation(fields: [categoryId], references: [id])
+  tags             PostTag[]
+  telegramImports  TelegramImport[]
+  comments         Comment[]
+  createdAt        DateTime   @default(now())
+  updatedAt        DateTime   @updatedAt
+}
+
+/** 聚合登录（QQ/微信等）用户，用于前台评论身份 */
+model SocialUser {
+  id         String    @id @default(cuid())
+  socialUid  String
+  loginType  String
+  nickname   String
+  faceimg    String
+  gender     String?
+  location   String?
+  comments   Comment[]
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+
+  @@unique([loginType, socialUid])
+}
+
+/** 聚合登录跳转前暂存 returnPath，避免仅依赖 Cookie 在第三方回调时被丢弃（如微信 WebView） */
+model OAuthLoginState {
+  id          String   @id
+  returnPath  String
+  oauthType   String
+  expiresAt   DateTime
+  createdAt   DateTime @default(now())
+
+  @@index([expiresAt])
+}
+
+model Comment {
+  id        String      @id @default(cuid())
+  postId    String
+  post      Post        @relation(fields: [postId], references: [id], onDelete: Cascade)
+  authorId  String
+  author    SocialUser  @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  parentId  String?
+  parent    Comment?    @relation("CommentThread", fields: [parentId], references: [id], onDelete: Cascade)
+  replies   Comment[]   @relation("CommentThread")
+  body      String
+  createdAt DateTime    @default(now())
+
+  @@index([postId, parentId])
+  @@index([postId, createdAt])
+}
+
+model MediaAsset {
+  id        String    @id @default(cuid())
+  filename  String
+  url       String
+  type      MediaType
+  size      Int
+  createdAt DateTime  @default(now())
+}
+
+model TelegramConfig {
+  id                String   @id @default(cuid())
+  botToken          String
+  channelId         String
+  channelName       String?
+  webhookSecret     String   @unique
+  defaultCategoryId String
+  defaultStatus     PostStatus @default(DRAFT)
+  autoPublish       Boolean  @default(false)
+  downloadMedia     Boolean  @default(true)
+  isEnabled         Boolean  @default(false)
+  lastUpdateId      Int?
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+}
+
+model TelegramImport {
+  id           String   @id @default(cuid())
+  updateId     Int?
+  messageId    Int
+  chatId       String
+  chatTitle    String?
+  rawText      String
+  mediaType    String?
+  mediaUrl     String?
+  /** Same id on all messages in one Telegram media album (multi-photo) */
+  mediaGroupId String?
+  postId       String?
+  post         Post?    @relation(fields: [postId], references: [id], onDelete: SetNull)
+  createdAt    DateTime @default(now())
+
+  @@unique([chatId, messageId])
+  @@index([chatId, mediaGroupId])
+}
