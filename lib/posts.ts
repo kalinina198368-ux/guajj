@@ -7,11 +7,14 @@ export const postInclude = {
   tags: { include: { tag: true } }
 };
 
+/** 首页「最新吃瓜」等同台数据：置顶优先，其余按入库时间新→旧（比 id 字串更可靠）。 */
+const publishedListOrderBy = [{ isPinned: "desc" as const }, { createdAt: "desc" as const }, { id: "desc" as const }];
+
 export async function getPublishedPosts() {
   return prisma.post.findMany({
     where: { status: PostStatus.PUBLISHED },
     include: postInclude,
-    orderBy: [{ isPinned: "desc" }, { publishedAt: "desc" }, { views: "desc" }]
+    orderBy: publishedListOrderBy
   });
 }
 
@@ -34,7 +37,7 @@ export async function searchPublishedPosts(q: string) {
   return prisma.post.findMany({
     where,
     include: postInclude,
-    orderBy: [{ isPinned: "desc" }, { publishedAt: "desc" }, { views: "desc" }]
+    orderBy: publishedListOrderBy
   });
 }
 

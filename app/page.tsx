@@ -41,8 +41,11 @@ export default async function HomePage({ searchParams }: { searchParams: Promise
     categoryName: p.category.name
   }));
 
-  const ranks = [...posts].sort((a, b) => b.views - a.views).slice(0, 6);
-  const latest = posts.slice(1);
+  /** 轮播已展示前 3 条；置顶仅走轮播。列表区不再出现置顶，且不再重复轮播里的稿件。 */
+  const carouselIds = new Set(posts.slice(0, 3).map((p) => p.id));
+  const inListFeed = (p: (typeof posts)[number]) => !p.isPinned && !carouselIds.has(p.id);
+  const ranks = [...posts.filter(inListFeed)].sort((a, b) => b.views - a.views).slice(0, 6);
+  const latest = posts.filter(inListFeed);
 
   return (
     <main className="site-shell h5-home">

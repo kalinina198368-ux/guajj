@@ -17,6 +17,13 @@ const nextConfig = {
   },
   outputFileTracingRoot: path.resolve("."),
   /**
+   * 运行时写入 `public/uploads/…`（如 TG Webhook）在 `next start` 下偶发 404，重启才恢复：
+   * 生产对静态资源的处理与 dev 不完全一致。将 `/uploads/*` 统一交给 API 按磁盘流式读取，避免依赖启动时扫描的 public 清单。
+   */
+  async rewrites() {
+    return [{ source: "/uploads/:path*", destination: "/api/uploads/:path*" }];
+  },
+  /**
    * 用 http://127.0.0.1:3000 访问时，HMR / 开发字体等请求的 Origin 为 127.0.0.1，
    * 与默认放行的 localhost 不同，会被误判跨站。仅影响 `next dev`。
    */
