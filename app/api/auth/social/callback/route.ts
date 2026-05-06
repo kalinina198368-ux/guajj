@@ -3,6 +3,7 @@ import { cookies } from "next/headers";
 import { createSocialUserSessionToken, readOAuthStateToken } from "@/lib/social-auth";
 import { oauthFlowCookieAttrs } from "@/lib/social-oauth-cookie";
 import { prisma } from "@/lib/prisma";
+import { getPublicSiteOrigin } from "@/lib/site-public-origin";
 import { fetchSuyanwUserByCode, isSuyanwLoginType } from "@/lib/suyanw-oauth";
 
 export async function GET(request: Request) {
@@ -11,7 +12,7 @@ export async function GET(request: Request) {
   const code = searchParams.get("code") || "";
   const providerState = searchParams.get("state") || "";
 
-  const origin = new URL(request.url).origin;
+  const origin = getPublicSiteOrigin(request);
   const flow = oauthFlowCookieAttrs(request);
 
   const failRedirect = (msg: string, debug?: Record<string, unknown>) => {
@@ -64,6 +65,7 @@ export async function GET(request: Request) {
       codeLength: code.length,
       providerStateLength: providerState.length,
       origin,
+      requestUrlOrigin: new URL(request.url).origin,
       hasSidCookie: Boolean(sid),
       sidPrefix: sid ? `${sid.slice(0, 8)}…` : null,
       hasSignedCookie: Boolean(signedRaw),

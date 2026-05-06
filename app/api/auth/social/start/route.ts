@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 import { createOAuthStateToken } from "@/lib/social-auth";
 import { oauthFlowCookieAttrs } from "@/lib/social-oauth-cookie";
 import { prisma } from "@/lib/prisma";
+import { getPublicSiteOrigin } from "@/lib/site-public-origin";
 import { fetchSuyanwLoginUrl, isSuyanwLoginType } from "@/lib/suyanw-oauth";
 
 function safeReturnPath(raw: string | null): string {
@@ -20,7 +21,7 @@ export async function GET(request: Request) {
     return NextResponse.json({ error: "不支持的登录方式" }, { status: 400 });
   }
 
-  const origin = new URL(request.url).origin;
+  const origin = getPublicSiteOrigin(request);
   const redirectUri = process.env.SUYANW_REDIRECT_URI || `${origin}/api/auth/social/callback`;
 
   let loginUrl: string;
