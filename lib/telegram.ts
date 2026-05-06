@@ -3,6 +3,7 @@ import { mkdir, writeFile } from "fs/promises";
 import path from "path";
 import { MediaType, PostStatus, PostType, type TelegramConfig } from "@/lib/generated/prisma";
 import { prisma } from "@/lib/prisma";
+import { isRepostAttributionOnlyLine, stripRepostAttributionFromText } from "@/lib/strip-repost-attribution";
 
 type TelegramPhotoSize = { file_id: string; file_unique_id?: string; width: number; height: number; file_size?: number };
 type TelegramMedia = { file_id: string; file_name?: string; mime_type?: string; file_size?: number };
@@ -112,18 +113,17 @@ function resolveImportStatus(config: TelegramConfig, message: TelegramMessage): 
   return config.defaultStatus;
 }
 
-/** 与 forwardPrefix() 写入的正文首行一致：仅标记来源，不作为标题 */
-function isForwardAttributionLine(line: string): boolean {
-  const t = line.trim();
-  return t.startsWith("【转自") && t.endsWith("】");
-}
-
 export function parseTelegramContent(text: string) {
-  const lines = text.split(/\r?\n/).map((line) => line.trim()).filter(Boolean);
-  const substantive = lines.filter((line) => !isForwardAttributionLine(line));
+  const cleaned = stripRepostAttributionFromText(text.trim());
+  const lines = cleaned.split(/\r?\n/).map((line) => line.trim()).filter(Boolean);
+  const substantive = lines.filter((line) => !isRepostAttributionOnlyLine(line));
 
   const defaultTitle = "佳佳吃瓜新吃瓜";
   const defaultSummary = "频道自动采集内容，进入后台可继续编辑标题、热度和正文。";
+
+  if (substantive.length === 0) {
+    return { title: defaultTitle, summary: defaultSummary, body: defaultSummary };
+  }
 
   const firstLine = substantive[0];
   const title = (firstLine || defaultTitle).slice(0, 80);
@@ -136,7 +136,7 @@ export function parseTelegramContent(text: string) {
   return {
     title,
     summary,
-    body: text.trim() || summary
+    body: substantive.join("\n")
   };
 }
 

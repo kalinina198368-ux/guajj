@@ -19,5 +19,6 @@ RUN npx prisma generate && npm run build
 ENV NODE_ENV=production
 EXPOSE 3000
 
-# 监听 0.0.0.0 以便宿主机/Nginx 访问容器端口
+# 监听 0.0.0.0 以便宿主机/Nginx 访问容器端口。
+# 大视频上传：除应用内 ADMIN_UPLOAD_MAX_MB 外，若经 Nginx 反代，须提高 client_max_body_size（默认常仅 1m，会 413）。
 CMD ["npx", "next", "start", "--hostname", "0.0.0.0", "-p", "3000"]

@@ -1,7 +1,10 @@
 import Link from "next/link";
 import { H5HeroCarousel } from "@/components/h5-hero-carousel";
+import { H5StoryListCard } from "@/components/h5-story-list-card";
 import { formatRelativeTime } from "@/lib/format-relative-time";
+import { extractListMediaTiles } from "@/lib/home-post-media";
 import { getPublishedPosts, searchPublishedPosts } from "@/lib/posts";
+import { stripRepostAttributionFromText } from "@/lib/strip-repost-attribution";
 
 function formatDate(date?: Date | null) {
   if (!date) return "刚刚";
@@ -104,19 +107,18 @@ export default async function HomePage({ searchParams }: { searchParams: Promise
             ) : (
               <div className="h5-story-grid">
                 {posts.map((post) => (
-                  <Link href={`/post/${post.id}`} className="h5-story-card" key={post.id}>
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img src={post.coverUrl} alt="" className="h5-story-img" />
-                    <div className="h5-story-body">
-                      <div className="h5-story-meta">
-                        <span className={`h5-rank-tag ${tagToneClass(post.category.name)}`}>{post.category.name}</span>
-                        <span>{formatRelativeTime(post.publishedAt)}</span>
-                        <span className="h5-story-heat">🔥 {post.views}</span>
-                      </div>
-                      <h3 className="h5-story-heading">{post.title}</h3>
-                      <p className="h5-story-sum">{post.summary}</p>
-                    </div>
-                  </Link>
+                  <H5StoryListCard
+                    key={post.id}
+                    postId={post.id}
+                    href={`/post/${post.id}`}
+                    title={post.title}
+                    summary={stripRepostAttributionFromText(post.summary)}
+                    categoryName={post.category.name}
+                    timeLabel={formatRelativeTime(post.publishedAt)}
+                    views={post.views}
+                    tiles={extractListMediaTiles(post)}
+                    tagToneClass={tagToneClass(post.category.name)}
+                  />
                 ))}
               </div>
             )}
@@ -170,19 +172,18 @@ export default async function HomePage({ searchParams }: { searchParams: Promise
               </div>
               <div className="h5-story-grid">
                 {latest.map((post) => (
-                  <Link href={`/post/${post.id}`} className="h5-story-card" key={post.id}>
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img src={post.coverUrl} alt="" className="h5-story-img" />
-                    <div className="h5-story-body">
-                      <div className="h5-story-meta">
-                        <span className={`h5-rank-tag ${tagToneClass(post.category.name)}`}>{post.category.name}</span>
-                        <span>{formatDate(post.publishedAt)}</span>
-                        <span className="h5-story-heat">🔥 {post.views}</span>
-                      </div>
-                      <h3 className="h5-story-heading">{post.title}</h3>
-                      <p className="h5-story-sum">{post.summary}</p>
-                    </div>
-                  </Link>
+                  <H5StoryListCard
+                    key={post.id}
+                    postId={post.id}
+                    href={`/post/${post.id}`}
+                    title={post.title}
+                    summary={stripRepostAttributionFromText(post.summary)}
+                    categoryName={post.category.name}
+                    timeLabel={formatDate(post.publishedAt)}
+                    views={post.views}
+                    tiles={extractListMediaTiles(post)}
+                    tagToneClass={tagToneClass(post.category.name)}
+                  />
                 ))}
               </div>
             </section>

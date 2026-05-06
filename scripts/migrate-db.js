@@ -58,7 +58,11 @@ async function main() {
     `DROP INDEX IF EXISTS "TelegramImport_postId_key";`,
     `ALTER TABLE "Post" ADD COLUMN "galleryImageUrls" TEXT;`,
     `ALTER TABLE "TelegramImport" ADD COLUMN "mediaGroupId" TEXT;`,
-    `CREATE INDEX IF NOT EXISTS "TelegramImport_chatId_mediaGroupId_idx" ON "TelegramImport"("chatId", "mediaGroupId");`
+    `CREATE INDEX IF NOT EXISTS "TelegramImport_chatId_mediaGroupId_idx" ON "TelegramImport"("chatId", "mediaGroupId");`,
+    /** 混排 JSON；与 prisma/schema.prisma 中 Post.contentBlocks 对齐，拉取旧库后需补列 */
+    `ALTER TABLE "Post" ADD COLUMN "contentBlocks" TEXT;`,
+    `ALTER TABLE "Post" ADD COLUMN "galleryVideoUrls" TEXT;`,
+    `ALTER TABLE "SocialUser" ADD COLUMN "lastLoginAt" DATETIME;`
   ];
   for (const sql of migrateSteps) {
     try {

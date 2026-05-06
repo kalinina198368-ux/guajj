@@ -4,7 +4,10 @@ import { PostDetailBottomBar } from "@/components/post-detail-bottom-bar";
 import { PostDetailHeader } from "@/components/post-detail-header";
 import { PostDetailInteractRow } from "@/components/post-detail-interact-row";
 import { PostRelatedH5 } from "@/components/post-related-h5";
-import { PostArticleMedia } from "@/components/post-article-media";
+import { PostRichContent } from "@/components/post-rich-content";
+import { buildRenderableBlocks, dropLeadingTextBlockIfEqualsBody } from "@/lib/post-content-blocks";
+import { stripRepostAttributionFromText } from "@/lib/strip-repost-attribution";
+import { buildAllVideoUrls } from "@/lib/post-gallery";
 import { buildCommentTree } from "@/lib/comments-tree";
 import { PostStatus } from "@/lib/generated/prisma";
 import { getLoggedInSocialUser } from "@/lib/social-user";
@@ -35,6 +38,12 @@ function pad2(n: number) {
 
 function formatDetailTime(d: Date) {
   return `${d.getFullYear()}-${pad2(d.getMonth() + 1)}-${pad2(d.getDate())} ${pad2(d.getHours())}:${pad2(d.getMinutes())}`;
+}
+
+function formatBrowseCount(n: number) {
+  if (n >= 10000) return `${(n / 10000).toFixed(1)}万浏览`;
+  if (n >= 1000) return `${(n / 1000).toFixed(1)}k浏览`;
+  return `${n}浏览`;
 }
 
 export default async function PostDetailPage({
@@ -104,44 +113,40 @@ export default async function PostDetailPage({
       }
     : null;
 
-  const tagLine =
-    post.tags.length > 0
-      ? post.tags.map(({ tag }) => tag.name).join(" · ")
-      : "欢迎投稿";
+  const bodyDisplay = stripRepostAttributionFromText(post.body);
+  const richBlocks = dropLeadingTextBlockIfEqualsBody(buildRenderableBlocks(post), post.body);
+  const videoMissing = post.type === "VIDEO" && buildAllVideoUrls(post).length === 0;
 
   return (
     <main className="site-shell h5-detail-page">
-      <PostDetailHeader postId={post.id} />
+      <PostDetailHeader />
 
       <div className="h5-detail-main">
         <article className="h5-detail-card">
-          <span className="h5-detail-cat-pill">{post.category.name}</span>
-
-          <div className="h5-detail-media">
-            <PostArticleMedia post={post} />
-          </div>
-
           <div className="h5-detail-card-inner">
+            <span className="h5-detail-cat-pill">{post.category.name}</span>
             <h1 className="h5-detail-title">{post.title}</h1>
 
             <div className="h5-detail-meta">
-              <span className="h5-detail-meta-heat">
+              {/* <span className="h5-detail-meta-heat">
                 <span aria-hidden>🔥</span> 热度 {heatDisplay}
-              </span>
+              </span> */}
               <span className="h5-detail-meta-time">{timeLabel}</span>
-            </div>
-
-            <div className="h5-detail-quote" lang="zh-Hans">
-              <span className="h5-detail-quote-mark" aria-hidden>
-                “
+              <span className="h5-detail-meta-views">
+                <span aria-hidden>👁</span> {formatBrowseCount(heatDisplay)}
               </span>
-              {post.type === "VIDEO" && !post.videoUrl ? (
-                <p className="h5-detail-quote-warn">当前标记为视频类型但未填写可播放地址。请在后台「视频地址」填入 MP4 / WebM / MOV 的站内路径（如 /uploads/…）。</p>
-              ) : null}
-              <p className="h5-detail-quote-body">{post.body}</p>
             </div>
 
-            <div className="h5-detail-contrib">
+            {bodyDisplay.trim() ? (
+              <div className="h5-detail-quote" lang="zh-Hans">
+                <span className="h5-detail-quote-mark" aria-hidden>
+                  “
+                </span>
+                <p className="h5-detail-quote-body">{bodyDisplay}</p>
+              </div>
+            ) : null}
+
+            {/* <div className="h5-detail-contrib">
               <div className="h5-detail-contrib-avatar" aria-hidden>
                 🐣
               </div>
@@ -152,10 +157,22 @@ export default async function PostDetailPage({
             </div>
 
             <p className="h5-detail-card-foot">
-              😂 {post.category.name} | 🧨 {tagLine}
-            </p>
+              😂 {post.category.name} | 🧨 欢迎投稿
+            </p> */}
 
-            <PostDetailInteractRow heat={heatDisplay} commentCount={commentRows.length} postTitle={post.title} />
+            <PostRichContent blocks={richBlocks} videoMissingHint={videoMissing} />
+
+            {post.tags.length > 0 ? (
+              <div className="h5-detail-tags">
+                {post.tags.map(({ tag }) => (
+                  <span key={tag.id} className="h5-detail-tag-pill">
+                    #{tag.name}
+                  </span>
+                ))}
+              </div>
+            ) : null}
+
+            <PostDetailInteractRow heat={heatDisplay} commentCount={commentRows.length} />
           </div>
         </article>
 
@@ -174,7 +191,7 @@ export default async function PostDetailPage({
         </div>
       </div>
 
-      <PostDetailBottomBar postId={post.id} heat={heatDisplay} postTitle={post.title} />
+      <PostDetailBottomBar heat={heatDisplay} />
     </main>
   );
 }

@@ -1,36 +1,23 @@
 import type { Category, Post, PostTag, Tag } from "@/lib/generated/prisma";
+import { buildAllVideoUrls, buildGalleryImageUrls } from "@/lib/post-gallery";
 
 export type PostWithCategoryTags = Post & {
   category: Category;
   tags: Array<PostTag & { tag: Tag }>;
 };
 
-function parseGalleryExtras(galleryImageUrls: string | null | undefined): string[] {
-  if (!galleryImageUrls) return [];
-  try {
-    const parsed = JSON.parse(galleryImageUrls) as unknown;
-    return Array.isArray(parsed) ? parsed.filter((u): u is string => typeof u === "string") : [];
-  } catch {
-    return [];
-  }
-}
+export { buildGalleryImageUrls };
 
-/** 图集：封面 + 额外图（去重），与详情页逻辑一致 */
-export function buildGalleryImageUrls(post: Post): string[] {
-  if (post.type !== "GALLERY") return [];
-  const extras = parseGalleryExtras(post.galleryImageUrls);
-  return [post.coverUrl, ...extras.filter((u) => u && u !== post.coverUrl)];
-}
-
+/** @deprecated 前台详情已改用 PostRichContent；列表卡片等仍可用 */
 export function PostArticleMedia({ post }: { post: PostWithCategoryTags }) {
   const galleryImages = buildGalleryImageUrls(post);
+  const videos = buildAllVideoUrls(post);
 
-  // 有视频地址即播放：避免后台只填了 videoUrl、类型仍为「图文」时用户端不渲染播放器
-  if (post.videoUrl) {
+  if (videos.length > 0) {
     return (
       <video
         className="article-video"
-        src={post.videoUrl}
+        src={videos[0]}
         poster={post.coverUrl}
         controls
         playsInline

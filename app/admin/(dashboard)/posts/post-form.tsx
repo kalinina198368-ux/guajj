@@ -1,6 +1,7 @@
 import Link from "next/link";
 import type { Category, Post, PostTag, Tag } from "@/lib/generated/prisma";
 import { createPostAction, updatePostAction } from "./actions";
+import { buildAllVideoUrls } from "@/lib/post-gallery";
 
 type PostWithMeta = Post & { tags: Array<PostTag & { tag: Tag }> };
 
@@ -69,6 +70,23 @@ export default function PostForm({
         <textarea id="post-body" name="body" defaultValue={post?.body || ""} required />
       </div>
 
+      <div className="field">
+        <label htmlFor="post-content-blocks">混排内容块（可选 JSON）</label>
+        <textarea
+          id="post-content-blocks"
+          name="contentBlocks"
+          rows={10}
+          defaultValue={post?.contentBlocks || ""}
+          placeholder={`可多段文字、多视频、多图任意穿插，示例：
+[{"type":"text","text":"开篇段落…"},{"type":"video","src":"/uploads/a.mp4","poster":"/uploads/cover.jpg"},{"type":"images","urls":["/uploads/1.jpg","/uploads/2.jpg"]},{"type":"text","text":"结尾再说两句。"}]`}
+          spellCheck={false}
+          style={{ fontFamily: "ui-monospace, monospace", fontSize: 13 }}
+        />
+        <span style={{ color: "var(--muted)", fontSize: 12, display: "block", marginTop: 6 }}>
+          留空则前台按「正文 → 视频 → 图片/封面」自动排版；填写后完全以此为准（摘要仍显示在顶部金句区）。
+        </span>
+      </div>
+
       <div className="toolbar">
         <div className="field" style={{ flex: 1 }}>
           <label>类型</label>
@@ -110,11 +128,28 @@ export default function PostForm({
 
       <div className="field">
         <label>封面地址</label>
-        <input name="coverUrl" defaultValue={post?.coverUrl || "/assets/cover-spotlight.svg"} required />
+        <input name="coverUrl" defaultValue={post?.coverUrl} required />
       </div>
       <div className="field">
-        <label>视频地址</label>
-        <input name="videoUrl" defaultValue={post?.videoUrl || ""} placeholder="/uploads/demo.mp4" />
+        <label htmlFor="post-video-url">主视频地址（首个）</label>
+        <input id="post-video-url" name="videoUrl" defaultValue={post?.videoUrl || ""} placeholder="/uploads/demo.mp4" />
+        <span style={{ color: "var(--muted)", fontSize: 12, display: "block", marginTop: 4 }}>
+          多视频时此处填第一个（或留空仅填下方 JSON）；首页与详情会按「主视频 + 更多视频」顺序拼版。
+        </span>
+      </div>
+
+      <div className="field">
+        <label htmlFor="post-gallery-videos">更多视频（JSON 字符串数组）</label>
+        <textarea
+          id="post-gallery-videos"
+          name="galleryVideoUrls"
+          rows={3}
+          defaultValue={post?.galleryVideoUrls || ""}
+          placeholder='["/uploads/telegram/b.mp4","/uploads/telegram/c.mp4"]'
+        />
+        <span style={{ color: "var(--muted)", fontSize: 12, display: "block", marginTop: 4 }}>
+          与图集额外图相同格式；与「主视频」合并去重后依次展示，前台每个可单独点开播放。
+        </span>
       </div>
 
       <div className="field">
@@ -137,11 +172,15 @@ export default function PostForm({
         </div>
       ) : null}
 
-      {post?.videoUrl ? (
+      {post && buildAllVideoUrls(post).length > 0 ? (
         <div className="field">
-          <label>视频预览</label>
-          <div style={{ border: "1px solid var(--admin-border)", borderRadius: 8, padding: 8, background: "#0d1117" }}>
-            <video src={post.videoUrl} controls style={{ width: "100%", maxHeight: 260 }} preload="metadata" />
+          <label>视频预览（全部）</label>
+          <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+            {buildAllVideoUrls(post).map((src) => (
+              <div key={src} style={{ border: "1px solid var(--admin-border)", borderRadius: 8, padding: 8, background: "#0d1117" }}>
+                <video src={src} controls style={{ width: "100%", maxHeight: 220 }} preload="metadata" />
+              </div>
+            ))}
           </div>
         </div>
       ) : null}

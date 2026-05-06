@@ -72,10 +72,21 @@ function IconSettings() {
   );
 }
 
+function IconUsers() {
+  return (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden>
+      <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+      <circle cx="9" cy="7" r="4" />
+      <path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" />
+    </svg>
+  );
+}
+
 const navItems: NavItem[] = [
   { href: "/admin", label: "概览", icon: <IconOverview />, end: true },
   { href: "/admin/posts", label: "内容", icon: <IconDoc /> },
   { href: "/admin/comments", label: "评论", icon: <IconChat /> },
+  { href: "/admin/social-users", label: "登录用户", icon: <IconUsers /> },
   { href: "/admin/media", label: "媒体", icon: <IconImage /> },
   { href: "/admin/taxonomy", label: "分类标签", icon: <IconTags /> },
   { href: "/admin/telegram", label: "TG机器人", icon: <IconSend /> },

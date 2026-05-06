@@ -101,6 +101,7 @@ export async function GET(request: Request) {
     })
   );
 
+  const now = new Date();
   const user = await prisma.socialUser.upsert({
     where: { loginType_socialUid: { loginType: profile.type, socialUid: profile.socialUid } },
     create: {
@@ -109,13 +110,15 @@ export async function GET(request: Request) {
       nickname: profile.nickname,
       faceimg: profile.faceimg,
       gender: profile.gender,
-      location: profile.location
+      location: profile.location,
+      lastLoginAt: now
     },
     update: {
       nickname: profile.nickname,
       faceimg: profile.faceimg,
       gender: profile.gender,
-      location: profile.location
+      location: profile.location,
+      lastLoginAt: now
     }
   });
 

@@ -62,6 +62,8 @@ async function main() {
       "coverUrl" TEXT NOT NULL,
       "videoUrl" TEXT,
       "galleryImageUrls" TEXT,
+      "galleryVideoUrls" TEXT,
+      "contentBlocks" TEXT,
       "isPinned" BOOLEAN NOT NULL DEFAULT false,
       "heat" INTEGER NOT NULL DEFAULT 100,
       "views" INTEGER NOT NULL DEFAULT 0,

@@ -1,6 +1,9 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { PostArticleMedia } from "@/components/post-article-media";
+import { PostRichContent } from "@/components/post-rich-content";
+import { buildRenderableBlocks } from "@/lib/post-content-blocks";
+import { stripRepostAttributionFromText } from "@/lib/strip-repost-attribution";
+import { buildAllVideoUrls } from "@/lib/post-gallery";
 import { requireAdmin } from "@/lib/auth";
 import { getPostAnyStatus } from "@/lib/posts";
 
@@ -16,6 +19,10 @@ export default async function AdminPostPreviewPage({ params }: { params: Promise
   const post = await getPostAnyStatus(id);
   if (!post) notFound();
 
+  const blocks = buildRenderableBlocks(post);
+  const videoMissing = post.type === "VIDEO" && buildAllVideoUrls(post).length === 0;
+  const summaryDisplay = stripRepostAttributionFromText(post.summary);
+
   return (
     <div style={{ maxWidth: 900, margin: "0 auto" }}>
       <div className="admin-page-toolbar">
@@ -29,10 +36,9 @@ export default async function AdminPostPreviewPage({ params }: { params: Promise
           </Link>
         ) : null}
       </div>
-      <p className="admin-page-note">草稿与下架内容在前台 `/post/…` 不会展示；此处仅供管理员核对封面、图集与视频是否正常。</p>
+      <p className="admin-page-note">草稿与下架内容在前台 `/post/…` 不会展示；此处核对摘要、混排块与媒体是否正常。</p>
 
       <article className="article admin-panel admin-preview-article" style={{ marginTop: 12 }}>
-        <PostArticleMedia post={post} />
         <div className="article-body">
           <span className="chip">{post.category.name}</span>
           <h1>{post.title}</h1>
@@ -42,12 +48,14 @@ export default async function AdminPostPreviewPage({ params }: { params: Promise
               <span key={tag.id}>#{tag.name}</span>
             ))}
           </div>
-          {post.type === "VIDEO" && !post.videoUrl ? (
-            <p style={{ color: "var(--muted)" }}>
-              类型为视频但未填写可播放地址。请确认 TG 配置里已勾选「下载图片和视频到本地」，或在下方「视频地址」中填入 <code>/uploads/…</code> 路径。
-            </p>
+          {summaryDisplay.trim() ? (
+            <blockquote style={{ margin: "16px 0", padding: "12px 16px", borderLeft: "4px solid var(--brand)", background: "#f9fafb" }}>
+              {summaryDisplay}
+            </blockquote>
           ) : null}
-          <p>{post.body}</p>
+          <div style={{ background: "#1a1a1a", borderRadius: 12, padding: 16, marginTop: 16 }}>
+            <PostRichContent blocks={blocks} videoMissingHint={videoMissing} />
+          </div>
         </div>
       </article>
     </div>

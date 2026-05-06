@@ -11,6 +11,8 @@ function readPostForm(formData: FormData) {
   const status = String(formData.get("status") || "DRAFT");
 
   const galleryRaw = String(formData.get("galleryImageUrls") || "").trim();
+  const galleryVideosRaw = String(formData.get("galleryVideoUrls") || "").trim();
+  const contentBlocksRaw = String(formData.get("contentBlocks") || "").trim();
 
   return {
     title: String(formData.get("title") || "").trim(),
@@ -21,6 +23,8 @@ function readPostForm(formData: FormData) {
     coverUrl: String(formData.get("coverUrl") || "").trim(),
     videoUrl: String(formData.get("videoUrl") || "").trim() || null,
     galleryImageUrls: galleryRaw || null,
+    galleryVideoUrls: galleryVideosRaw || null,
+    contentBlocks: contentBlocksRaw || null,
     isPinned: formData.get("isPinned") === "on",
     views: Math.max(0, Math.floor(Number(formData.get("views") ?? 0))),
     categoryId: String(formData.get("categoryId") || ""),
@@ -47,6 +51,8 @@ export async function createPostAction(formData: FormData) {
       coverUrl: data.coverUrl,
       videoUrl: data.videoUrl,
       galleryImageUrls: data.galleryImageUrls,
+      galleryVideoUrls: data.galleryVideoUrls,
+      contentBlocks: data.contentBlocks,
       isPinned: data.isPinned,
       views: data.views,
       heat: data.views,
@@ -78,6 +84,8 @@ export async function updatePostAction(id: string, formData: FormData) {
       coverUrl: data.coverUrl,
       videoUrl: data.videoUrl,
       galleryImageUrls: data.galleryImageUrls,
+      galleryVideoUrls: data.galleryVideoUrls,
+      contentBlocks: data.contentBlocks,
       isPinned: data.isPinned,
       views: data.views,
       heat: data.views,

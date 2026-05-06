@@ -7204,7 +7204,9 @@ export namespace Prisma {
     status: $Enums.PostStatus | null
     coverUrl: string | null
     videoUrl: string | null
+    galleryVideoUrls: string | null
     galleryImageUrls: string | null
+    contentBlocks: string | null
     isPinned: boolean | null
     heat: number | null
     views: number | null
@@ -7223,7 +7225,9 @@ export namespace Prisma {
     status: $Enums.PostStatus | null
     coverUrl: string | null
     videoUrl: string | null
+    galleryVideoUrls: string | null
     galleryImageUrls: string | null
+    contentBlocks: string | null
     isPinned: boolean | null
     heat: number | null
     views: number | null
@@ -7242,7 +7246,9 @@ export namespace Prisma {
     status: number
     coverUrl: number
     videoUrl: number
+    galleryVideoUrls: number
     galleryImageUrls: number
+    contentBlocks: number
     isPinned: number
     heat: number
     views: number
@@ -7273,7 +7279,9 @@ export namespace Prisma {
     status?: true
     coverUrl?: true
     videoUrl?: true
+    galleryVideoUrls?: true
     galleryImageUrls?: true
+    contentBlocks?: true
     isPinned?: true
     heat?: true
     views?: true
@@ -7292,7 +7300,9 @@ export namespace Prisma {
     status?: true
     coverUrl?: true
     videoUrl?: true
+    galleryVideoUrls?: true
     galleryImageUrls?: true
+    contentBlocks?: true
     isPinned?: true
     heat?: true
     views?: true
@@ -7311,7 +7321,9 @@ export namespace Prisma {
     status?: true
     coverUrl?: true
     videoUrl?: true
+    galleryVideoUrls?: true
     galleryImageUrls?: true
+    contentBlocks?: true
     isPinned?: true
     heat?: true
     views?: true
@@ -7417,7 +7429,9 @@ export namespace Prisma {
     status: $Enums.PostStatus
     coverUrl: string
     videoUrl: string | null
+    galleryVideoUrls: string | null
     galleryImageUrls: string | null
+    contentBlocks: string | null
     isPinned: boolean
     heat: number
     views: number
@@ -7455,7 +7469,9 @@ export namespace Prisma {
     status?: boolean
     coverUrl?: boolean
     videoUrl?: boolean
+    galleryVideoUrls?: boolean
     galleryImageUrls?: boolean
+    contentBlocks?: boolean
     isPinned?: boolean
     heat?: boolean
     views?: boolean
@@ -7479,7 +7495,9 @@ export namespace Prisma {
     status?: boolean
     coverUrl?: boolean
     videoUrl?: boolean
+    galleryVideoUrls?: boolean
     galleryImageUrls?: boolean
+    contentBlocks?: boolean
     isPinned?: boolean
     heat?: boolean
     views?: boolean
@@ -7499,7 +7517,9 @@ export namespace Prisma {
     status?: boolean
     coverUrl?: boolean
     videoUrl?: boolean
+    galleryVideoUrls?: boolean
     galleryImageUrls?: boolean
+    contentBlocks?: boolean
     isPinned?: boolean
     heat?: boolean
     views?: boolean
@@ -7519,7 +7539,9 @@ export namespace Prisma {
     status?: boolean
     coverUrl?: boolean
     videoUrl?: boolean
+    galleryVideoUrls?: boolean
     galleryImageUrls?: boolean
+    contentBlocks?: boolean
     isPinned?: boolean
     heat?: boolean
     views?: boolean
@@ -7529,7 +7551,7 @@ export namespace Prisma {
     updatedAt?: boolean
   }
 
-  export type PostOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "title" | "summary" | "body" | "type" | "status" | "coverUrl" | "videoUrl" | "galleryImageUrls" | "isPinned" | "heat" | "views" | "publishedAt" | "categoryId" | "createdAt" | "updatedAt", ExtArgs["result"]["post"]>
+  export type PostOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "title" | "summary" | "body" | "type" | "status" | "coverUrl" | "videoUrl" | "galleryVideoUrls" | "galleryImageUrls" | "contentBlocks" | "isPinned" | "heat" | "views" | "publishedAt" | "categoryId" | "createdAt" | "updatedAt", ExtArgs["result"]["post"]>
   export type PostInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     category?: boolean | CategoryDefaultArgs<ExtArgs>
     tags?: boolean | Post$tagsArgs<ExtArgs>
@@ -7562,9 +7584,17 @@ export namespace Prisma {
       coverUrl: string
       videoUrl: string | null
       /**
+       * * JSON array of extra video URLs（站内路径），与主视频 `videoUrl` 顺序：主 + 本数组依次
+       */
+      galleryVideoUrls: string | null
+      /**
        * * JSON array of extra image URLs (same-origin paths) after coverUrl, for TG multi-photo albums
        */
       galleryImageUrls: string | null
+      /**
+       * * 可选：JSON 混排 [{type:"text"|"video"|"images", ...}]，与后台「混排内容块」对应；为空则按正文+视频+图集自动生成
+       */
+      contentBlocks: string | null
       isPinned: boolean
       heat: number
       views: number
@@ -8007,7 +8037,9 @@ export namespace Prisma {
     readonly status: FieldRef<"Post", 'PostStatus'>
     readonly coverUrl: FieldRef<"Post", 'String'>
     readonly videoUrl: FieldRef<"Post", 'String'>
+    readonly galleryVideoUrls: FieldRef<"Post", 'String'>
     readonly galleryImageUrls: FieldRef<"Post", 'String'>
+    readonly contentBlocks: FieldRef<"Post", 'String'>
     readonly isPinned: FieldRef<"Post", 'Boolean'>
     readonly heat: FieldRef<"Post", 'Int'>
     readonly views: FieldRef<"Post", 'Int'>
@@ -8517,6 +8549,7 @@ export namespace Prisma {
     faceimg: string | null
     gender: string | null
     location: string | null
+    lastLoginAt: Date | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -8529,6 +8562,7 @@ export namespace Prisma {
     faceimg: string | null
     gender: string | null
     location: string | null
+    lastLoginAt: Date | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -8541,6 +8575,7 @@ export namespace Prisma {
     faceimg: number
     gender: number
     location: number
+    lastLoginAt: number
     createdAt: number
     updatedAt: number
     _all: number
@@ -8555,6 +8590,7 @@ export namespace Prisma {
     faceimg?: true
     gender?: true
     location?: true
+    lastLoginAt?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -8567,6 +8603,7 @@ export namespace Prisma {
     faceimg?: true
     gender?: true
     location?: true
+    lastLoginAt?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -8579,6 +8616,7 @@ export namespace Prisma {
     faceimg?: true
     gender?: true
     location?: true
+    lastLoginAt?: true
     createdAt?: true
     updatedAt?: true
     _all?: true
@@ -8664,6 +8702,7 @@ export namespace Prisma {
     faceimg: string
     gender: string | null
     location: string | null
+    lastLoginAt: Date | null
     createdAt: Date
     updatedAt: Date
     _count: SocialUserCountAggregateOutputType | null
@@ -8693,6 +8732,7 @@ export namespace Prisma {
     faceimg?: boolean
     gender?: boolean
     location?: boolean
+    lastLoginAt?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     comments?: boolean | SocialUser$commentsArgs<ExtArgs>
@@ -8707,6 +8747,7 @@ export namespace Prisma {
     faceimg?: boolean
     gender?: boolean
     location?: boolean
+    lastLoginAt?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }, ExtArgs["result"]["socialUser"]>
@@ -8719,6 +8760,7 @@ export namespace Prisma {
     faceimg?: boolean
     gender?: boolean
     location?: boolean
+    lastLoginAt?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }, ExtArgs["result"]["socialUser"]>
@@ -8731,11 +8773,12 @@ export namespace Prisma {
     faceimg?: boolean
     gender?: boolean
     location?: boolean
+    lastLoginAt?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }
 
-  export type SocialUserOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "socialUid" | "loginType" | "nickname" | "faceimg" | "gender" | "location" | "createdAt" | "updatedAt", ExtArgs["result"]["socialUser"]>
+  export type SocialUserOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "socialUid" | "loginType" | "nickname" | "faceimg" | "gender" | "location" | "lastLoginAt" | "createdAt" | "updatedAt", ExtArgs["result"]["socialUser"]>
   export type SocialUserInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     comments?: boolean | SocialUser$commentsArgs<ExtArgs>
     _count?: boolean | SocialUserCountOutputTypeDefaultArgs<ExtArgs>
@@ -8756,6 +8799,10 @@ export namespace Prisma {
       faceimg: string
       gender: string | null
       location: string | null
+      /**
+       * * OAuth 回调成功建立会话的时间（用于后台「上次登录」）
+       */
+      lastLoginAt: Date | null
       createdAt: Date
       updatedAt: Date
     }, ExtArgs["result"]["socialUser"]>
@@ -9189,6 +9236,7 @@ export namespace Prisma {
     readonly faceimg: FieldRef<"SocialUser", 'String'>
     readonly gender: FieldRef<"SocialUser", 'String'>
     readonly location: FieldRef<"SocialUser", 'String'>
+    readonly lastLoginAt: FieldRef<"SocialUser", 'DateTime'>
     readonly createdAt: FieldRef<"SocialUser", 'DateTime'>
     readonly updatedAt: FieldRef<"SocialUser", 'DateTime'>
   }
@@ -15179,7 +15227,9 @@ export namespace Prisma {
     status: 'status',
     coverUrl: 'coverUrl',
     videoUrl: 'videoUrl',
+    galleryVideoUrls: 'galleryVideoUrls',
     galleryImageUrls: 'galleryImageUrls',
+    contentBlocks: 'contentBlocks',
     isPinned: 'isPinned',
     heat: 'heat',
     views: 'views',
@@ -15200,6 +15250,7 @@ export namespace Prisma {
     faceimg: 'faceimg',
     gender: 'gender',
     location: 'location',
+    lastLoginAt: 'lastLoginAt',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt'
   };
@@ -15608,7 +15659,9 @@ export namespace Prisma {
     status?: EnumPostStatusFilter<"Post"> | $Enums.PostStatus
     coverUrl?: StringFilter<"Post"> | string
     videoUrl?: StringNullableFilter<"Post"> | string | null
+    galleryVideoUrls?: StringNullableFilter<"Post"> | string | null
     galleryImageUrls?: StringNullableFilter<"Post"> | string | null
+    contentBlocks?: StringNullableFilter<"Post"> | string | null
     isPinned?: BoolFilter<"Post"> | boolean
     heat?: IntFilter<"Post"> | number
     views?: IntFilter<"Post"> | number
@@ -15631,7 +15684,9 @@ export namespace Prisma {
     status?: SortOrder
     coverUrl?: SortOrder
     videoUrl?: SortOrderInput | SortOrder
+    galleryVideoUrls?: SortOrderInput | SortOrder
     galleryImageUrls?: SortOrderInput | SortOrder
+    contentBlocks?: SortOrderInput | SortOrder
     isPinned?: SortOrder
     heat?: SortOrder
     views?: SortOrder
@@ -15657,7 +15712,9 @@ export namespace Prisma {
     status?: EnumPostStatusFilter<"Post"> | $Enums.PostStatus
     coverUrl?: StringFilter<"Post"> | string
     videoUrl?: StringNullableFilter<"Post"> | string | null
+    galleryVideoUrls?: StringNullableFilter<"Post"> | string | null
     galleryImageUrls?: StringNullableFilter<"Post"> | string | null
+    contentBlocks?: StringNullableFilter<"Post"> | string | null
     isPinned?: BoolFilter<"Post"> | boolean
     heat?: IntFilter<"Post"> | number
     views?: IntFilter<"Post"> | number
@@ -15680,7 +15737,9 @@ export namespace Prisma {
     status?: SortOrder
     coverUrl?: SortOrder
     videoUrl?: SortOrderInput | SortOrder
+    galleryVideoUrls?: SortOrderInput | SortOrder
     galleryImageUrls?: SortOrderInput | SortOrder
+    contentBlocks?: SortOrderInput | SortOrder
     isPinned?: SortOrder
     heat?: SortOrder
     views?: SortOrder
@@ -15707,7 +15766,9 @@ export namespace Prisma {
     status?: EnumPostStatusWithAggregatesFilter<"Post"> | $Enums.PostStatus
     coverUrl?: StringWithAggregatesFilter<"Post"> | string
     videoUrl?: StringNullableWithAggregatesFilter<"Post"> | string | null
+    galleryVideoUrls?: StringNullableWithAggregatesFilter<"Post"> | string | null
     galleryImageUrls?: StringNullableWithAggregatesFilter<"Post"> | string | null
+    contentBlocks?: StringNullableWithAggregatesFilter<"Post"> | string | null
     isPinned?: BoolWithAggregatesFilter<"Post"> | boolean
     heat?: IntWithAggregatesFilter<"Post"> | number
     views?: IntWithAggregatesFilter<"Post"> | number
@@ -15728,6 +15789,7 @@ export namespace Prisma {
     faceimg?: StringFilter<"SocialUser"> | string
     gender?: StringNullableFilter<"SocialUser"> | string | null
     location?: StringNullableFilter<"SocialUser"> | string | null
+    lastLoginAt?: DateTimeNullableFilter<"SocialUser"> | Date | string | null
     createdAt?: DateTimeFilter<"SocialUser"> | Date | string
     updatedAt?: DateTimeFilter<"SocialUser"> | Date | string
     comments?: CommentListRelationFilter
@@ -15741,6 +15803,7 @@ export namespace Prisma {
     faceimg?: SortOrder
     gender?: SortOrderInput | SortOrder
     location?: SortOrderInput | SortOrder
+    lastLoginAt?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     comments?: CommentOrderByRelationAggregateInput
@@ -15758,6 +15821,7 @@ export namespace Prisma {
     faceimg?: StringFilter<"SocialUser"> | string
     gender?: StringNullableFilter<"SocialUser"> | string | null
     location?: StringNullableFilter<"SocialUser"> | string | null
+    lastLoginAt?: DateTimeNullableFilter<"SocialUser"> | Date | string | null
     createdAt?: DateTimeFilter<"SocialUser"> | Date | string
     updatedAt?: DateTimeFilter<"SocialUser"> | Date | string
     comments?: CommentListRelationFilter
@@ -15771,6 +15835,7 @@ export namespace Prisma {
     faceimg?: SortOrder
     gender?: SortOrderInput | SortOrder
     location?: SortOrderInput | SortOrder
+    lastLoginAt?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     _count?: SocialUserCountOrderByAggregateInput
@@ -15789,6 +15854,7 @@ export namespace Prisma {
     faceimg?: StringWithAggregatesFilter<"SocialUser"> | string
     gender?: StringNullableWithAggregatesFilter<"SocialUser"> | string | null
     location?: StringNullableWithAggregatesFilter<"SocialUser"> | string | null
+    lastLoginAt?: DateTimeNullableWithAggregatesFilter<"SocialUser"> | Date | string | null
     createdAt?: DateTimeWithAggregatesFilter<"SocialUser"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"SocialUser"> | Date | string
   }
@@ -16402,7 +16468,9 @@ export namespace Prisma {
     status?: $Enums.PostStatus
     coverUrl: string
     videoUrl?: string | null
+    galleryVideoUrls?: string | null
     galleryImageUrls?: string | null
+    contentBlocks?: string | null
     isPinned?: boolean
     heat?: number
     views?: number
@@ -16424,7 +16492,9 @@ export namespace Prisma {
     status?: $Enums.PostStatus
     coverUrl: string
     videoUrl?: string | null
+    galleryVideoUrls?: string | null
     galleryImageUrls?: string | null
+    contentBlocks?: string | null
     isPinned?: boolean
     heat?: number
     views?: number
@@ -16446,7 +16516,9 @@ export namespace Prisma {
     status?: EnumPostStatusFieldUpdateOperationsInput | $Enums.PostStatus
     coverUrl?: StringFieldUpdateOperationsInput | string
     videoUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    galleryVideoUrls?: NullableStringFieldUpdateOperationsInput | string | null
     galleryImageUrls?: NullableStringFieldUpdateOperationsInput | string | null
+    contentBlocks?: NullableStringFieldUpdateOperationsInput | string | null
     isPinned?: BoolFieldUpdateOperationsInput | boolean
     heat?: IntFieldUpdateOperationsInput | number
     views?: IntFieldUpdateOperationsInput | number
@@ -16468,7 +16540,9 @@ export namespace Prisma {
     status?: EnumPostStatusFieldUpdateOperationsInput | $Enums.PostStatus
     coverUrl?: StringFieldUpdateOperationsInput | string
     videoUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    galleryVideoUrls?: NullableStringFieldUpdateOperationsInput | string | null
     galleryImageUrls?: NullableStringFieldUpdateOperationsInput | string | null
+    contentBlocks?: NullableStringFieldUpdateOperationsInput | string | null
     isPinned?: BoolFieldUpdateOperationsInput | boolean
     heat?: IntFieldUpdateOperationsInput | number
     views?: IntFieldUpdateOperationsInput | number
@@ -16490,7 +16564,9 @@ export namespace Prisma {
     status?: $Enums.PostStatus
     coverUrl: string
     videoUrl?: string | null
+    galleryVideoUrls?: string | null
     galleryImageUrls?: string | null
+    contentBlocks?: string | null
     isPinned?: boolean
     heat?: number
     views?: number
@@ -16509,7 +16585,9 @@ export namespace Prisma {
     status?: EnumPostStatusFieldUpdateOperationsInput | $Enums.PostStatus
     coverUrl?: StringFieldUpdateOperationsInput | string
     videoUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    galleryVideoUrls?: NullableStringFieldUpdateOperationsInput | string | null
     galleryImageUrls?: NullableStringFieldUpdateOperationsInput | string | null
+    contentBlocks?: NullableStringFieldUpdateOperationsInput | string | null
     isPinned?: BoolFieldUpdateOperationsInput | boolean
     heat?: IntFieldUpdateOperationsInput | number
     views?: IntFieldUpdateOperationsInput | number
@@ -16527,7 +16605,9 @@ export namespace Prisma {
     status?: EnumPostStatusFieldUpdateOperationsInput | $Enums.PostStatus
     coverUrl?: StringFieldUpdateOperationsInput | string
     videoUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    galleryVideoUrls?: NullableStringFieldUpdateOperationsInput | string | null
     galleryImageUrls?: NullableStringFieldUpdateOperationsInput | string | null
+    contentBlocks?: NullableStringFieldUpdateOperationsInput | string | null
     isPinned?: BoolFieldUpdateOperationsInput | boolean
     heat?: IntFieldUpdateOperationsInput | number
     views?: IntFieldUpdateOperationsInput | number
@@ -16545,6 +16625,7 @@ export namespace Prisma {
     faceimg: string
     gender?: string | null
     location?: string | null
+    lastLoginAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     comments?: CommentCreateNestedManyWithoutAuthorInput
@@ -16558,6 +16639,7 @@ export namespace Prisma {
     faceimg: string
     gender?: string | null
     location?: string | null
+    lastLoginAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     comments?: CommentUncheckedCreateNestedManyWithoutAuthorInput
@@ -16571,6 +16653,7 @@ export namespace Prisma {
     faceimg?: StringFieldUpdateOperationsInput | string
     gender?: NullableStringFieldUpdateOperationsInput | string | null
     location?: NullableStringFieldUpdateOperationsInput | string | null
+    lastLoginAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     comments?: CommentUpdateManyWithoutAuthorNestedInput
@@ -16584,6 +16667,7 @@ export namespace Prisma {
     faceimg?: StringFieldUpdateOperationsInput | string
     gender?: NullableStringFieldUpdateOperationsInput | string | null
     location?: NullableStringFieldUpdateOperationsInput | string | null
+    lastLoginAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     comments?: CommentUncheckedUpdateManyWithoutAuthorNestedInput
@@ -16597,6 +16681,7 @@ export namespace Prisma {
     faceimg: string
     gender?: string | null
     location?: string | null
+    lastLoginAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -16609,6 +16694,7 @@ export namespace Prisma {
     faceimg?: StringFieldUpdateOperationsInput | string
     gender?: NullableStringFieldUpdateOperationsInput | string | null
     location?: NullableStringFieldUpdateOperationsInput | string | null
+    lastLoginAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -16621,6 +16707,7 @@ export namespace Prisma {
     faceimg?: StringFieldUpdateOperationsInput | string
     gender?: NullableStringFieldUpdateOperationsInput | string | null
     location?: NullableStringFieldUpdateOperationsInput | string | null
+    lastLoginAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -17309,7 +17396,9 @@ export namespace Prisma {
     status?: SortOrder
     coverUrl?: SortOrder
     videoUrl?: SortOrder
+    galleryVideoUrls?: SortOrder
     galleryImageUrls?: SortOrder
+    contentBlocks?: SortOrder
     isPinned?: SortOrder
     heat?: SortOrder
     views?: SortOrder
@@ -17333,7 +17422,9 @@ export namespace Prisma {
     status?: SortOrder
     coverUrl?: SortOrder
     videoUrl?: SortOrder
+    galleryVideoUrls?: SortOrder
     galleryImageUrls?: SortOrder
+    contentBlocks?: SortOrder
     isPinned?: SortOrder
     heat?: SortOrder
     views?: SortOrder
@@ -17352,7 +17443,9 @@ export namespace Prisma {
     status?: SortOrder
     coverUrl?: SortOrder
     videoUrl?: SortOrder
+    galleryVideoUrls?: SortOrder
     galleryImageUrls?: SortOrder
+    contentBlocks?: SortOrder
     isPinned?: SortOrder
     heat?: SortOrder
     views?: SortOrder
@@ -17447,6 +17540,7 @@ export namespace Prisma {
     faceimg?: SortOrder
     gender?: SortOrder
     location?: SortOrder
+    lastLoginAt?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -17459,6 +17553,7 @@ export namespace Prisma {
     faceimg?: SortOrder
     gender?: SortOrder
     location?: SortOrder
+    lastLoginAt?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -17471,6 +17566,7 @@ export namespace Prisma {
     faceimg?: SortOrder
     gender?: SortOrder
     location?: SortOrder
+    lastLoginAt?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -18438,7 +18534,9 @@ export namespace Prisma {
     status?: $Enums.PostStatus
     coverUrl: string
     videoUrl?: string | null
+    galleryVideoUrls?: string | null
     galleryImageUrls?: string | null
+    contentBlocks?: string | null
     isPinned?: boolean
     heat?: number
     views?: number
@@ -18459,7 +18557,9 @@ export namespace Prisma {
     status?: $Enums.PostStatus
     coverUrl: string
     videoUrl?: string | null
+    galleryVideoUrls?: string | null
     galleryImageUrls?: string | null
+    contentBlocks?: string | null
     isPinned?: boolean
     heat?: number
     views?: number
@@ -18508,7 +18608,9 @@ export namespace Prisma {
     status?: EnumPostStatusFilter<"Post"> | $Enums.PostStatus
     coverUrl?: StringFilter<"Post"> | string
     videoUrl?: StringNullableFilter<"Post"> | string | null
+    galleryVideoUrls?: StringNullableFilter<"Post"> | string | null
     galleryImageUrls?: StringNullableFilter<"Post"> | string | null
+    contentBlocks?: StringNullableFilter<"Post"> | string | null
     isPinned?: BoolFilter<"Post"> | boolean
     heat?: IntFilter<"Post"> | number
     views?: IntFilter<"Post"> | number
@@ -18568,7 +18670,9 @@ export namespace Prisma {
     status?: $Enums.PostStatus
     coverUrl: string
     videoUrl?: string | null
+    galleryVideoUrls?: string | null
     galleryImageUrls?: string | null
+    contentBlocks?: string | null
     isPinned?: boolean
     heat?: number
     views?: number
@@ -18589,7 +18693,9 @@ export namespace Prisma {
     status?: $Enums.PostStatus
     coverUrl: string
     videoUrl?: string | null
+    galleryVideoUrls?: string | null
     galleryImageUrls?: string | null
+    contentBlocks?: string | null
     isPinned?: boolean
     heat?: number
     views?: number
@@ -18645,7 +18751,9 @@ export namespace Prisma {
     status?: EnumPostStatusFieldUpdateOperationsInput | $Enums.PostStatus
     coverUrl?: StringFieldUpdateOperationsInput | string
     videoUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    galleryVideoUrls?: NullableStringFieldUpdateOperationsInput | string | null
     galleryImageUrls?: NullableStringFieldUpdateOperationsInput | string | null
+    contentBlocks?: NullableStringFieldUpdateOperationsInput | string | null
     isPinned?: BoolFieldUpdateOperationsInput | boolean
     heat?: IntFieldUpdateOperationsInput | number
     views?: IntFieldUpdateOperationsInput | number
@@ -18666,7 +18774,9 @@ export namespace Prisma {
     status?: EnumPostStatusFieldUpdateOperationsInput | $Enums.PostStatus
     coverUrl?: StringFieldUpdateOperationsInput | string
     videoUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    galleryVideoUrls?: NullableStringFieldUpdateOperationsInput | string | null
     galleryImageUrls?: NullableStringFieldUpdateOperationsInput | string | null
+    contentBlocks?: NullableStringFieldUpdateOperationsInput | string | null
     isPinned?: BoolFieldUpdateOperationsInput | boolean
     heat?: IntFieldUpdateOperationsInput | number
     views?: IntFieldUpdateOperationsInput | number
@@ -18955,7 +19065,9 @@ export namespace Prisma {
     status?: $Enums.PostStatus
     coverUrl: string
     videoUrl?: string | null
+    galleryVideoUrls?: string | null
     galleryImageUrls?: string | null
+    contentBlocks?: string | null
     isPinned?: boolean
     heat?: number
     views?: number
@@ -18976,7 +19088,9 @@ export namespace Prisma {
     status?: $Enums.PostStatus
     coverUrl: string
     videoUrl?: string | null
+    galleryVideoUrls?: string | null
     galleryImageUrls?: string | null
+    contentBlocks?: string | null
     isPinned?: boolean
     heat?: number
     views?: number
@@ -19001,6 +19115,7 @@ export namespace Prisma {
     faceimg: string
     gender?: string | null
     location?: string | null
+    lastLoginAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -19013,6 +19128,7 @@ export namespace Prisma {
     faceimg: string
     gender?: string | null
     location?: string | null
+    lastLoginAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -19092,7 +19208,9 @@ export namespace Prisma {
     status?: EnumPostStatusFieldUpdateOperationsInput | $Enums.PostStatus
     coverUrl?: StringFieldUpdateOperationsInput | string
     videoUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    galleryVideoUrls?: NullableStringFieldUpdateOperationsInput | string | null
     galleryImageUrls?: NullableStringFieldUpdateOperationsInput | string | null
+    contentBlocks?: NullableStringFieldUpdateOperationsInput | string | null
     isPinned?: BoolFieldUpdateOperationsInput | boolean
     heat?: IntFieldUpdateOperationsInput | number
     views?: IntFieldUpdateOperationsInput | number
@@ -19113,7 +19231,9 @@ export namespace Prisma {
     status?: EnumPostStatusFieldUpdateOperationsInput | $Enums.PostStatus
     coverUrl?: StringFieldUpdateOperationsInput | string
     videoUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    galleryVideoUrls?: NullableStringFieldUpdateOperationsInput | string | null
     galleryImageUrls?: NullableStringFieldUpdateOperationsInput | string | null
+    contentBlocks?: NullableStringFieldUpdateOperationsInput | string | null
     isPinned?: BoolFieldUpdateOperationsInput | boolean
     heat?: IntFieldUpdateOperationsInput | number
     views?: IntFieldUpdateOperationsInput | number
@@ -19144,6 +19264,7 @@ export namespace Prisma {
     faceimg?: StringFieldUpdateOperationsInput | string
     gender?: NullableStringFieldUpdateOperationsInput | string | null
     location?: NullableStringFieldUpdateOperationsInput | string | null
+    lastLoginAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -19156,6 +19277,7 @@ export namespace Prisma {
     faceimg?: StringFieldUpdateOperationsInput | string
     gender?: NullableStringFieldUpdateOperationsInput | string | null
     location?: NullableStringFieldUpdateOperationsInput | string | null
+    lastLoginAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -19214,7 +19336,9 @@ export namespace Prisma {
     status?: $Enums.PostStatus
     coverUrl: string
     videoUrl?: string | null
+    galleryVideoUrls?: string | null
     galleryImageUrls?: string | null
+    contentBlocks?: string | null
     isPinned?: boolean
     heat?: number
     views?: number
@@ -19235,7 +19359,9 @@ export namespace Prisma {
     status?: $Enums.PostStatus
     coverUrl: string
     videoUrl?: string | null
+    galleryVideoUrls?: string | null
     galleryImageUrls?: string | null
+    contentBlocks?: string | null
     isPinned?: boolean
     heat?: number
     views?: number
@@ -19272,7 +19398,9 @@ export namespace Prisma {
     status?: EnumPostStatusFieldUpdateOperationsInput | $Enums.PostStatus
     coverUrl?: StringFieldUpdateOperationsInput | string
     videoUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    galleryVideoUrls?: NullableStringFieldUpdateOperationsInput | string | null
     galleryImageUrls?: NullableStringFieldUpdateOperationsInput | string | null
+    contentBlocks?: NullableStringFieldUpdateOperationsInput | string | null
     isPinned?: BoolFieldUpdateOperationsInput | boolean
     heat?: IntFieldUpdateOperationsInput | number
     views?: IntFieldUpdateOperationsInput | number
@@ -19293,7 +19421,9 @@ export namespace Prisma {
     status?: EnumPostStatusFieldUpdateOperationsInput | $Enums.PostStatus
     coverUrl?: StringFieldUpdateOperationsInput | string
     videoUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    galleryVideoUrls?: NullableStringFieldUpdateOperationsInput | string | null
     galleryImageUrls?: NullableStringFieldUpdateOperationsInput | string | null
+    contentBlocks?: NullableStringFieldUpdateOperationsInput | string | null
     isPinned?: BoolFieldUpdateOperationsInput | boolean
     heat?: IntFieldUpdateOperationsInput | number
     views?: IntFieldUpdateOperationsInput | number
@@ -19314,7 +19444,9 @@ export namespace Prisma {
     status?: $Enums.PostStatus
     coverUrl: string
     videoUrl?: string | null
+    galleryVideoUrls?: string | null
     galleryImageUrls?: string | null
+    contentBlocks?: string | null
     isPinned?: boolean
     heat?: number
     views?: number
@@ -19332,7 +19464,9 @@ export namespace Prisma {
     status?: EnumPostStatusFieldUpdateOperationsInput | $Enums.PostStatus
     coverUrl?: StringFieldUpdateOperationsInput | string
     videoUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    galleryVideoUrls?: NullableStringFieldUpdateOperationsInput | string | null
     galleryImageUrls?: NullableStringFieldUpdateOperationsInput | string | null
+    contentBlocks?: NullableStringFieldUpdateOperationsInput | string | null
     isPinned?: BoolFieldUpdateOperationsInput | boolean
     heat?: IntFieldUpdateOperationsInput | number
     views?: IntFieldUpdateOperationsInput | number
@@ -19353,7 +19487,9 @@ export namespace Prisma {
     status?: EnumPostStatusFieldUpdateOperationsInput | $Enums.PostStatus
     coverUrl?: StringFieldUpdateOperationsInput | string
     videoUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    galleryVideoUrls?: NullableStringFieldUpdateOperationsInput | string | null
     galleryImageUrls?: NullableStringFieldUpdateOperationsInput | string | null
+    contentBlocks?: NullableStringFieldUpdateOperationsInput | string | null
     isPinned?: BoolFieldUpdateOperationsInput | boolean
     heat?: IntFieldUpdateOperationsInput | number
     views?: IntFieldUpdateOperationsInput | number
@@ -19374,7 +19510,9 @@ export namespace Prisma {
     status?: EnumPostStatusFieldUpdateOperationsInput | $Enums.PostStatus
     coverUrl?: StringFieldUpdateOperationsInput | string
     videoUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    galleryVideoUrls?: NullableStringFieldUpdateOperationsInput | string | null
     galleryImageUrls?: NullableStringFieldUpdateOperationsInput | string | null
+    contentBlocks?: NullableStringFieldUpdateOperationsInput | string | null
     isPinned?: BoolFieldUpdateOperationsInput | boolean
     heat?: IntFieldUpdateOperationsInput | number
     views?: IntFieldUpdateOperationsInput | number

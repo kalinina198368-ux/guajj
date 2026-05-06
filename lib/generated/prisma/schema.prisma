@@ -78,9 +78,17 @@ model Post {
   coverUrl         String
   videoUrl         String?
   /**
+   * JSON array of extra video URLs（站内路径），与主视频 `videoUrl` 顺序：主 + 本数组依次
+   */
+  galleryVideoUrls String?
+  /**
    * JSON array of extra image URLs (same-origin paths) after coverUrl, for TG multi-photo albums
    */
   galleryImageUrls String?
+  /**
+   * 可选：JSON 混排 [{type:"text"|"video"|"images", ...}]，与后台「混排内容块」对应；为空则按正文+视频+图集自动生成
+   */
+  contentBlocks    String?
   isPinned         Boolean          @default(false)
   heat             Int              @default(100)
   views            Int              @default(0)
@@ -98,16 +106,20 @@ model Post {
  * 聚合登录（QQ/微信等）用户，用于前台评论身份
  */
 model SocialUser {
-  id        String    @id @default(cuid())
-  socialUid String
-  loginType String
-  nickname  String
-  faceimg   String
-  gender    String?
-  location  String?
-  comments  Comment[]
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
+  id          String    @id @default(cuid())
+  socialUid   String
+  loginType   String
+  nickname    String
+  faceimg     String
+  gender      String?
+  location    String?
+  /**
+   * OAuth 回调成功建立会话的时间（用于后台「上次登录」）
+   */
+  lastLoginAt DateTime?
+  comments    Comment[]
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
 
   @@unique([loginType, socialUid])
 }
