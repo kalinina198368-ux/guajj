@@ -12,11 +12,15 @@ export type PostListPagination = {
   editId?: string;
 };
 
-function buildPostsUrl(opts: { edit?: string; q?: string; page?: number }) {
+const PAGE_SIZES = [10, 50, 100] as const;
+
+function buildPostsUrl(opts: { edit?: string; q?: string; page?: number; perPage?: number }) {
   const p = new URLSearchParams();
   if (opts.edit) p.set("edit", opts.edit);
   if (opts.q) p.set("q", opts.q);
   if (opts.page && opts.page > 1) p.set("page", String(opts.page));
+  const pp = opts.perPage ?? 10;
+  if (pp !== 10) p.set("perPage", String(pp));
   const s = p.toString();
   return s ? `/admin/posts?${s}` : "/admin/posts";
 }
@@ -120,7 +124,12 @@ export default function PostTable({
                     <div className="admin-table-actions">
                       <Link
                         className="admin-icon-action"
-                        href={buildPostsUrl({ edit: post.id, q: listQuery || undefined, page: page > 1 ? page : undefined })}
+                        href={buildPostsUrl({
+                          edit: post.id,
+                          q: listQuery || undefined,
+                          page: page > 1 ? page : undefined,
+                          perPage: pageSize
+                        })}
                         title="编辑"
                         aria-label="编辑"
                       >
@@ -143,20 +152,40 @@ export default function PostTable({
         <span>
           共 {total} 条{total ? ` · 每页 ${pageSize} 条` : ""}
         </span>
-        <div className="admin-pagination-pages">
-          {page > 1 ? (
-            <Link href={buildPostsUrl({ edit: editId, q: listQuery || undefined, page: page - 1 })}>上一页</Link>
-          ) : (
-            <span style={{ opacity: 0.4 }}>上一页</span>
-          )}
-          <span>
-            第 {page} / {totalPages} 页
-          </span>
-          {page < totalPages ? (
-            <Link href={buildPostsUrl({ edit: editId, q: listQuery || undefined, page: page + 1 })}>下一页</Link>
-          ) : (
-            <span style={{ opacity: 0.4 }}>下一页</span>
-          )}
+        <div className="admin-pagination-row">
+          <div className="admin-per-page" role="group" aria-label="每页条数">
+            <span className="admin-per-page-label">每页</span>
+            {PAGE_SIZES.map((n) =>
+              pageSize === n ? (
+                <span key={n} className="admin-per-page-opt is-active" aria-current="true">
+                  {n}
+                </span>
+              ) : (
+                <Link
+                  key={n}
+                  href={buildPostsUrl({ edit: editId, q: listQuery || undefined, perPage: n })}
+                  className="admin-per-page-opt"
+                >
+                  {n}
+                </Link>
+              )
+            )}
+          </div>
+          <div className="admin-pagination-pages">
+            {page > 1 ? (
+              <Link href={buildPostsUrl({ edit: editId, q: listQuery || undefined, page: page - 1, perPage: pageSize })}>上一页</Link>
+            ) : (
+              <span style={{ opacity: 0.4 }}>上一页</span>
+            )}
+            <span>
+              第 {page} / {totalPages} 页
+            </span>
+            {page < totalPages ? (
+              <Link href={buildPostsUrl({ edit: editId, q: listQuery || undefined, page: page + 1, perPage: pageSize })}>下一页</Link>
+            ) : (
+              <span style={{ opacity: 0.4 }}>下一页</span>
+            )}
+          </div>
         </div>
       </div>
     </>

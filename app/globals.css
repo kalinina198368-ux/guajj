@@ -722,6 +722,53 @@ textarea {
   color: var(--muted);
 }
 
+.admin-pagination-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 16px;
+  row-gap: 10px;
+}
+
+.admin-per-page {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.admin-per-page-label {
+  margin-right: 2px;
+  font-weight: 700;
+}
+
+.admin-per-page-opt {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 36px;
+  padding: 4px 10px;
+  border-radius: 8px;
+  border: 1px solid var(--admin-border);
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--admin-accent);
+  text-decoration: none;
+  background: #fff;
+}
+
+.admin-per-page-opt:hover {
+  border-color: var(--admin-accent);
+  background: var(--admin-accent-soft);
+}
+
+.admin-per-page-opt.is-active {
+  border-color: var(--admin-accent);
+  background: var(--admin-accent-soft);
+  color: #4338ca;
+  cursor: default;
+}
+
 .admin-pagination-pages {
   display: flex;
   align-items: center;

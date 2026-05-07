@@ -3,6 +3,7 @@ import { mkdir, writeFile } from "fs/promises";
 import path from "path";
 import { MediaType, PostStatus, PostType, type TelegramConfig } from "@/lib/generated/prisma";
 import { prisma } from "@/lib/prisma";
+import { parseGalleryExtras, parseGalleryVideos } from "@/lib/post-gallery";
 import { isRepostAttributionOnlyLine, stripRepostAttributionFromText } from "@/lib/strip-repost-attribution";
 
 type TelegramPhotoSize = { file_id: string; file_unique_id?: string; width: number; height: number; file_size?: number };
@@ -173,16 +174,6 @@ function pickMedia(message: TelegramMessage): PickedMedia | null {
   return null;
 }
 
-function parseGalleryExtras(json: string | null | undefined): string[] {
-  if (!json) return [];
-  try {
-    const a = JSON.parse(json) as unknown;
-    return Array.isArray(a) ? a.filter((x): x is string => typeof x === "string") : [];
-  } catch {
-    return [];
-  }
-}
-
 async function telegramApi<T>(token: string, method: string, body?: unknown) {
   const res = await fetch(`https://api.telegram.org/bot${token}/${method}`, {
     method: body ? "POST" : "GET",
@@ -262,18 +253,44 @@ export async function processTelegramUpdate(config: TelegramConfig, update: Tele
       if (!post) return { skipped: "post-missing" };
 
       const { mediaUrl, mediaType, picked } = await tryDownloadTelegramMedia(config, message);
-      const extras = parseGalleryExtras(post.galleryImageUrls);
-      const nextExtras = mediaUrl && mediaType === MediaType.IMAGE ? [...extras, mediaUrl] : extras;
+      const imgExtras = parseGalleryExtras(post.galleryImageUrls);
+      const nextImgExtras = mediaUrl && mediaType === MediaType.IMAGE ? [...imgExtras, mediaUrl] : imgExtras;
+
+      let nextVideoUrl = post.videoUrl;
+      let nextGalleryVideoUrls = post.galleryVideoUrls;
+      const vidExtras = parseGalleryVideos(post.galleryVideoUrls);
+
+      if (mediaUrl && mediaType === MediaType.VIDEO) {
+        const main = post.videoUrl?.trim();
+        if (!main) {
+          nextVideoUrl = mediaUrl;
+        } else if (mediaUrl !== main && !vidExtras.includes(mediaUrl)) {
+          nextGalleryVideoUrls = JSON.stringify([...vidExtras, mediaUrl]);
+        }
+      }
+
       const parsed = parseTelegramContent(rawText);
       const richerCaption = rawText.length > post.body.length;
       const nextStatus = resolveImportStatus(config, message);
 
+      const finalVidExtras = parseGalleryVideos(nextGalleryVideoUrls);
+      const hasAnyVideo = Boolean((nextVideoUrl ?? "").trim() || finalVidExtras.length > 0);
+      const hasAnyImage =
+        nextImgExtras.length > 0 || (Boolean(post.coverUrl) && !PLACEHOLDER_COVERS.has(post.coverUrl));
+
+      let mergedType = post.type;
+      if (hasAnyImage && hasAnyVideo) mergedType = PostType.GALLERY;
+      else if (hasAnyVideo && !hasAnyImage) mergedType = PostType.VIDEO;
+      else if (hasAnyImage && !hasAnyVideo) mergedType = PostType.GALLERY;
+
       await prisma.post.update({
         where: { id: post.id },
         data: {
-          type: PostType.GALLERY,
+          type: mergedType,
+          videoUrl: nextVideoUrl,
+          galleryVideoUrls: nextGalleryVideoUrls,
           galleryImageUrls:
-            mediaUrl && mediaType === MediaType.IMAGE ? JSON.stringify(nextExtras) : post.galleryImageUrls,
+            mediaUrl && mediaType === MediaType.IMAGE ? JSON.stringify(nextImgExtras) : post.galleryImageUrls,
           ...(mediaUrl && mediaType === MediaType.IMAGE && PLACEHOLDER_COVERS.has(post.coverUrl) ? { coverUrl: mediaUrl } : {}),
           ...(richerCaption ? { title: parsed.title, summary: parsed.summary, body: parsed.body } : {}),
           ...(nextStatus === PostStatus.PUBLISHED && post.status !== PostStatus.PUBLISHED
@@ -329,6 +346,7 @@ export async function processTelegramUpdate(config: TelegramConfig, update: Tele
       coverUrl,
       videoUrl,
       galleryImageUrls: null,
+      galleryVideoUrls: null,
       isPinned: false,
       views: 300,
       heat: 300,

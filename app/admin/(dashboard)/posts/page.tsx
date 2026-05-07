@@ -4,7 +4,12 @@ import { prisma } from "@/lib/prisma";
 import PostForm from "./post-form";
 import PostTable from "./post-table";
 
-const PAGE_SIZE = 10;
+const ALLOWED_PAGE_SIZES = [10, 50, 100] as const;
+
+function parsePageSize(raw: string | undefined): number {
+  const n = Math.floor(Number(raw));
+  return ALLOWED_PAGE_SIZES.includes(n as (typeof ALLOWED_PAGE_SIZES)[number]) ? n : 10;
+}
 
 export default async function AdminPostsPage({
   searchParams
@@ -16,10 +21,12 @@ export default async function AdminPostsPage({
     deleted?: string;
     q?: string;
     page?: string;
+    perPage?: string;
   }>;
 }) {
   const params = await searchParams;
   const q = params.q?.trim() ?? "";
+  const pageSize = parsePageSize(params.perPage);
   const rawPage = Math.max(1, Math.floor(Number(params.page) || 1));
   const listWhere: Prisma.PostWhereInput | undefined = q
     ? {
@@ -34,7 +41,7 @@ export default async function AdminPostsPage({
     : undefined;
 
   const total = await prisma.post.count({ where: listWhere });
-  const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
+  const totalPages = Math.max(1, Math.ceil(total / pageSize));
   const page = Math.min(rawPage, totalPages);
 
   const [posts, categories, tags] = await Promise.all([
@@ -42,8 +49,8 @@ export default async function AdminPostsPage({
       where: listWhere,
       include: { category: true, tags: { include: { tag: true } } },
       orderBy: [{ isPinned: "desc" }, { updatedAt: "desc" }],
-      skip: (page - 1) * PAGE_SIZE,
-      take: PAGE_SIZE
+      skip: (page - 1) * pageSize,
+      take: pageSize
     }),
     prisma.category.findMany({ orderBy: { name: "asc" } }),
     prisma.tag.findMany({ orderBy: { name: "asc" } })
@@ -55,6 +62,16 @@ export default async function AdminPostsPage({
       })
     : null;
 
+  const clearSearchHref = (() => {
+    const p = new URLSearchParams();
+    if (params.edit) p.set("edit", params.edit);
+    if (pageSize !== 10) p.set("perPage", String(pageSize));
+    const s = p.toString();
+    return s ? `/admin/posts?${s}` : "/admin/posts";
+  })();
+
+  const newPostHref = pageSize === 10 ? "/admin/posts" : `/admin/posts?perPage=${pageSize}`;
+
   return (
     <>
       {params.saved ? <p className="admin-flash success">内容已保存。</p> : null}
@@ -65,6 +82,7 @@ export default async function AdminPostsPage({
           <div className="admin-list-toolbar">
             <form method="get" action="/admin/posts" className="admin-post-search">
               {params.edit ? <input type="hidden" name="edit" value={params.edit} /> : null}
+              {pageSize !== 10 ? <input type="hidden" name="perPage" value={String(pageSize)} /> : null}
               <input
                 type="search"
                 name="q"
@@ -76,12 +94,12 @@ export default async function AdminPostsPage({
                 查询
               </button>
               {q ? (
-                <Link className="btn-admin-ghost" href={params.edit ? `/admin/posts?edit=${params.edit}` : "/admin/posts"} style={{ textDecoration: "none", display: "inline-flex" }}>
+                <Link className="btn-admin-ghost" href={clearSearchHref} style={{ textDecoration: "none", display: "inline-flex" }}>
                   清除
                 </Link>
               ) : null}
             </form>
-            <Link className="btn btn-admin-primary" href="/admin/posts" style={{ textDecoration: "none", whiteSpace: "nowrap" }}>
+            <Link className="btn btn-admin-primary" href={newPostHref} style={{ textDecoration: "none", whiteSpace: "nowrap" }}>
               ＋ 新建内容
             </Link>
           </div>
@@ -89,7 +107,7 @@ export default async function AdminPostsPage({
           <PostTable
             posts={posts}
             listQuery={q}
-            pagination={{ total, page, pageSize: PAGE_SIZE, totalPages, editId: params.edit }}
+            pagination={{ total, page, pageSize, totalPages, editId: params.edit }}
           />
         </section>
       </div>
