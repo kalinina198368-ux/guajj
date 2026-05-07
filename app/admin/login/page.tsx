@@ -15,7 +15,7 @@ export default async function LoginPage({
     <main className="login-page">
       <section className="login-box">
         <h1>吃瓜网后台</h1>
-        <p style={{ color: "var(--muted)", lineHeight: 1.7 }}>默认账号：admin，默认密码：admin123456</p>
+        <p style={{ color: "var(--muted)", lineHeight: 1.7 }}></p>
         <LoginForm hasError={params.error === "1"} />
       </section>
     </main>

@@ -10,11 +10,22 @@ export function parseGalleryExtras(galleryImageUrls: string | null | undefined):
   }
 }
 
-/** 图集：封面 + 额外图（去重），详情页与后台预览共用 */
+/**
+ * 多图列表：封面 + 图集额外图（去重）。
+ * - `GALLERY`：始终返回封面 + 额外图。
+ * - `ARTICLE` / `VIDEO`：若 Telegram 等多图只写在「额外图 JSON」里（未改类型），同样返回完整列表，避免前台只显示封面一张。
+ */
 export function buildGalleryImageUrls(post: Post): string[] {
-  if (post.type !== "GALLERY") return [];
   const extras = parseGalleryExtras(post.galleryImageUrls);
-  return [post.coverUrl, ...extras.filter((u) => u && u !== post.coverUrl)];
+  const cover = post.coverUrl?.trim();
+  if (post.type === "GALLERY") {
+    if (!cover) return extras.filter(Boolean);
+    return [cover, ...extras.filter((u) => u && u !== cover)];
+  }
+  if (extras.length > 0 && cover) {
+    return [cover, ...extras.filter((u) => u && u !== cover)];
+  }
+  return [];
 }
 
 export function parseGalleryVideos(galleryVideoUrls: string | null | undefined): string[] {

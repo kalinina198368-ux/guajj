@@ -49,6 +49,40 @@ function stripTextBlocks(blocks: ContentBlock[]): ContentBlock[] {
 }
 
 /**
+ * 混排 JSON 若只含部分图片（常见：导入时只写了封面一张），与库里「封面 + 图集额外图」对齐。
+ * 当首段 `images` 的 URL 全是 canonical 的子集且 canonical 更完整时，整段替换为 canonical，顺序与后台图集一致。
+ */
+function mergeGalleryImagesIntoParsedBlocks(blocks: ContentBlock[], post: Post): ContentBlock[] {
+  const canonical = buildGalleryImageUrls(post);
+  if (canonical.length === 0) return blocks;
+
+  const out = blocks.map((b) =>
+    b.type === "images" ? { ...b, urls: [...b.urls] } : b
+  ) as ContentBlock[];
+
+  const idx = out.findIndex((b) => b.type === "images");
+  if (idx < 0) {
+    out.push({ type: "images", urls: [...canonical] });
+    return out;
+  }
+
+  const cur = out[idx] as Extract<ContentBlock, { type: "images" }>;
+  const curSet = new Set(cur.urls);
+  const subsetOfCanonical = cur.urls.length > 0 && cur.urls.every((u) => canonical.includes(u));
+
+  if (subsetOfCanonical && canonical.length > cur.urls.length) {
+    out[idx] = { type: "images", urls: [...canonical] };
+    return out;
+  }
+
+  const missing = canonical.filter((u) => !curSet.has(u));
+  if (missing.length === 0) return out;
+
+  out[idx] = { type: "images", urls: [...cur.urls, ...missing] };
+  return out;
+}
+
+/**
  * H5 详情：正文单独用「摘要引用」样式展示时，若混排首块 text 与库里的 body 一致则去掉，避免重复。
  */
 export function dropLeadingTextBlockIfEqualsBody(blocks: ContentBlock[], rawBody: string): ContentBlock[] {
@@ -63,7 +97,9 @@ export function dropLeadingTextBlockIfEqualsBody(blocks: ContentBlock[], rawBody
 
 export function buildRenderableBlocks(post: Post): ContentBlock[] {
   const parsed = parseContentBlocks(post.contentBlocks);
-  if (parsed?.length) return stripTextBlocks(parsed);
+  if (parsed?.length) {
+    return stripTextBlocks(mergeGalleryImagesIntoParsedBlocks(parsed, post));
+  }
 
   const blocks: ContentBlock[] = [];
   const body = stripRepostAttributionFromText(post.body?.trim() ?? "");
@@ -77,17 +113,16 @@ export function buildRenderableBlocks(post: Post): ContentBlock[] {
     blocks.push({ type: "video", src, poster });
   }
 
-  let imageUrls: string[] = [];
-  if (post.type === "GALLERY") {
-    imageUrls = buildGalleryImageUrls(post);
-  } else if (post.coverUrl && !PLACEHOLDER_COVER_RE.test(post.coverUrl)) {
+  const galleryStrip = buildGalleryImageUrls(post);
+  let imageUrls = galleryStrip;
+  if (imageUrls.length === 0 && post.coverUrl && !PLACEHOLDER_COVER_RE.test(post.coverUrl)) {
     imageUrls = [post.coverUrl];
   }
 
   if (imageUrls.length > 0) {
     if (!hasAnyVideo) {
       blocks.push({ type: "images", urls: imageUrls });
-    } else if (post.type === "GALLERY") {
+    } else if (post.type === "GALLERY" || galleryStrip.length > 1) {
       blocks.push({ type: "images", urls: imageUrls });
     }
   }

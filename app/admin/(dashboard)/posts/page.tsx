@@ -41,7 +41,7 @@ export default async function AdminPostsPage({
     prisma.post.findMany({
       where: listWhere,
       include: { category: true, tags: { include: { tag: true } } },
-      orderBy: { updatedAt: "desc" },
+      orderBy: [{ isPinned: "desc" }, { updatedAt: "desc" }],
       skip: (page - 1) * PAGE_SIZE,
       take: PAGE_SIZE
     }),

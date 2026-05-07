@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { H5HomeShell } from "@/components/h5-home-shell";
 import { H5HeroCarousel } from "@/components/h5-hero-carousel";
 import { H5StoryListCard } from "@/components/h5-story-list-card";
 import { formatRelativeTime } from "@/lib/format-relative-time";
@@ -33,19 +34,22 @@ export default async function HomePage({ searchParams }: { searchParams: Promise
 
   const posts = hasQuery ? await searchPublishedPosts(q) : await getPublishedPosts();
 
-  const carouselSlides = posts.slice(0, 3).map((p) => ({
+  /** 仅后台勾选「置顶」的稿件进轮播（最多 3 条）；Webhook 等新建文默认不置顶，不会占轮播位。 */
+  const pinnedForCarousel = posts.filter((p) => p.isPinned).slice(0, 3);
+  const carouselSlides = pinnedForCarousel.map((p) => ({
     id: p.id,
     title: p.title,
-    summary: p.summary,
+    summary: stripRepostAttributionFromText(p.summary),
     coverUrl: p.coverUrl,
-    categoryName: p.category.name
+    categoryName: p.category.name,
+    tiles: extractListMediaTiles(p)
   }));
 
-  /** 轮播已展示前 3 条；置顶仅走轮播。列表区不再出现置顶，且不再重复轮播里的稿件。 */
-  const carouselIds = new Set(posts.slice(0, 3).map((p) => p.id));
-  const inListFeed = (p: (typeof posts)[number]) => !p.isPinned && !carouselIds.has(p.id);
-  const ranks = [...posts.filter(inListFeed)].sort((a, b) => b.views - a.views).slice(0, 6);
-  const latest = posts.filter(inListFeed);
+  const nonPinned = posts.filter((p) => !p.isPinned);
+  const ranks = [...nonPinned].sort((a, b) => b.views - a.views).slice(0, 6);
+  const rankIds = new Set(ranks.map((p) => p.id));
+  /** 与热度榜互斥：已进入 Top6 的稿件不再出现在「最新吃瓜」。置顶仅在轮播出现。 */
+  const latest = nonPinned.filter((p) => !rankIds.has(p.id));
 
   return (
     <main className="site-shell h5-home">
@@ -91,45 +95,69 @@ export default async function HomePage({ searchParams }: { searchParams: Promise
         </div>
       </header>
 
-      <div className="h5-container">
-        {hasQuery ? (
-          <section className="h5-section h5-search-results" aria-labelledby="search-results-title">
-            <div className="h5-search-result-head">
-              <h2 id="search-results-title" className="h5-section-title">
-                搜索结果
-                <span className="h5-search-meta">
-                  「{q}」· 共 {posts.length} 条
-                </span>
-              </h2>
-              <Link href="/" className="h5-clear-link">
-                返回全部
-              </Link>
-            </div>
-            {posts.length === 0 ? (
-              <p className="h5-empty">没有找到相关内容，换个关键词试试。</p>
-            ) : (
-              <div className="h5-story-grid">
-                {posts.map((post) => (
-                  <H5StoryListCard
-                    key={post.id}
-                    postId={post.id}
-                    href={`/post/${post.id}`}
-                    title={post.title}
-                    summary={stripRepostAttributionFromText(post.summary)}
-                    categoryName={post.category.name}
-                    timeLabel={formatRelativeTime(post.publishedAt)}
-                    views={post.views}
-                    tiles={extractListMediaTiles(post)}
-                    tagToneClass={tagToneClass(post.category.name)}
-                  />
-                ))}
+      {hasQuery ? (
+        <>
+          <div className="h5-container">
+            <section className="h5-section h5-search-results" aria-labelledby="search-results-title">
+              <div className="h5-search-result-head">
+                <h2 id="search-results-title" className="h5-section-title">
+                  搜索结果
+                  <span className="h5-search-meta">
+                    「{q}」· 共 {posts.length} 条
+                  </span>
+                </h2>
+                <Link href="/" className="h5-clear-link">
+                  返回全部
+                </Link>
               </div>
-            )}
-          </section>
-        ) : (
-          <>
-            {carouselSlides.length > 0 ? <H5HeroCarousel items={carouselSlides} /> : null}
+              {posts.length === 0 ? (
+                <p className="h5-empty">没有找到相关内容，换个关键词试试。</p>
+              ) : (
+                <div className="h5-story-grid">
+                  {posts.map((post) => (
+                    <H5StoryListCard
+                      key={post.id}
+                      postId={post.id}
+                      href={`/post/${post.id}`}
+                      title={post.title}
+                      summary={stripRepostAttributionFromText(post.summary)}
+                      categoryName={post.category.name}
+                      timeLabel={formatRelativeTime(post.publishedAt)}
+                      views={post.views}
+                      tiles={extractListMediaTiles(post)}
+                      tagToneClass={tagToneClass(post.category.name)}
+                    />
+                  ))}
+                </div>
+              )}
+            </section>
+          </div>
 
+          <nav className="mobile-tabs h5-bottom-tabs" aria-label="首页导航">
+            <Link href="/#latest">
+              <span className="h5-tab-icon" aria-hidden>
+                ⌂
+              </span>
+              最新
+            </Link>
+            <Link href="/#rank">
+              <span className="h5-tab-icon" aria-hidden>
+                🔥
+              </span>
+              热榜
+            </Link>
+            <Link href="/vip">
+              <span className="h5-tab-icon" aria-hidden>
+                ▦
+              </span>
+              其他
+            </Link>
+          </nav>
+        </>
+      ) : (
+        <H5HomeShell
+          carousel={carouselSlides.length > 0 ? <H5HeroCarousel items={carouselSlides} /> : null}
+          rankPanel={
             <section className="h5-section h5-rank-section" id="rank" aria-labelledby="rank-title">
               <div className="h5-section-head">
                 <h2 id="rank-title" className="h5-section-title-row">
@@ -162,7 +190,8 @@ export default async function HomePage({ searchParams }: { searchParams: Promise
                 ))}
               </div>
             </section>
-
+          }
+          latestPanel={
             <section className="h5-section" id="latest">
               <div className="h5-section-head">
                 <h2 className="h5-section-title-row">
@@ -190,30 +219,9 @@ export default async function HomePage({ searchParams }: { searchParams: Promise
                 ))}
               </div>
             </section>
-          </>
-        )}
-      </div>
-
-      <nav className="mobile-tabs h5-bottom-tabs" aria-label="首页导航">
-        <a href="#latest">
-          <span className="h5-tab-icon" aria-hidden>
-            ⌂
-          </span>
-          最新
-        </a>
-        <a href="#rank">
-          <span className="h5-tab-icon" aria-hidden>
-            🔥
-          </span>
-          热榜
-        </a>
-        <Link href="/vip">
-          <span className="h5-tab-icon" aria-hidden>
-            ▦
-          </span>
-          其他
-        </Link>
-      </nav>
+          }
+        />
+      )}
     </main>
   );
 }

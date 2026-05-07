@@ -96,11 +96,19 @@ export default function PostTable({
               </tr>
             ) : (
               posts.map((post) => (
-                <tr key={post.id}>
+                <tr key={post.id} className={post.isPinned ? "admin-post-row-pinned" : undefined}>
                   <td>
-                    <strong>{post.title}</strong>
-                    <br />
-                    <span style={{ fontSize: 12, color: "var(--muted)" }}>{post.tags.map(({ tag }) => `#${tag.name}`).join(" ")}</span>
+                    <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", gap: "8px 10px" }}>
+                      {post.isPinned ? (
+                        <span className="post-pinned-badge" title="首页轮播置顶">
+                          👑 置顶
+                        </span>
+                      ) : null}
+                      <strong style={{ flex: "1 1 12rem", minWidth: 0 }}>{post.title}</strong>
+                    </div>
+                    <div style={{ fontSize: 12, color: "var(--muted)", marginTop: 6 }}>
+                      {post.tags.map(({ tag }) => `#${tag.name}`).join(" ")}
+                    </div>
                   </td>
                   <td>
                     <span className={statusPillClass[post.status]}>{statusText[post.status]}</span>

@@ -76,6 +76,7 @@ export function H5StoryListCard({
 
   const current = tiles[viewerIndex];
   const n = tiles.length;
+  const showCollage = n > 0;
 
   return (
     <div className="h5-story-card">
@@ -89,39 +90,41 @@ export function H5StoryListCard({
         <p className="h5-story-sum">{summary}</p>
       </Link>
 
-      <div className={collageClass(n)}>
-        {tiles.map((tile, index) => (
-          <button
-            key={tileKey(postId, index, tile)}
-            type="button"
-            className="h5-story-tile"
-            onClick={() => openAt(index)}
-            aria-label={tile.kind === "video" ? "播放视频" : "查看大图"}
-          >
-            {tile.kind === "video" ? (
-              <>
-                <video
-                  className="h5-story-tile-media h5-story-tile-video"
-                  src={videoSrcForListThumbnail(tile.url)}
-                  poster={tile.poster?.trim() ? tile.poster : undefined}
-                  muted
-                  playsInline
-                  preload="metadata"
-                  disablePictureInPicture
-                  tabIndex={-1}
-                  aria-hidden
-                />
-                <span className="h5-story-tile-play" aria-hidden>
-                  ▶
-                </span>
-              </>
-            ) : (
-              /* eslint-disable-next-line @next/next/no-img-element */
-              <img src={tile.url} alt="" className="h5-story-tile-media" loading="lazy" />
-            )}
-          </button>
-        ))}
-      </div>
+      {showCollage ? (
+        <div className={collageClass(n)}>
+          {tiles.map((tile, index) => (
+            <button
+              key={tileKey(postId, index, tile)}
+              type="button"
+              className="h5-story-tile"
+              onClick={() => openAt(index)}
+              aria-label={tile.kind === "video" ? "播放视频" : "查看大图"}
+            >
+              {tile.kind === "video" ? (
+                <>
+                  <video
+                    className="h5-story-tile-media h5-story-tile-video"
+                    src={videoSrcForListThumbnail(tile.url)}
+                    poster={tile.poster?.trim() ? tile.poster : undefined}
+                    muted
+                    playsInline
+                    preload="metadata"
+                    disablePictureInPicture
+                    tabIndex={-1}
+                    aria-hidden
+                  />
+                  <span className="h5-story-tile-play" aria-hidden>
+                    ▶
+                  </span>
+                </>
+              ) : (
+                /* eslint-disable-next-line @next/next/no-img-element */
+                <img src={tile.url} alt="" className="h5-story-tile-media" loading="lazy" />
+              )}
+            </button>
+          ))}
+        </div>
+      ) : null}
 
       {viewerOpen && current ? (
         <div className="h5-media-viewer" role="dialog" aria-modal="true" aria-label="媒体预览">

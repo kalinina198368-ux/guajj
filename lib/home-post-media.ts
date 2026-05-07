@@ -19,8 +19,6 @@ export function extractListMediaTiles(post: Post): HomeListTile[] {
       tiles.push({ kind: "video", url: b.src, poster: b.poster ?? undefined });
     }
   }
-  if (tiles.length === 0 && post.coverUrl) {
-    tiles.push({ kind: "image", url: post.coverUrl });
-  }
+  /** 纯文字稿：无混排图/视频块时不再用封面兜底拼版，列表不显示拼图区 */
   return tiles;
 }

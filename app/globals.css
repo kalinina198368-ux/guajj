@@ -1412,6 +1412,29 @@ textarea {
   color: #b91c1c;
 }
 
+.post-pinned-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  flex-shrink: 0;
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: 0.02em;
+  background: linear-gradient(135deg, rgba(255, 140, 0, 0.22), rgba(255, 87, 34, 0.18));
+  color: #c2410c;
+  border: 1px solid rgba(255, 140, 0, 0.45);
+}
+
+.admin-table tbody tr.admin-post-row-pinned {
+  background: linear-gradient(90deg, rgba(255, 140, 0, 0.06), transparent 48%);
+}
+
+.admin-table tbody tr.admin-post-row-pinned:hover {
+  background: linear-gradient(90deg, rgba(255, 140, 0, 0.1), transparent 48%);
+}
+
 .toolbar {
   display: flex;
   flex-wrap: wrap;
@@ -2068,6 +2091,32 @@ textarea {
   margin-bottom: 24px;
 }
 
+.h5-hero-viewport {
+  overflow: hidden;
+  border-radius: 16px;
+}
+
+.h5-hero-track {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  transition: transform 0.55s cubic-bezier(0.33, 1, 0.32, 1);
+  will-change: transform;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .h5-hero-track {
+    transition-duration: 0.01ms;
+  }
+}
+
+.h5-hero-slide {
+  flex-shrink: 0;
+  box-sizing: border-box;
+  text-decoration: none;
+  color: inherit;
+}
+
 .h5-hero-card {
   display: block;
   border-radius: 16px;
@@ -2081,7 +2130,8 @@ textarea {
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(120px, 38%);
   gap: 12px;
-  align-items: stretch;
+  /* 与 stretch 不同：右侧媒体区勿被左侧文案撑高，否则拼图有 max-height 时下方会露出黑底 */
+  align-items: start;
   padding: 16px 14px 18px;
 }
 
@@ -2142,9 +2192,10 @@ textarea {
 .h5-hero-visual {
   border-radius: 12px;
   overflow: hidden;
-  align-self: stretch;
-  min-height: 96px;
-  background: #0d0d0d;
+  align-self: start;
+  width: 100%;
+  min-height: 0;
+  background: #0a0a0a;
 }
 
 .h5-hero-cover {
@@ -2153,6 +2204,33 @@ textarea {
   min-height: 96px;
   object-fit: cover;
   display: block;
+}
+
+/* 置顶轮播右侧：与列表卡一致的拼图格，略压缩高度以适配 hero 布局 */
+.h5-hero-visual .h5-hero-collage {
+  padding: 3px;
+  gap: 3px;
+  width: 100%;
+  height: auto;
+  max-height: min(200px, 28vw);
+  background: #0a0a0a;
+  box-sizing: border-box;
+}
+
+.h5-hero-visual .h5-hero-collage.h5-story-collage--1 .h5-story-tile {
+  aspect-ratio: 16 / 10;
+  max-height: min(200px, 28vw);
+  min-height: 0;
+}
+
+.h5-hero-visual .h5-story-tile-video {
+  object-fit: cover;
+  object-position: center;
+}
+
+.h5-hero-visual .h5-hero-tile {
+  pointer-events: none;
+  border-radius: 6px;
 }
 
 .h5-hero-dots {
@@ -2334,7 +2412,7 @@ textarea {
 }
 
 .h5-story-collage--3 {
-  grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(3, 1fr);
 }
 
 .h5-story-collage--4 {
@@ -2609,6 +2687,7 @@ textarea {
   padding-bottom: env(safe-area-inset-bottom, 0px);
 }
 
+.h5-home .h5-bottom-tabs .h5-bottom-tab,
 .h5-home .h5-bottom-tabs a {
   display: flex;
   flex-direction: column;
@@ -2618,9 +2697,16 @@ textarea {
   font-size: 11px;
   font-weight: 800;
   color: #757575;
+  background: transparent;
+  border: 0;
+  padding: 0;
+  margin: 0;
+  cursor: pointer;
+  font-family: inherit;
+  text-decoration: none;
 }
 
-.h5-home .h5-bottom-tabs a:first-child {
+.h5-home .h5-bottom-tabs .h5-bottom-tab.is-active {
   color: #ff5722;
 }
 
@@ -2853,8 +2939,8 @@ textarea {
 .h5-detail-video-card + .h5-detail-img-grid,
 .h5-detail-img-grid + .h5-detail-prose-block,
 .h5-detail-img-grid + .h5-detail-video-card {
-  margin-top: 14px;
-}
+    margin-top: 14px;
+  }
 
 .h5-detail-prose-p {
   margin: 0 0 12px;
