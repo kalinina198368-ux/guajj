@@ -62,7 +62,13 @@ async function main() {
     /** 混排 JSON；与 prisma/schema.prisma 中 Post.contentBlocks 对齐，拉取旧库后需补列 */
     `ALTER TABLE "Post" ADD COLUMN "contentBlocks" TEXT;`,
     `ALTER TABLE "Post" ADD COLUMN "galleryVideoUrls" TEXT;`,
-    `ALTER TABLE "SocialUser" ADD COLUMN "lastLoginAt" DATETIME;`
+    `ALTER TABLE "SocialUser" ADD COLUMN "lastLoginAt" DATETIME;`,
+    `ALTER TABLE "SiteSettings" ADD COLUMN "mediaStorage" TEXT NOT NULL DEFAULT 'local';`,
+    `ALTER TABLE "SiteSettings" ADD COLUMN "r2AccountId" TEXT;`,
+    `ALTER TABLE "SiteSettings" ADD COLUMN "r2BucketName" TEXT;`,
+    `ALTER TABLE "SiteSettings" ADD COLUMN "r2PublicBaseUrl" TEXT;`,
+    `ALTER TABLE "SiteSettings" ADD COLUMN "r2AccessKeyId" TEXT;`,
+    `ALTER TABLE "SiteSettings" ADD COLUMN "r2SecretAccessKey" TEXT;`
   ];
   for (const sql of migrateSteps) {
     try {

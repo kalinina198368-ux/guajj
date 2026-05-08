@@ -1,7 +1,7 @@
 import crypto from "crypto";
-import { mkdir, writeFile } from "fs/promises";
 import path from "path";
 import { MediaType, PostStatus, PostType, type TelegramConfig } from "@/lib/generated/prisma";
+import { saveMediaBytes } from "@/lib/media-storage";
 import { prisma } from "@/lib/prisma";
 import { parseGalleryExtras, parseGalleryVideos } from "@/lib/post-gallery";
 import { isRepostAttributionOnlyLine, stripRepostAttributionFromText } from "@/lib/strip-repost-attribution";
@@ -192,12 +192,17 @@ async function downloadTelegramPickedMedia(config: TelegramConfig, picked: Picke
 
   const ext = safeExt(fileInfo.file_path, picked.mime);
   const filename = `tg-${Date.now()}-${crypto.randomUUID()}${ext}`;
-  const uploadDir = path.join(process.cwd(), "public", "uploads", "telegram");
-  await mkdir(uploadDir, { recursive: true });
   const buffer = Buffer.from(await fileRes.arrayBuffer());
-  await writeFile(path.join(uploadDir, filename), buffer);
+  const contentType =
+    picked.mime ||
+    (picked.kind === MediaType.VIDEO ? "video/mp4" : picked.kind === MediaType.IMAGE ? "image/jpeg" : "application/octet-stream");
 
-  const url = `/uploads/telegram/${filename}`;
+  const { url } = await saveMediaBytes({
+    buffer,
+    subPath: `telegram/${filename}`,
+    contentType
+  });
+
   await prisma.mediaAsset.create({
     data: {
       filename,

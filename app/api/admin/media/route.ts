@@ -1,14 +1,10 @@
 import crypto from "crypto";
-import { createWriteStream } from "fs";
-import { mkdir, unlink } from "fs/promises";
 import path from "path";
-import type { ReadableStream as NodeReadableStream } from "stream/web";
-import { Readable } from "stream";
-import { pipeline } from "stream/promises";
 import { NextResponse } from "next/server";
 import { getAdminUploadMaxBytes, getAdminUploadMaxMb } from "@/lib/admin-upload-limits";
 import { MediaType } from "@/lib/generated/prisma";
 import { getAdminSession } from "@/lib/auth";
+import { saveMediaBytes } from "@/lib/media-storage";
 import { prisma } from "@/lib/prisma";
 
 export const runtime = "nodejs";
@@ -42,16 +38,19 @@ export async function POST(request: Request) {
 
   const ext = path.extname(file.name).toLowerCase() || "";
   const safeName = `${Date.now()}-${crypto.randomUUID()}${ext}`;
-  const uploadDir = path.join(process.cwd(), "public", "uploads");
-  await mkdir(uploadDir, { recursive: true });
-  const outPath = path.join(uploadDir, safeName);
 
+  let publicUrl: string;
   try {
-    await pipeline(Readable.fromWeb(file.stream() as unknown as NodeReadableStream), createWriteStream(outPath));
+    const buffer = Buffer.from(await file.arrayBuffer());
+    const result = await saveMediaBytes({
+      buffer,
+      subPath: safeName,
+      contentType: file.type || undefined
+    });
+    publicUrl = result.url;
   } catch (err) {
-    await unlink(outPath).catch(() => {});
-    console.error("[admin/media] write failed", err);
-    return NextResponse.json({ error: "写入磁盘失败" }, { status: 500 });
+    console.error("[admin/media] upload failed", err);
+    return NextResponse.json({ error: "上传失败" }, { status: 500 });
   }
 
   const mediaType = file.type.startsWith("image/")
@@ -63,7 +62,7 @@ export async function POST(request: Request) {
   const media = await prisma.mediaAsset.create({
     data: {
       filename: file.name,
-      url: `/uploads/${safeName}`,
+      url: publicUrl,
       type: mediaType,
       size: file.size
     }

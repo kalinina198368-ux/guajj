@@ -3084,18 +3084,36 @@ export namespace Prisma {
   export type SiteSettingsMinAggregateOutputType = {
     id: string | null
     allowAnonymousComments: boolean | null
+    mediaStorage: string | null
+    r2AccountId: string | null
+    r2BucketName: string | null
+    r2PublicBaseUrl: string | null
+    r2AccessKeyId: string | null
+    r2SecretAccessKey: string | null
     updatedAt: Date | null
   }
 
   export type SiteSettingsMaxAggregateOutputType = {
     id: string | null
     allowAnonymousComments: boolean | null
+    mediaStorage: string | null
+    r2AccountId: string | null
+    r2BucketName: string | null
+    r2PublicBaseUrl: string | null
+    r2AccessKeyId: string | null
+    r2SecretAccessKey: string | null
     updatedAt: Date | null
   }
 
   export type SiteSettingsCountAggregateOutputType = {
     id: number
     allowAnonymousComments: number
+    mediaStorage: number
+    r2AccountId: number
+    r2BucketName: number
+    r2PublicBaseUrl: number
+    r2AccessKeyId: number
+    r2SecretAccessKey: number
     updatedAt: number
     _all: number
   }
@@ -3104,18 +3122,36 @@ export namespace Prisma {
   export type SiteSettingsMinAggregateInputType = {
     id?: true
     allowAnonymousComments?: true
+    mediaStorage?: true
+    r2AccountId?: true
+    r2BucketName?: true
+    r2PublicBaseUrl?: true
+    r2AccessKeyId?: true
+    r2SecretAccessKey?: true
     updatedAt?: true
   }
 
   export type SiteSettingsMaxAggregateInputType = {
     id?: true
     allowAnonymousComments?: true
+    mediaStorage?: true
+    r2AccountId?: true
+    r2BucketName?: true
+    r2PublicBaseUrl?: true
+    r2AccessKeyId?: true
+    r2SecretAccessKey?: true
     updatedAt?: true
   }
 
   export type SiteSettingsCountAggregateInputType = {
     id?: true
     allowAnonymousComments?: true
+    mediaStorage?: true
+    r2AccountId?: true
+    r2BucketName?: true
+    r2PublicBaseUrl?: true
+    r2AccessKeyId?: true
+    r2SecretAccessKey?: true
     updatedAt?: true
     _all?: true
   }
@@ -3195,6 +3231,12 @@ export namespace Prisma {
   export type SiteSettingsGroupByOutputType = {
     id: string
     allowAnonymousComments: boolean
+    mediaStorage: string
+    r2AccountId: string | null
+    r2BucketName: string | null
+    r2PublicBaseUrl: string | null
+    r2AccessKeyId: string | null
+    r2SecretAccessKey: string | null
     updatedAt: Date
     _count: SiteSettingsCountAggregateOutputType | null
     _min: SiteSettingsMinAggregateOutputType | null
@@ -3218,28 +3260,52 @@ export namespace Prisma {
   export type SiteSettingsSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     allowAnonymousComments?: boolean
+    mediaStorage?: boolean
+    r2AccountId?: boolean
+    r2BucketName?: boolean
+    r2PublicBaseUrl?: boolean
+    r2AccessKeyId?: boolean
+    r2SecretAccessKey?: boolean
     updatedAt?: boolean
   }, ExtArgs["result"]["siteSettings"]>
 
   export type SiteSettingsSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     allowAnonymousComments?: boolean
+    mediaStorage?: boolean
+    r2AccountId?: boolean
+    r2BucketName?: boolean
+    r2PublicBaseUrl?: boolean
+    r2AccessKeyId?: boolean
+    r2SecretAccessKey?: boolean
     updatedAt?: boolean
   }, ExtArgs["result"]["siteSettings"]>
 
   export type SiteSettingsSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     allowAnonymousComments?: boolean
+    mediaStorage?: boolean
+    r2AccountId?: boolean
+    r2BucketName?: boolean
+    r2PublicBaseUrl?: boolean
+    r2AccessKeyId?: boolean
+    r2SecretAccessKey?: boolean
     updatedAt?: boolean
   }, ExtArgs["result"]["siteSettings"]>
 
   export type SiteSettingsSelectScalar = {
     id?: boolean
     allowAnonymousComments?: boolean
+    mediaStorage?: boolean
+    r2AccountId?: boolean
+    r2BucketName?: boolean
+    r2PublicBaseUrl?: boolean
+    r2AccessKeyId?: boolean
+    r2SecretAccessKey?: boolean
     updatedAt?: boolean
   }
 
-  export type SiteSettingsOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "allowAnonymousComments" | "updatedAt", ExtArgs["result"]["siteSettings"]>
+  export type SiteSettingsOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "allowAnonymousComments" | "mediaStorage" | "r2AccountId" | "r2BucketName" | "r2PublicBaseUrl" | "r2AccessKeyId" | "r2SecretAccessKey" | "updatedAt", ExtArgs["result"]["siteSettings"]>
 
   export type $SiteSettingsPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "SiteSettings"
@@ -3247,6 +3313,24 @@ export namespace Prisma {
     scalars: $Extensions.GetPayloadResult<{
       id: string
       allowAnonymousComments: boolean
+      /**
+       * * local = public/uploads；r2 = Cloudflare R2（S3 兼容 API）
+       */
+      mediaStorage: string
+      /**
+       * * R2 仪表盘中的 Account ID
+       */
+      r2AccountId: string | null
+      r2BucketName: string | null
+      /**
+       * * 公网访问前缀，如 https://pub-xxx.r2.dev 或自定义域名，勿尾斜杠
+       */
+      r2PublicBaseUrl: string | null
+      /**
+       * * 可选；留空则从环境变量 R2_ACCESS_KEY_ID / R2_SECRET_ACCESS_KEY 读取
+       */
+      r2AccessKeyId: string | null
+      r2SecretAccessKey: string | null
       updatedAt: Date
     }, ExtArgs["result"]["siteSettings"]>
     composites: {}
@@ -3673,6 +3757,12 @@ export namespace Prisma {
   interface SiteSettingsFieldRefs {
     readonly id: FieldRef<"SiteSettings", 'String'>
     readonly allowAnonymousComments: FieldRef<"SiteSettings", 'Boolean'>
+    readonly mediaStorage: FieldRef<"SiteSettings", 'String'>
+    readonly r2AccountId: FieldRef<"SiteSettings", 'String'>
+    readonly r2BucketName: FieldRef<"SiteSettings", 'String'>
+    readonly r2PublicBaseUrl: FieldRef<"SiteSettings", 'String'>
+    readonly r2AccessKeyId: FieldRef<"SiteSettings", 'String'>
+    readonly r2SecretAccessKey: FieldRef<"SiteSettings", 'String'>
     readonly updatedAt: FieldRef<"SiteSettings", 'DateTime'>
   }
     
@@ -15184,6 +15274,12 @@ export namespace Prisma {
   export const SiteSettingsScalarFieldEnum: {
     id: 'id',
     allowAnonymousComments: 'allowAnonymousComments',
+    mediaStorage: 'mediaStorage',
+    r2AccountId: 'r2AccountId',
+    r2BucketName: 'r2BucketName',
+    r2PublicBaseUrl: 'r2PublicBaseUrl',
+    r2AccessKeyId: 'r2AccessKeyId',
+    r2SecretAccessKey: 'r2SecretAccessKey',
     updatedAt: 'updatedAt'
   };
 
@@ -15467,12 +15563,24 @@ export namespace Prisma {
     NOT?: SiteSettingsWhereInput | SiteSettingsWhereInput[]
     id?: StringFilter<"SiteSettings"> | string
     allowAnonymousComments?: BoolFilter<"SiteSettings"> | boolean
+    mediaStorage?: StringFilter<"SiteSettings"> | string
+    r2AccountId?: StringNullableFilter<"SiteSettings"> | string | null
+    r2BucketName?: StringNullableFilter<"SiteSettings"> | string | null
+    r2PublicBaseUrl?: StringNullableFilter<"SiteSettings"> | string | null
+    r2AccessKeyId?: StringNullableFilter<"SiteSettings"> | string | null
+    r2SecretAccessKey?: StringNullableFilter<"SiteSettings"> | string | null
     updatedAt?: DateTimeFilter<"SiteSettings"> | Date | string
   }
 
   export type SiteSettingsOrderByWithRelationInput = {
     id?: SortOrder
     allowAnonymousComments?: SortOrder
+    mediaStorage?: SortOrder
+    r2AccountId?: SortOrderInput | SortOrder
+    r2BucketName?: SortOrderInput | SortOrder
+    r2PublicBaseUrl?: SortOrderInput | SortOrder
+    r2AccessKeyId?: SortOrderInput | SortOrder
+    r2SecretAccessKey?: SortOrderInput | SortOrder
     updatedAt?: SortOrder
   }
 
@@ -15482,12 +15590,24 @@ export namespace Prisma {
     OR?: SiteSettingsWhereInput[]
     NOT?: SiteSettingsWhereInput | SiteSettingsWhereInput[]
     allowAnonymousComments?: BoolFilter<"SiteSettings"> | boolean
+    mediaStorage?: StringFilter<"SiteSettings"> | string
+    r2AccountId?: StringNullableFilter<"SiteSettings"> | string | null
+    r2BucketName?: StringNullableFilter<"SiteSettings"> | string | null
+    r2PublicBaseUrl?: StringNullableFilter<"SiteSettings"> | string | null
+    r2AccessKeyId?: StringNullableFilter<"SiteSettings"> | string | null
+    r2SecretAccessKey?: StringNullableFilter<"SiteSettings"> | string | null
     updatedAt?: DateTimeFilter<"SiteSettings"> | Date | string
   }, "id">
 
   export type SiteSettingsOrderByWithAggregationInput = {
     id?: SortOrder
     allowAnonymousComments?: SortOrder
+    mediaStorage?: SortOrder
+    r2AccountId?: SortOrderInput | SortOrder
+    r2BucketName?: SortOrderInput | SortOrder
+    r2PublicBaseUrl?: SortOrderInput | SortOrder
+    r2AccessKeyId?: SortOrderInput | SortOrder
+    r2SecretAccessKey?: SortOrderInput | SortOrder
     updatedAt?: SortOrder
     _count?: SiteSettingsCountOrderByAggregateInput
     _max?: SiteSettingsMaxOrderByAggregateInput
@@ -15500,6 +15620,12 @@ export namespace Prisma {
     NOT?: SiteSettingsScalarWhereWithAggregatesInput | SiteSettingsScalarWhereWithAggregatesInput[]
     id?: StringWithAggregatesFilter<"SiteSettings"> | string
     allowAnonymousComments?: BoolWithAggregatesFilter<"SiteSettings"> | boolean
+    mediaStorage?: StringWithAggregatesFilter<"SiteSettings"> | string
+    r2AccountId?: StringNullableWithAggregatesFilter<"SiteSettings"> | string | null
+    r2BucketName?: StringNullableWithAggregatesFilter<"SiteSettings"> | string | null
+    r2PublicBaseUrl?: StringNullableWithAggregatesFilter<"SiteSettings"> | string | null
+    r2AccessKeyId?: StringNullableWithAggregatesFilter<"SiteSettings"> | string | null
+    r2SecretAccessKey?: StringNullableWithAggregatesFilter<"SiteSettings"> | string | null
     updatedAt?: DateTimeWithAggregatesFilter<"SiteSettings"> | Date | string
   }
 
@@ -16280,42 +16406,84 @@ export namespace Prisma {
   export type SiteSettingsCreateInput = {
     id?: string
     allowAnonymousComments?: boolean
+    mediaStorage?: string
+    r2AccountId?: string | null
+    r2BucketName?: string | null
+    r2PublicBaseUrl?: string | null
+    r2AccessKeyId?: string | null
+    r2SecretAccessKey?: string | null
     updatedAt?: Date | string
   }
 
   export type SiteSettingsUncheckedCreateInput = {
     id?: string
     allowAnonymousComments?: boolean
+    mediaStorage?: string
+    r2AccountId?: string | null
+    r2BucketName?: string | null
+    r2PublicBaseUrl?: string | null
+    r2AccessKeyId?: string | null
+    r2SecretAccessKey?: string | null
     updatedAt?: Date | string
   }
 
   export type SiteSettingsUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
     allowAnonymousComments?: BoolFieldUpdateOperationsInput | boolean
+    mediaStorage?: StringFieldUpdateOperationsInput | string
+    r2AccountId?: NullableStringFieldUpdateOperationsInput | string | null
+    r2BucketName?: NullableStringFieldUpdateOperationsInput | string | null
+    r2PublicBaseUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    r2AccessKeyId?: NullableStringFieldUpdateOperationsInput | string | null
+    r2SecretAccessKey?: NullableStringFieldUpdateOperationsInput | string | null
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type SiteSettingsUncheckedUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
     allowAnonymousComments?: BoolFieldUpdateOperationsInput | boolean
+    mediaStorage?: StringFieldUpdateOperationsInput | string
+    r2AccountId?: NullableStringFieldUpdateOperationsInput | string | null
+    r2BucketName?: NullableStringFieldUpdateOperationsInput | string | null
+    r2PublicBaseUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    r2AccessKeyId?: NullableStringFieldUpdateOperationsInput | string | null
+    r2SecretAccessKey?: NullableStringFieldUpdateOperationsInput | string | null
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type SiteSettingsCreateManyInput = {
     id?: string
     allowAnonymousComments?: boolean
+    mediaStorage?: string
+    r2AccountId?: string | null
+    r2BucketName?: string | null
+    r2PublicBaseUrl?: string | null
+    r2AccessKeyId?: string | null
+    r2SecretAccessKey?: string | null
     updatedAt?: Date | string
   }
 
   export type SiteSettingsUpdateManyMutationInput = {
     id?: StringFieldUpdateOperationsInput | string
     allowAnonymousComments?: BoolFieldUpdateOperationsInput | boolean
+    mediaStorage?: StringFieldUpdateOperationsInput | string
+    r2AccountId?: NullableStringFieldUpdateOperationsInput | string | null
+    r2BucketName?: NullableStringFieldUpdateOperationsInput | string | null
+    r2PublicBaseUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    r2AccessKeyId?: NullableStringFieldUpdateOperationsInput | string | null
+    r2SecretAccessKey?: NullableStringFieldUpdateOperationsInput | string | null
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type SiteSettingsUncheckedUpdateManyInput = {
     id?: StringFieldUpdateOperationsInput | string
     allowAnonymousComments?: BoolFieldUpdateOperationsInput | boolean
+    mediaStorage?: StringFieldUpdateOperationsInput | string
+    r2AccountId?: NullableStringFieldUpdateOperationsInput | string | null
+    r2BucketName?: NullableStringFieldUpdateOperationsInput | string | null
+    r2PublicBaseUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    r2AccessKeyId?: NullableStringFieldUpdateOperationsInput | string | null
+    r2SecretAccessKey?: NullableStringFieldUpdateOperationsInput | string | null
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
@@ -17189,21 +17357,58 @@ export namespace Prisma {
     not?: NestedBoolFilter<$PrismaModel> | boolean
   }
 
+  export type StringNullableFilter<$PrismaModel = never> = {
+    equals?: string | StringFieldRefInput<$PrismaModel> | null
+    in?: string[] | null
+    notIn?: string[] | null
+    lt?: string | StringFieldRefInput<$PrismaModel>
+    lte?: string | StringFieldRefInput<$PrismaModel>
+    gt?: string | StringFieldRefInput<$PrismaModel>
+    gte?: string | StringFieldRefInput<$PrismaModel>
+    contains?: string | StringFieldRefInput<$PrismaModel>
+    startsWith?: string | StringFieldRefInput<$PrismaModel>
+    endsWith?: string | StringFieldRefInput<$PrismaModel>
+    not?: NestedStringNullableFilter<$PrismaModel> | string | null
+  }
+
+  export type SortOrderInput = {
+    sort: SortOrder
+    nulls?: NullsOrder
+  }
+
   export type SiteSettingsCountOrderByAggregateInput = {
     id?: SortOrder
     allowAnonymousComments?: SortOrder
+    mediaStorage?: SortOrder
+    r2AccountId?: SortOrder
+    r2BucketName?: SortOrder
+    r2PublicBaseUrl?: SortOrder
+    r2AccessKeyId?: SortOrder
+    r2SecretAccessKey?: SortOrder
     updatedAt?: SortOrder
   }
 
   export type SiteSettingsMaxOrderByAggregateInput = {
     id?: SortOrder
     allowAnonymousComments?: SortOrder
+    mediaStorage?: SortOrder
+    r2AccountId?: SortOrder
+    r2BucketName?: SortOrder
+    r2PublicBaseUrl?: SortOrder
+    r2AccessKeyId?: SortOrder
+    r2SecretAccessKey?: SortOrder
     updatedAt?: SortOrder
   }
 
   export type SiteSettingsMinOrderByAggregateInput = {
     id?: SortOrder
     allowAnonymousComments?: SortOrder
+    mediaStorage?: SortOrder
+    r2AccountId?: SortOrder
+    r2BucketName?: SortOrder
+    r2PublicBaseUrl?: SortOrder
+    r2AccessKeyId?: SortOrder
+    r2SecretAccessKey?: SortOrder
     updatedAt?: SortOrder
   }
 
@@ -17213,6 +17418,23 @@ export namespace Prisma {
     _count?: NestedIntFilter<$PrismaModel>
     _min?: NestedBoolFilter<$PrismaModel>
     _max?: NestedBoolFilter<$PrismaModel>
+  }
+
+  export type StringNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: string | StringFieldRefInput<$PrismaModel> | null
+    in?: string[] | null
+    notIn?: string[] | null
+    lt?: string | StringFieldRefInput<$PrismaModel>
+    lte?: string | StringFieldRefInput<$PrismaModel>
+    gt?: string | StringFieldRefInput<$PrismaModel>
+    gte?: string | StringFieldRefInput<$PrismaModel>
+    contains?: string | StringFieldRefInput<$PrismaModel>
+    startsWith?: string | StringFieldRefInput<$PrismaModel>
+    endsWith?: string | StringFieldRefInput<$PrismaModel>
+    not?: NestedStringNullableWithAggregatesFilter<$PrismaModel> | string | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedStringNullableFilter<$PrismaModel>
+    _max?: NestedStringNullableFilter<$PrismaModel>
   }
 
   export type PostListRelationFilter = {
@@ -17321,20 +17543,6 @@ export namespace Prisma {
     not?: NestedEnumPostStatusFilter<$PrismaModel> | $Enums.PostStatus
   }
 
-  export type StringNullableFilter<$PrismaModel = never> = {
-    equals?: string | StringFieldRefInput<$PrismaModel> | null
-    in?: string[] | null
-    notIn?: string[] | null
-    lt?: string | StringFieldRefInput<$PrismaModel>
-    lte?: string | StringFieldRefInput<$PrismaModel>
-    gt?: string | StringFieldRefInput<$PrismaModel>
-    gte?: string | StringFieldRefInput<$PrismaModel>
-    contains?: string | StringFieldRefInput<$PrismaModel>
-    startsWith?: string | StringFieldRefInput<$PrismaModel>
-    endsWith?: string | StringFieldRefInput<$PrismaModel>
-    not?: NestedStringNullableFilter<$PrismaModel> | string | null
-  }
-
   export type IntFilter<$PrismaModel = never> = {
     equals?: number | IntFieldRefInput<$PrismaModel>
     in?: number[]
@@ -17372,11 +17580,6 @@ export namespace Prisma {
     every?: CommentWhereInput
     some?: CommentWhereInput
     none?: CommentWhereInput
-  }
-
-  export type SortOrderInput = {
-    sort: SortOrder
-    nulls?: NullsOrder
   }
 
   export type TelegramImportOrderByRelationAggregateInput = {
@@ -17478,23 +17681,6 @@ export namespace Prisma {
     _count?: NestedIntFilter<$PrismaModel>
     _min?: NestedEnumPostStatusFilter<$PrismaModel>
     _max?: NestedEnumPostStatusFilter<$PrismaModel>
-  }
-
-  export type StringNullableWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: string | StringFieldRefInput<$PrismaModel> | null
-    in?: string[] | null
-    notIn?: string[] | null
-    lt?: string | StringFieldRefInput<$PrismaModel>
-    lte?: string | StringFieldRefInput<$PrismaModel>
-    gt?: string | StringFieldRefInput<$PrismaModel>
-    gte?: string | StringFieldRefInput<$PrismaModel>
-    contains?: string | StringFieldRefInput<$PrismaModel>
-    startsWith?: string | StringFieldRefInput<$PrismaModel>
-    endsWith?: string | StringFieldRefInput<$PrismaModel>
-    not?: NestedStringNullableWithAggregatesFilter<$PrismaModel> | string | null
-    _count?: NestedIntNullableFilter<$PrismaModel>
-    _min?: NestedStringNullableFilter<$PrismaModel>
-    _max?: NestedStringNullableFilter<$PrismaModel>
   }
 
   export type IntWithAggregatesFilter<$PrismaModel = never> = {
@@ -17841,6 +18027,10 @@ export namespace Prisma {
     set?: boolean
   }
 
+  export type NullableStringFieldUpdateOperationsInput = {
+    set?: string | null
+  }
+
   export type PostCreateNestedManyWithoutCategoryInput = {
     create?: XOR<PostCreateWithoutCategoryInput, PostUncheckedCreateWithoutCategoryInput> | PostCreateWithoutCategoryInput[] | PostUncheckedCreateWithoutCategoryInput[]
     connectOrCreate?: PostCreateOrConnectWithoutCategoryInput | PostCreateOrConnectWithoutCategoryInput[]
@@ -18007,10 +18197,6 @@ export namespace Prisma {
 
   export type EnumPostStatusFieldUpdateOperationsInput = {
     set?: $Enums.PostStatus
-  }
-
-  export type NullableStringFieldUpdateOperationsInput = {
-    set?: string | null
   }
 
   export type IntFieldUpdateOperationsInput = {
@@ -18345,12 +18531,54 @@ export namespace Prisma {
     not?: NestedBoolFilter<$PrismaModel> | boolean
   }
 
+  export type NestedStringNullableFilter<$PrismaModel = never> = {
+    equals?: string | StringFieldRefInput<$PrismaModel> | null
+    in?: string[] | null
+    notIn?: string[] | null
+    lt?: string | StringFieldRefInput<$PrismaModel>
+    lte?: string | StringFieldRefInput<$PrismaModel>
+    gt?: string | StringFieldRefInput<$PrismaModel>
+    gte?: string | StringFieldRefInput<$PrismaModel>
+    contains?: string | StringFieldRefInput<$PrismaModel>
+    startsWith?: string | StringFieldRefInput<$PrismaModel>
+    endsWith?: string | StringFieldRefInput<$PrismaModel>
+    not?: NestedStringNullableFilter<$PrismaModel> | string | null
+  }
+
   export type NestedBoolWithAggregatesFilter<$PrismaModel = never> = {
     equals?: boolean | BooleanFieldRefInput<$PrismaModel>
     not?: NestedBoolWithAggregatesFilter<$PrismaModel> | boolean
     _count?: NestedIntFilter<$PrismaModel>
     _min?: NestedBoolFilter<$PrismaModel>
     _max?: NestedBoolFilter<$PrismaModel>
+  }
+
+  export type NestedStringNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: string | StringFieldRefInput<$PrismaModel> | null
+    in?: string[] | null
+    notIn?: string[] | null
+    lt?: string | StringFieldRefInput<$PrismaModel>
+    lte?: string | StringFieldRefInput<$PrismaModel>
+    gt?: string | StringFieldRefInput<$PrismaModel>
+    gte?: string | StringFieldRefInput<$PrismaModel>
+    contains?: string | StringFieldRefInput<$PrismaModel>
+    startsWith?: string | StringFieldRefInput<$PrismaModel>
+    endsWith?: string | StringFieldRefInput<$PrismaModel>
+    not?: NestedStringNullableWithAggregatesFilter<$PrismaModel> | string | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedStringNullableFilter<$PrismaModel>
+    _max?: NestedStringNullableFilter<$PrismaModel>
+  }
+
+  export type NestedIntNullableFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel> | null
+    in?: number[] | null
+    notIn?: number[] | null
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntNullableFilter<$PrismaModel> | number | null
   }
 
   export type NestedEnumPostTypeFilter<$PrismaModel = never> = {
@@ -18365,20 +18593,6 @@ export namespace Prisma {
     in?: $Enums.PostStatus[]
     notIn?: $Enums.PostStatus[]
     not?: NestedEnumPostStatusFilter<$PrismaModel> | $Enums.PostStatus
-  }
-
-  export type NestedStringNullableFilter<$PrismaModel = never> = {
-    equals?: string | StringFieldRefInput<$PrismaModel> | null
-    in?: string[] | null
-    notIn?: string[] | null
-    lt?: string | StringFieldRefInput<$PrismaModel>
-    lte?: string | StringFieldRefInput<$PrismaModel>
-    gt?: string | StringFieldRefInput<$PrismaModel>
-    gte?: string | StringFieldRefInput<$PrismaModel>
-    contains?: string | StringFieldRefInput<$PrismaModel>
-    startsWith?: string | StringFieldRefInput<$PrismaModel>
-    endsWith?: string | StringFieldRefInput<$PrismaModel>
-    not?: NestedStringNullableFilter<$PrismaModel> | string | null
   }
 
   export type NestedDateTimeNullableFilter<$PrismaModel = never> = {
@@ -18410,34 +18624,6 @@ export namespace Prisma {
     _count?: NestedIntFilter<$PrismaModel>
     _min?: NestedEnumPostStatusFilter<$PrismaModel>
     _max?: NestedEnumPostStatusFilter<$PrismaModel>
-  }
-
-  export type NestedStringNullableWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: string | StringFieldRefInput<$PrismaModel> | null
-    in?: string[] | null
-    notIn?: string[] | null
-    lt?: string | StringFieldRefInput<$PrismaModel>
-    lte?: string | StringFieldRefInput<$PrismaModel>
-    gt?: string | StringFieldRefInput<$PrismaModel>
-    gte?: string | StringFieldRefInput<$PrismaModel>
-    contains?: string | StringFieldRefInput<$PrismaModel>
-    startsWith?: string | StringFieldRefInput<$PrismaModel>
-    endsWith?: string | StringFieldRefInput<$PrismaModel>
-    not?: NestedStringNullableWithAggregatesFilter<$PrismaModel> | string | null
-    _count?: NestedIntNullableFilter<$PrismaModel>
-    _min?: NestedStringNullableFilter<$PrismaModel>
-    _max?: NestedStringNullableFilter<$PrismaModel>
-  }
-
-  export type NestedIntNullableFilter<$PrismaModel = never> = {
-    equals?: number | IntFieldRefInput<$PrismaModel> | null
-    in?: number[] | null
-    notIn?: number[] | null
-    lt?: number | IntFieldRefInput<$PrismaModel>
-    lte?: number | IntFieldRefInput<$PrismaModel>
-    gt?: number | IntFieldRefInput<$PrismaModel>
-    gte?: number | IntFieldRefInput<$PrismaModel>
-    not?: NestedIntNullableFilter<$PrismaModel> | number | null
   }
 
   export type NestedIntWithAggregatesFilter<$PrismaModel = never> = {
