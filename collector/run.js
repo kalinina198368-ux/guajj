@@ -5,6 +5,7 @@
  * 环境变量:
  *   TG_COLLECTOR_POLL_MS — 轮询间隔（毫秒），默认 90000；设为 0 关闭轮询
  *   TG_COLLECTOR_DEBUG — 设为 1 时打印跳过历史消息的日志
+ *   TG_COLLECTOR_TZ — 日志时间显示时区，默认 Asia/Shanghai（东八区）
  */
 const { TelegramClient } = require("telegram");
 const { StringSession } = require("telegram/sessions");
@@ -21,6 +22,7 @@ const {
   loadLastIndexedDates,
   bumpLastIndexedDate
 } = require("./ingest-guard");
+const { collectorTimezone, formatCollectorTime } = require("./format-time");
 
 const collectorDebug = () =>
   (process.env.TG_COLLECTOR_DEBUG || "").trim() === "1";
@@ -69,18 +71,19 @@ async function main() {
   );
 
   const pollMs = collectorPollMs();
+  const tz = collectorTimezone();
   console.log(
     `采集已启动 (${me.firstName || me.id})，监听 ${sources.length} 个频道…` +
       (isMediaDownloadEnabled() ? " [媒体下载:开]" : " [媒体下载:关]") +
-      (pollMs > 0 ? ` [轮询:${pollMs / 1000}s]` : " [轮询:关]")
+      (pollMs > 0 ? ` [轮询:${pollMs / 1000}s]` : " [轮询:关]") +
+      ` [时区:${tz}]`
   );
   for (const s of sources) {
     const cid = normalizeChatId(s.chatId);
     const floor = lastIndexedDateByChatId.get(cid);
-    const floorLabel = floor
-      ? floor.toISOString().replace("T", " ").slice(0, 19)
-      : "—";
-    console.log(`  - ${s.title || s.username} (${s.chatId}) 仅新于 ${floorLabel}`);
+    console.log(
+      `  - ${s.title || s.username} (${s.chatId}) 仅新于 ${formatCollectorTime(floor)}`
+    );
   }
 
   try {
@@ -122,7 +125,7 @@ async function main() {
       const maxId = Math.max(...items.map((i) => i.msg.id));
       if (collectorDebug()) {
         console.log(
-          `[跳过/历史] ${chatId}/${maxId} 相册 ${payload.messageDate.toISOString()}`
+          `[跳过/历史] ${chatId}/${maxId} 相册 ${formatCollectorTime(payload.messageDate)}`
         );
       }
       if (source) await bumpSourceCursor(source, maxId);
@@ -164,7 +167,7 @@ async function main() {
     if (!shouldIngestByTime(chatId, messageDate)) {
       if (collectorDebug()) {
         console.log(
-          `[跳过/历史] ${chatId}/${msg.id} ${messageDate.toISOString()}`
+          `[跳过/历史] ${chatId}/${msg.id} ${formatCollectorTime(messageDate)}`
         );
       }
       await bumpSourceCursor(source, msg.id);
