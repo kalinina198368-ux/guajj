@@ -10,7 +10,21 @@ const { PrismaClient } = require("../lib/generated/prisma");
 
 const sqlitePath = path.join(__dirname, "..", "prisma", "dev.db");
 
-async function readSqliteTable(db, table) {
+function sqliteTableExists(db, table) {
+  const stmt = db.prepare(
+    `SELECT 1 FROM sqlite_master WHERE type='table' AND name = ? LIMIT 1`
+  );
+  stmt.bind([table]);
+  const exists = stmt.step();
+  stmt.free();
+  return exists;
+}
+
+function readSqliteTable(db, table) {
+  if (!sqliteTableExists(db, table)) {
+    console.log(`[跳过] SQLite 无表 ${table}（旧库正常，可忽略）`);
+    return [];
+  }
   const stmt = db.prepare(`SELECT * FROM "${table}"`);
   const rows = [];
   while (stmt.step()) {
@@ -38,7 +52,9 @@ async function main() {
   const db = new SQL.Database(fs.readFileSync(sqlitePath));
   const prisma = new PrismaClient();
 
-  const categories = await readSqliteTable(db, "Category");
+  const imported = [];
+
+  const categories = readSqliteTable(db, "Category");
   for (const row of categories) {
     await prisma.category.upsert({
       where: { id: row.id },
@@ -46,8 +62,9 @@ async function main() {
       create: { id: row.id, name: row.name, slug: row.slug, createdAt: new Date(row.createdAt) }
     });
   }
+  if (categories.length) imported.push(`Category(${categories.length})`);
 
-  const tags = await readSqliteTable(db, "Tag");
+  const tags = readSqliteTable(db, "Tag");
   for (const row of tags) {
     await prisma.tag.upsert({
       where: { id: row.id },
@@ -55,8 +72,9 @@ async function main() {
       create: { id: row.id, name: row.name, slug: row.slug, createdAt: new Date(row.createdAt) }
     });
   }
+  if (tags.length) imported.push(`Tag(${tags.length})`);
 
-  const adminUsers = await readSqliteTable(db, "AdminUser");
+  const adminUsers = readSqliteTable(db, "AdminUser");
   for (const row of adminUsers) {
     await prisma.adminUser.upsert({
       where: { id: row.id },
@@ -70,8 +88,9 @@ async function main() {
       }
     });
   }
+  if (adminUsers.length) imported.push(`AdminUser(${adminUsers.length})`);
 
-  const siteRows = await readSqliteTable(db, "SiteSettings");
+  const siteRows = readSqliteTable(db, "SiteSettings");
   for (const row of siteRows) {
     await prisma.siteSettings.upsert({
       where: { id: row.id },
@@ -97,8 +116,9 @@ async function main() {
       }
     });
   }
+  if (siteRows.length) imported.push(`SiteSettings(${siteRows.length})`);
 
-  const posts = await readSqliteTable(db, "Post");
+  const posts = readSqliteTable(db, "Post");
   for (const row of posts) {
     await prisma.post.upsert({
       where: { id: row.id },
@@ -125,8 +145,9 @@ async function main() {
       }
     });
   }
+  if (posts.length) imported.push(`Post(${posts.length})`);
 
-  const postTags = await readSqliteTable(db, "PostTag");
+  const postTags = readSqliteTable(db, "PostTag");
   for (const row of postTags) {
     await prisma.postTag.upsert({
       where: { postId_tagId: { postId: row.postId, tagId: row.tagId } },
@@ -134,8 +155,9 @@ async function main() {
       create: { postId: row.postId, tagId: row.tagId }
     });
   }
+  if (postTags.length) imported.push(`PostTag(${postTags.length})`);
 
-  const socialUsers = await readSqliteTable(db, "SocialUser");
+  const socialUsers = readSqliteTable(db, "SocialUser");
   for (const row of socialUsers) {
     await prisma.socialUser.upsert({
       where: { loginType_socialUid: { loginType: row.loginType, socialUid: row.socialUid } },
@@ -154,8 +176,9 @@ async function main() {
       }
     });
   }
+  if (socialUsers.length) imported.push(`SocialUser(${socialUsers.length})`);
 
-  const comments = await readSqliteTable(db, "Comment");
+  const comments = readSqliteTable(db, "Comment");
   for (const row of comments) {
     await prisma.comment.upsert({
       where: { id: row.id },
@@ -170,8 +193,9 @@ async function main() {
       }
     });
   }
+  if (comments.length) imported.push(`Comment(${comments.length})`);
 
-  const tgIndexed = await readSqliteTable(db, "TgIndexedMessage");
+  const tgIndexed = readSqliteTable(db, "TgIndexedMessage");
   for (const row of tgIndexed) {
     await prisma.tgIndexedMessage.upsert({
       where: { chatId_messageId: { chatId: row.chatId, messageId: row.messageId } },
@@ -194,17 +218,19 @@ async function main() {
       }
     });
   }
+  if (tgIndexed.length) imported.push(`TgIndexedMessage(${tgIndexed.length})`);
 
-  const tables = [
+  const optionalTables = [
+    "TgSourceChannel",
     "TelegramConfig",
     "TelegramImport",
     "MediaAsset",
     "OAuthLoginState"
   ];
+  console.log(imported.length ? `已导入: ${imported.join(", ")}` : "未从 SQLite 读到可导入的数据");
   console.log(
-    "已导入: Category, Tag, AdminUser, SiteSettings, Post, PostTag, SocialUser, Comment, TgIndexedMessage"
+    `以下表若 SQLite 中不存在将自动跳过；存在但未实现导入逻辑的请后台重配: ${optionalTables.join(", ")}`
   );
-  console.log(`以下表请按需手动迁移或在后台重新配置: ${tables.join(", ")}`);
 
   await prisma.$disconnect();
   console.log("SQLite → MySQL 导入完成。");
