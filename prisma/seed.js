@@ -111,6 +111,99 @@ async function main() {
     }
   ];
 
+  const vipSamples = [
+    {
+      chatId: "-1001111000001",
+      messageId: 1001,
+      contentType: "VIDEO",
+      title: "牛教练健身日常片段曝光",
+      snippet: "牛教练在健身房录制的一段日常训练，网友讨论动作是否标准…",
+      rawText:
+        "牛教练健身日常片段曝光\n\n牛教练在健身房录制的一段日常训练，网友讨论动作是否标准。相关话题持续发酵，更多片段仍在整理中。",
+      sourceTitle: "吃瓜速递",
+      sourceUsername: "gossip_feed",
+      durationSec: 42
+    },
+    {
+      chatId: "-1001111000001",
+      messageId: 1002,
+      contentType: "VIDEO",
+      title: "牛教练直播回放精华剪辑",
+      snippet: "昨晚直播中的高能片段汇总，含互动问答环节…",
+      rawText: "牛教练直播回放精华剪辑\n\n昨晚直播中的高能片段汇总，含互动问答环节。",
+      sourceTitle: "吃瓜速递",
+      durationSec: 81
+    },
+    {
+      chatId: "-1001111000002",
+      messageId: 2001,
+      contentType: "TEXT",
+      title: "牛教练聊天记录整理（文字版）",
+      snippet: "群友整理的对话时间线，涉及合作与行程讨论…",
+      rawText: "牛教练聊天记录整理（文字版）\n\n群友整理的对话时间线，涉及合作与行程讨论。仅供检索演示。",
+      sourceTitle: "圈内爆料"
+    },
+    {
+      chatId: "-1001111000003",
+      messageId: 3001,
+      contentType: "DOCUMENT",
+      title: "牛教练相关物料 PDF 汇总",
+      snippet: "包含多张截图与说明的压缩整理，文件较大建议 WiFi 下载…",
+      rawText: "牛教练相关物料 PDF 汇总\n\n包含多张截图与说明的压缩整理。",
+      sourceTitle: "资源归档"
+    },
+    {
+      chatId: "-1001111000001",
+      messageId: 1003,
+      contentType: "PHOTO",
+      title: "牛教练活动现场九宫格",
+      snippet: "粉丝拍摄的现场图集，共 9 张高清图…",
+      rawText: "牛教练活动现场九宫格\n\n粉丝拍摄的现场图集。",
+      sourceTitle: "吃瓜速递",
+      mediaUrl: "/assets/cover-city.svg"
+    },
+    {
+      chatId: "-1001111000004",
+      messageId: 4001,
+      contentType: "VIDEO",
+      title: "赵露思新剧路透短视频",
+      snippet: "片场路透 30 秒，服装造型引热议…",
+      rawText: "赵露思新剧路透短视频\n\n片场路透 30 秒，服装造型引热议。",
+      sourceTitle: "影视路透站",
+      durationSec: 30
+    },
+    {
+      chatId: "-1001111000004",
+      messageId: 4002,
+      contentType: "TEXT",
+      title: "教母话题长文梳理",
+      snippet: "按时间线梳理近期争议节点，附多方说法…",
+      rawText: "教母话题长文梳理\n\n按时间线梳理近期争议节点。",
+      sourceTitle: "深度吃瓜"
+    },
+    {
+      chatId: "-1001111000005",
+      messageId: 5001,
+      contentType: "VIDEO",
+      title: "货代周周访谈片段",
+      snippet: "行业访谈节选，谈及跨境物流与行情…",
+      rawText: "货代周周访谈片段\n\n行业访谈节选。",
+      sourceTitle: "财经边角",
+      durationSec: 125
+    }
+  ];
+
+  for (const sample of vipSamples) {
+    await prisma.tgIndexedMessage.upsert({
+      where: { chatId_messageId: { chatId: sample.chatId, messageId: sample.messageId } },
+      update: {},
+      create: {
+        ...sample,
+        messageDate: new Date(Date.now() - sample.messageId * 3600_000)
+      }
+    });
+  }
+
   for (const item of posts) {
     const existing = await prisma.post.findFirst({ where: { title: item.title } });
     const category = categoryMap[item.categorySlug];

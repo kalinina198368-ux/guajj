@@ -9,5 +9,6 @@ node_modules
 .env.local
 dev.db
 prisma/dev.db
+collector/session.txt
 public/uploads/*
 !public/uploads/.gitkeep

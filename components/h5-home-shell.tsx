@@ -74,9 +74,9 @@ export function H5HomeShell({
         </button>
         <Link href="/vip">
           <span className="h5-tab-icon" aria-hidden>
-            ▦
+            🔍
           </span>
-          其他
+          VIP搜索
         </Link>
       </nav>
     </>

@@ -3451,3 +3451,258 @@ button.h5-detail-img-cell:active {
     border-radius: 18px 18px 0 0;
   }
 }
+
+/* ---------- VIP 搜索 ---------- */
+.vip-page.site-shell {
+  background: #121212;
+  color: #fff;
+  padding-bottom: max(76px, calc(62px + env(safe-area-inset-bottom, 0px)));
+}
+
+.vip-top .h5-top-row {
+  margin-bottom: 12px;
+}
+
+.vip-search-bar {
+  display: flex;
+  gap: 8px;
+  max-width: 720px;
+  margin: 0 auto;
+}
+
+.vip-search-input {
+  flex: 1;
+  min-width: 0;
+}
+
+.vip-container {
+  padding-top: 8px;
+}
+
+.vip-intro-lead {
+  margin: 0 0 20px;
+  font-size: 14px;
+  line-height: 1.65;
+  color: #bdbdbd;
+}
+
+.vip-hot-label {
+  margin: 0 0 10px;
+  font-size: 13px;
+  font-weight: 800;
+  color: #9e9e9e;
+}
+
+.vip-hot-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.vip-hot-tag {
+  padding: 8px 14px;
+  border-radius: 999px;
+  background: rgba(255, 87, 34, 0.12);
+  border: 1px solid rgba(255, 87, 34, 0.35);
+  color: #ffab91;
+  font-size: 13px;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.vip-result-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.vip-result-item {
+  display: flex;
+  gap: 12px;
+  padding: 14px;
+  border-radius: 12px;
+  background: #1a1a1a;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  text-decoration: none;
+  color: inherit;
+  transition: border-color 0.15s ease, background 0.15s ease;
+}
+
+.vip-result-item:hover {
+  border-color: rgba(255, 87, 34, 0.45);
+  background: #222;
+}
+
+.vip-result-icon {
+  flex-shrink: 0;
+  font-size: 22px;
+  line-height: 1.2;
+}
+
+.vip-result-body {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.vip-result-title {
+  font-size: 15px;
+  font-weight: 800;
+  line-height: 1.45;
+  color: #4fc3f7;
+}
+
+.vip-result-duration {
+  color: #9e9e9e;
+  font-weight: 700;
+  margin-right: 4px;
+}
+
+.vip-result-snippet {
+  font-size: 13px;
+  line-height: 1.5;
+  color: #bdbdbd;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.vip-result-meta {
+  font-size: 11px;
+  color: #757575;
+  font-weight: 600;
+}
+
+.vip-hl {
+  background: rgba(255, 193, 7, 0.35);
+  color: #fffde7;
+  padding: 0 2px;
+  border-radius: 2px;
+}
+
+.vip-pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 24px;
+  padding-bottom: 8px;
+}
+
+.vip-page-btn {
+  padding: 10px 16px;
+  border-radius: 10px;
+  background: rgba(255, 87, 34, 0.15);
+  border: 1px solid rgba(255, 87, 34, 0.4);
+  color: #ffab91;
+  font-weight: 800;
+  font-size: 14px;
+  text-decoration: none;
+}
+
+.vip-page-btn.is-disabled {
+  opacity: 0.35;
+  pointer-events: none;
+}
+
+.vip-page-info {
+  font-size: 13px;
+  color: #9e9e9e;
+  font-weight: 700;
+}
+
+.vip-bottom-nav a.h5-bottom-tab {
+  text-decoration: none;
+  color: inherit;
+}
+
+.vip-detail-head {
+  max-width: 720px;
+  margin: 0 auto;
+}
+
+.vip-back-link {
+  font-size: 14px;
+  font-weight: 800;
+  color: #ffab91;
+  text-decoration: none;
+}
+
+.vip-detail {
+  padding-bottom: 32px;
+}
+
+.vip-detail-type {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  font-weight: 700;
+  color: #9e9e9e;
+  margin-bottom: 12px;
+}
+
+.vip-detail-title {
+  margin: 0 0 12px;
+  font-size: 20px;
+  font-weight: 900;
+  line-height: 1.4;
+  color: #fff;
+}
+
+.vip-detail-meta {
+  margin: 0 0 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 12px;
+  color: #757575;
+  font-weight: 600;
+}
+
+.vip-detail-media {
+  margin-bottom: 20px;
+  border-radius: 12px;
+  overflow: hidden;
+  background: #000;
+}
+
+.vip-detail-video {
+  width: 100%;
+  max-height: 60vh;
+  display: block;
+}
+
+.vip-detail-image {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.vip-detail-file-link {
+  display: inline-flex;
+  padding: 12px 18px;
+  color: #4fc3f7;
+  font-weight: 800;
+}
+
+.vip-detail-text {
+  font-size: 15px;
+  line-height: 1.75;
+  color: #e0e0e0;
+}
+
+.vip-detail-text p {
+  margin: 0 0 12px;
+}
+
+.vip-detail-foot {
+  margin-top: 28px;
+  font-size: 11px;
+  color: #616161;
+}

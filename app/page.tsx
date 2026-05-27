@@ -150,7 +150,7 @@ export default async function HomePage({ searchParams }: { searchParams: Promise
               <span className="h5-tab-icon" aria-hidden>
                 ▦
               </span>
-              其他
+              VIP搜索
             </Link>
           </nav>
         </>
