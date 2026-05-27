@@ -1,6 +1,9 @@
 /**
  * 长期监听源频道新消息 → 写入 TgIndexedMessage
  * 用法: npm run collector
+ *
+ * 环境变量:
+ *   TG_COLLECTOR_POLL_MS — 轮询间隔（毫秒），默认 90000；设为 0 关闭轮询
  */
 const { TelegramClient } = require("telegram");
 const { StringSession } = require("telegram/sessions");
@@ -11,6 +14,12 @@ const { normalizeChatId } = require("./chat-id");
 const { buildAlbumPayload, attachMediaFields } = require("./album-merge");
 const { isMediaDownloadEnabled } = require("./media-download");
 const { createPrisma, upsertIndexedMessage } = require("../lib/tg-index-ingest");
+
+function collectorPollMs() {
+  const n = Number(process.env.TG_COLLECTOR_POLL_MS ?? 90000);
+  if (!Number.isFinite(n) || n < 0) return 90000;
+  return Math.round(n);
+}
 
 async function loadSources(prisma) {
   return prisma.tgSourceChannel.findMany({
@@ -41,17 +50,27 @@ async function main() {
   });
   await client.connect();
   const me = await client.getMe();
+
+  const pollMs = collectorPollMs();
   console.log(
     `采集已启动 (${me.firstName || me.id})，监听 ${sources.length} 个频道…` +
-      (isMediaDownloadEnabled() ? " [媒体下载:开]" : " [媒体下载:关]")
+      (isMediaDownloadEnabled() ? " [媒体下载:开]" : " [媒体下载:关]") +
+      (pollMs > 0 ? ` [轮询:${pollMs / 1000}s]` : " [轮询:关]")
   );
   for (const s of sources) {
     console.log(`  - ${s.title || s.username} (${s.chatId})`);
   }
 
-  const albumBuffer = new Map();
+  try {
+    await client.getDialogs({ limit: 200 });
+  } catch (err) {
+    console.warn("[启动] getDialogs 失败（可忽略）:", err.message);
+  }
 
-  async function flushAlbum(groupKey) {
+  const albumBuffer = new Map();
+  let pollRunning = false;
+
+  async function flushAlbum(groupKey, via = "消息") {
     const items = albumBuffer.get(groupKey);
     if (!items?.length) return;
     albumBuffer.delete(groupKey);
@@ -77,8 +96,85 @@ async function main() {
         : 0);
     const mediaHint = nImg > 1 ? ` +${nImg}图` : payload.mediaUrl ? " +媒体" : "";
     console.log(
-      `[相册] ${items[0].chatId}/${payload.messageId} ${payload.title.slice(0, 40)}${mediaHint}`
+      `[相册${via === "轮询" ? "/轮询" : ""}] ${items[0].chatId}/${payload.messageId} ${payload.title.slice(0, 40)}${mediaHint}`
     );
+    if (source) {
+      const maxId = Math.max(...items.map((i) => i.msg.id));
+      source.lastMessageId = Math.max(source.lastMessageId || 0, maxId);
+      await prisma.tgSourceChannel.update({
+        where: { id: source.id },
+        data: { lastMessageId: source.lastMessageId, updatedAt: new Date() }
+      });
+    }
+  }
+
+  async function ingestMessage(msg, chatId, via = "消息") {
+    const source = sourceByChatId[chatId];
+    if (!source) return;
+
+    const payload = messageToIndexPayload(msg, {
+      title: source.title,
+      username: source.username
+    });
+
+    if (payload.mediaGroupId) {
+      const key = `${chatId}:${payload.mediaGroupId}`;
+      if (!albumBuffer.has(key)) {
+        albumBuffer.set(key, []);
+        setTimeout(() => flushAlbum(key, via), 2500);
+      }
+      albumBuffer.get(key).push({ msg, chatId, payload });
+      return;
+    }
+
+    await attachMediaFields(client, msg, payload, chatId);
+    await upsertIndexedMessage(prisma, { chatId, ...payload });
+    const mediaHint = payload.mediaUrl ? " +媒体" : "";
+    const tag = via === "轮询" ? "[消息/轮询]" : "[消息]";
+    console.log(
+      `${tag} ${chatId}/${payload.messageId} ${payload.contentType} ${payload.title.slice(0, 50)}${mediaHint}`
+    );
+
+    source.lastMessageId = Math.max(source.lastMessageId || 0, msg.id);
+    await prisma.tgSourceChannel.update({
+      where: { id: source.id },
+      data: {
+        lastMessageId: source.lastMessageId,
+        updatedAt: new Date()
+      }
+    });
+  }
+
+  async function pollSource(source) {
+    const chatId = normalizeChatId(source.chatId);
+    if (!chatId) return;
+    const entity = await client.getEntity(source.chatId);
+    const minId = source.lastMessageId || 0;
+    const messages = await client.getMessages(entity, { minId, limit: 30 });
+    if (!messages?.length) return;
+
+    const sorted = [...messages].sort((a, b) => a.id - b.id);
+    for (const msg of sorted) {
+      if (!msg?.id || msg.id <= minId) continue;
+      await ingestMessage(msg, chatId, "轮询");
+    }
+  }
+
+  async function pollAllSources() {
+    if (pollRunning) return;
+    pollRunning = true;
+    try {
+      for (const source of sources) {
+        try {
+          await pollSource(source);
+        } catch (err) {
+          const label = source.title || source.username || source.chatId;
+          console.warn(`[轮询] ${label}: ${err.message}`);
+        }
+      }
+    } finally {
+      pollRunning = false;
+    }
   }
 
   client.addEventHandler(
@@ -90,42 +186,22 @@ async function main() {
         const chatId = normalizeChatId(peerIdToChatId(event.chatId));
         if (!chatId || !chatIdSet.has(chatId)) return;
 
-        const source = sourceByChatId[chatId];
-        const payload = messageToIndexPayload(msg, {
-          title: source.title,
-          username: source.username
-        });
-
-        if (payload.mediaGroupId) {
-          const key = `${chatId}:${payload.mediaGroupId}`;
-          if (!albumBuffer.has(key)) {
-            albumBuffer.set(key, []);
-            setTimeout(() => flushAlbum(key), 2500);
-          }
-          albumBuffer.get(key).push({ msg, chatId, payload });
-          return;
-        }
-
-        await attachMediaFields(client, msg, payload, chatId);
-        await upsertIndexedMessage(prisma, { chatId, ...payload });
-        const mediaHint = payload.mediaUrl ? " +媒体" : "";
-        console.log(
-          `[消息] ${chatId}/${payload.messageId} ${payload.contentType} ${payload.title.slice(0, 50)}${mediaHint}`
-        );
-
-        await prisma.tgSourceChannel.update({
-          where: { id: source.id },
-          data: {
-            lastMessageId: Math.max(source.lastMessageId || 0, msg.id),
-            updatedAt: new Date()
-          }
-        });
+        await ingestMessage(msg, chatId, "消息");
       } catch (err) {
         console.error("处理消息失败:", err.message);
       }
     },
     new NewMessage({})
   );
+
+  if (pollMs > 0) {
+    setTimeout(() => {
+      pollAllSources().catch((err) => console.warn("[轮询] 首次失败:", err.message));
+    }, 5000);
+    setInterval(() => {
+      pollAllSources().catch((err) => console.warn("[轮询] 失败:", err.message));
+    }, pollMs);
+  }
 
   process.on("SIGINT", async () => {
     console.log("\n正在退出…");
