@@ -4,6 +4,7 @@
  *
  * 环境变量:
  *   TG_COLLECTOR_POLL_MS — 轮询间隔（毫秒），默认 90000；设为 0 关闭轮询
+ *   TG_COLLECTOR_DEBUG — 设为 1 时打印跳过历史消息的日志
  */
 const { TelegramClient } = require("telegram");
 const { StringSession } = require("telegram/sessions");
@@ -14,6 +15,15 @@ const { normalizeChatId } = require("./chat-id");
 const { buildAlbumPayload, attachMediaFields } = require("./album-merge");
 const { isMediaDownloadEnabled } = require("./media-download");
 const { createPrisma, upsertIndexedMessage } = require("../lib/tg-index-ingest");
+const {
+  messageDateFromMsg,
+  isNewerThanFloor,
+  loadLastIndexedDates,
+  bumpLastIndexedDate
+} = require("./ingest-guard");
+
+const collectorDebug = () =>
+  (process.env.TG_COLLECTOR_DEBUG || "").trim() === "1";
 
 function collectorPollMs() {
   const n = Number(process.env.TG_COLLECTOR_POLL_MS ?? 90000);
@@ -50,6 +60,13 @@ async function main() {
   });
   await client.connect();
   const me = await client.getMe();
+  const collectorStartedAt = new Date();
+  const chatIds = sources.map((s) => normalizeChatId(s.chatId));
+  const lastIndexedDateByChatId = await loadLastIndexedDates(
+    prisma,
+    chatIds,
+    collectorStartedAt
+  );
 
   const pollMs = collectorPollMs();
   console.log(
@@ -58,7 +75,12 @@ async function main() {
       (pollMs > 0 ? ` [轮询:${pollMs / 1000}s]` : " [轮询:关]")
   );
   for (const s of sources) {
-    console.log(`  - ${s.title || s.username} (${s.chatId})`);
+    const cid = normalizeChatId(s.chatId);
+    const floor = lastIndexedDateByChatId.get(cid);
+    const floorLabel = floor
+      ? floor.toISOString().replace("T", " ").slice(0, 19)
+      : "—";
+    console.log(`  - ${s.title || s.username} (${s.chatId}) 仅新于 ${floorLabel}`);
   }
 
   try {
@@ -70,15 +92,43 @@ async function main() {
   const albumBuffer = new Map();
   let pollRunning = false;
 
+  async function bumpSourceCursor(source, msgId) {
+    if (!source || msgId <= (source.lastMessageId || 0)) return;
+    source.lastMessageId = msgId;
+    await prisma.tgSourceChannel.update({
+      where: { id: source.id },
+      data: { lastMessageId: source.lastMessageId, updatedAt: new Date() }
+    });
+  }
+
+  /** @returns {boolean} 是否应入库（false = 历史消息，仅推进游标） */
+  function shouldIngestByTime(chatId, messageDate) {
+    const floor = lastIndexedDateByChatId.get(chatId);
+    return isNewerThanFloor(messageDate, floor);
+  }
+
   async function flushAlbum(groupKey, via = "消息") {
     const items = albumBuffer.get(groupKey);
     if (!items?.length) return;
     albumBuffer.delete(groupKey);
-    const source = sourceByChatId[items[0].chatId];
-    const payload = await buildAlbumPayload(client, items, items[0].chatId, {
+    const chatId = items[0].chatId;
+    const source = sourceByChatId[chatId];
+    const payload = await buildAlbumPayload(client, items, chatId, {
       title: source?.title,
       username: source?.username
     });
+
+    if (!shouldIngestByTime(chatId, payload.messageDate)) {
+      const maxId = Math.max(...items.map((i) => i.msg.id));
+      if (collectorDebug()) {
+        console.log(
+          `[跳过/历史] ${chatId}/${maxId} 相册 ${payload.messageDate.toISOString()}`
+        );
+      }
+      if (source) await bumpSourceCursor(source, maxId);
+      return;
+    }
+
     await upsertIndexedMessage(prisma, {
       chatId: items[0].chatId,
       ...payload
@@ -100,17 +150,26 @@ async function main() {
     );
     if (source) {
       const maxId = Math.max(...items.map((i) => i.msg.id));
-      source.lastMessageId = Math.max(source.lastMessageId || 0, maxId);
-      await prisma.tgSourceChannel.update({
-        where: { id: source.id },
-        data: { lastMessageId: source.lastMessageId, updatedAt: new Date() }
-      });
+      await bumpSourceCursor(source, maxId);
+      bumpLastIndexedDate(lastIndexedDateByChatId, chatId, payload.messageDate);
     }
   }
 
   async function ingestMessage(msg, chatId, via = "消息") {
     const source = sourceByChatId[chatId];
     if (!source) return;
+
+    const messageDate = messageDateFromMsg(msg);
+
+    if (!shouldIngestByTime(chatId, messageDate)) {
+      if (collectorDebug()) {
+        console.log(
+          `[跳过/历史] ${chatId}/${msg.id} ${messageDate.toISOString()}`
+        );
+      }
+      await bumpSourceCursor(source, msg.id);
+      return;
+    }
 
     const payload = messageToIndexPayload(msg, {
       title: source.title,
@@ -135,14 +194,8 @@ async function main() {
       `${tag} ${chatId}/${payload.messageId} ${payload.contentType} ${payload.title.slice(0, 50)}${mediaHint}`
     );
 
-    source.lastMessageId = Math.max(source.lastMessageId || 0, msg.id);
-    await prisma.tgSourceChannel.update({
-      where: { id: source.id },
-      data: {
-        lastMessageId: source.lastMessageId,
-        updatedAt: new Date()
-      }
-    });
+    await bumpSourceCursor(source, msg.id);
+    bumpLastIndexedDate(lastIndexedDateByChatId, chatId, payload.messageDate);
   }
 
   async function pollSource(source) {

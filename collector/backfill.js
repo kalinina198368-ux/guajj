@@ -41,6 +41,7 @@ async function main() {
     const entity = await client.getEntity(source.chatId);
     const chatId = normalizeChatId(source.chatId);
     let count = 0;
+    let maxMsgId = source.lastMessageId || 0;
     let albumGroup = [];
     let albumKey = null;
 
@@ -54,6 +55,7 @@ async function main() {
 
     for await (const msg of client.iterMessages(entity, { limit })) {
       if (!msg.id) continue;
+      maxMsgId = Math.max(maxMsgId, msg.id);
 
       if (msg.groupedId != null) {
         const key = `${chatId}:${msg.groupedId}`;
@@ -75,7 +77,13 @@ async function main() {
     }
 
     await flushAlbum();
-    console.log(`  写入 ${count} 条`);
+    if (maxMsgId > (source.lastMessageId || 0)) {
+      await prisma.tgSourceChannel.update({
+        where: { id: source.id },
+        data: { lastMessageId: maxMsgId, updatedAt: new Date() }
+      });
+    }
+    console.log(`  写入 ${count} 条，游标 messageId≤${maxMsgId}`);
   }
 
   await client.disconnect();
