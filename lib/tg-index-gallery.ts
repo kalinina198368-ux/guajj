@@ -20,7 +20,8 @@ export function buildIndexGalleryImageUrls(item: TgIndexedMessage): string[] {
     if (!cover) return extras.filter(Boolean);
     return [cover, ...extras.filter((u) => u && u !== cover)];
   }
-  if (cover && (item.contentType === "PHOTO" || !item.galleryVideoUrls)) {
+  // 非 PHOTO 且无 galleryImageUrls：仅有 mediaUrl 时作封面图（如 VIDEO 缩略图）
+  if (cover && !item.galleryVideoUrls) {
     return [cover];
   }
   return [];
