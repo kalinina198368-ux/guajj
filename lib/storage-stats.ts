@@ -1,4 +1,5 @@
 import { ListObjectsV2Command, type _Object } from "@aws-sdk/client-s3";
+import type { Dirent } from "fs";
 import { readdir, stat } from "fs/promises";
 import path from "path";
 import { createR2Client, isR2Ready } from "@/lib/media-storage";
@@ -128,7 +129,7 @@ function objectRow(obj: _Object): StorageObjectRow | null {
     key,
     size,
     lastModified: obj.LastModified,
-    kind: classifyMediaKind(key, obj.ContentType)
+    kind: classifyMediaKind(key)
   };
 }
 
@@ -174,7 +175,7 @@ export async function scanR2Bucket(prefix = "uploads/"): Promise<StorageScanResu
 
 async function walkLocalUploads(dir: string, baseKey = "uploads"): Promise<StorageObjectRow[]> {
   const rows: StorageObjectRow[] = [];
-  let entries: { name: string; isDirectory: () => boolean }[];
+  let entries: Dirent[];
   try {
     entries = await readdir(dir, { withFileTypes: true });
   } catch (e) {
