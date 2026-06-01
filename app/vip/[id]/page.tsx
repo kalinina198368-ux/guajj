@@ -73,7 +73,7 @@ export default async function VipDetailPage({
     <main className="site-shell h5-home vip-page vip-detail-page h5-detail-page">
       <header className="h5-top vip-top">
         <div className="vip-detail-head">
-          <Link href={backHref} className="vip-back-link">
+          <Link href={backHref} prefetch={false} className="vip-back-link">
             ← 返回结果
           </Link>
         </div>

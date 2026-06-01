@@ -1,5 +1,17 @@
 import type { TgIndexedMessage } from "@/lib/generated/prisma";
 
+const VIDEO_URL_RE = /\.(mp4|webm|mov|m4v|mkv|avi|mpeg|mpg|3gp)(\?|$)/i;
+
+/** 根据 URL 后缀判断是否为视频地址（避免把 mp4 当 img src） */
+export function isLikelyVideoUrl(url: string): boolean {
+  return VIDEO_URL_RE.test(url.trim());
+}
+
+export function isLikelyImageUrl(url: string): boolean {
+  const u = url.trim();
+  return Boolean(u) && !isLikelyVideoUrl(u);
+}
+
 export function parseIndexGalleryExtras(raw: string | null | undefined): string[] {
   if (!raw?.trim()) return [];
   try {
@@ -12,18 +24,23 @@ export function parseIndexGalleryExtras(raw: string | null | undefined): string[
   }
 }
 
-/** 封面 mediaUrl + galleryImageUrls（去重，顺序与 Post 图集一致） */
+/** 封面 mediaUrl + galleryImageUrls（去重；VIDEO 的 mediaUrl 不算图片） */
 export function buildIndexGalleryImageUrls(item: TgIndexedMessage): string[] {
-  const extras = parseIndexGalleryExtras(item.galleryImageUrls);
+  const extras = parseIndexGalleryExtras(item.galleryImageUrls).filter(isLikelyImageUrl);
   const cover = item.mediaUrl?.trim();
-  if (item.contentType === "PHOTO" || extras.length > 0) {
-    if (!cover) return extras.filter(Boolean);
-    return [cover, ...extras.filter((u) => u && u !== cover)];
+
+  if (item.contentType === "PHOTO") {
+    if (!cover || !isLikelyImageUrl(cover)) return extras;
+    return [cover, ...extras.filter((u) => u !== cover)];
   }
-  // 非 PHOTO 且无 galleryImageUrls：仅有 mediaUrl 时作封面图（如 VIDEO 缩略图）
-  if (cover && !item.galleryVideoUrls) {
-    return [cover];
+
+  if (extras.length > 0) {
+    if (cover && isLikelyImageUrl(cover) && !extras.includes(cover)) {
+      return [cover, ...extras];
+    }
+    return extras;
   }
+
   return [];
 }
 

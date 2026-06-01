@@ -43,10 +43,11 @@ export function formatMessageDate(d: Date): string {
   }).format(d);
 }
 
-export function buildVipListHref(q: string, page?: number): string {
+export function buildVipListHref(q: string, page?: number, tab?: string): string {
   const params = new URLSearchParams();
   if (q.trim()) params.set("q", q.trim());
   if (page && page > 1) params.set("page", String(page));
+  if (tab && tab !== "all") params.set("tab", tab);
   const s = params.toString();
   return s ? `/vip?${s}` : "/vip";
 }

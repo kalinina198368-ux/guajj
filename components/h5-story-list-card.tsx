@@ -80,7 +80,7 @@ export function H5StoryListCard({
 
   return (
     <div className="h5-story-card">
-      <Link href={href} className="h5-story-body">
+      <Link href={href} prefetch={false} className="h5-story-body">
         <div className="h5-story-meta">
           <span className={`h5-rank-tag ${tagToneClass}`}>{categoryName}</span>
           <span>{timeLabel}</span>
@@ -165,7 +165,7 @@ export function H5StoryListCard({
                 <img src={current.url} alt="" className="h5-media-viewer-img" />
               )}
             </div>
-            <Link href={href} className="h5-media-viewer-postlink">
+            <Link href={href} prefetch={false} className="h5-media-viewer-postlink">
               查看全文
             </Link>
             {tiles.length > 1 ? (

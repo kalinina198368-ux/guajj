@@ -5,7 +5,7 @@ import {
   type ContentBlock
 } from "@/lib/post-content-blocks";
 import { stripRepostAttributionFromText } from "@/lib/strip-repost-attribution";
-import { buildIndexAllVideoUrls, buildIndexGalleryImageUrls } from "@/lib/tg-index-gallery";
+import { buildIndexAllVideoUrls, buildIndexGalleryImageUrls, isLikelyImageUrl } from "@/lib/tg-index-gallery";
 
 function stripTextBlocks(blocks: ContentBlock[]): ContentBlock[] {
   return blocks
@@ -13,9 +13,17 @@ function stripTextBlocks(blocks: ContentBlock[]): ContentBlock[] {
     .filter((b) => !(b.type === "text" && !b.text.trim()));
 }
 
+function sanitizeImageUrls(urls: string[]): string[] {
+  return urls.filter(isLikelyImageUrl);
+}
+
 function mergeGalleryIntoBlocks(blocks: ContentBlock[], item: TgIndexedMessage): ContentBlock[] {
   const canonical = buildIndexGalleryImageUrls(item);
-  if (canonical.length === 0) return blocks;
+  if (canonical.length === 0) {
+    return blocks
+      .map((b) => (b.type === "images" ? { ...b, urls: sanitizeImageUrls(b.urls) } : b))
+      .filter((b) => !(b.type === "images" && b.urls.length === 0)) as ContentBlock[];
+  }
 
   const out = blocks.map((b) =>
     b.type === "images" ? { ...b, urls: [...b.urls] } : b
@@ -28,6 +36,12 @@ function mergeGalleryIntoBlocks(blocks: ContentBlock[], item: TgIndexedMessage):
   }
 
   const cur = out[idx] as Extract<ContentBlock, { type: "images" }>;
+  cur.urls = sanitizeImageUrls(cur.urls);
+  if (cur.urls.length === 0) {
+    out.splice(idx, 1);
+    out.push({ type: "images", urls: [...canonical] });
+    return out;
+  }
   const curSet = new Set(cur.urls);
   const subset = cur.urls.length > 0 && cur.urls.every((u) => canonical.includes(u));
   if (subset && canonical.length > cur.urls.length) {

@@ -10,6 +10,7 @@ const SITE_SETTINGS_ID = "main";
 export async function updateSiteSettingsAction(formData: FormData) {
   await requireAdmin();
   const allow = formData.get("allowAnonymousComments") === "on";
+  const homeFeedMode = String(formData.get("homeFeedMode") || "manual").trim() === "auto" ? "auto" : "manual";
   const mediaStorage = String(formData.get("mediaStorage") || "local").trim() === "r2" ? "r2" : "local";
   const r2AccountId = String(formData.get("r2AccountId") || "").trim() || null;
   const r2BucketName = String(formData.get("r2BucketName") || "").trim() || null;
@@ -22,6 +23,7 @@ export async function updateSiteSettingsAction(formData: FormData) {
     create: {
       id: SITE_SETTINGS_ID,
       allowAnonymousComments: allow,
+      homeFeedMode,
       mediaStorage,
       r2AccountId,
       r2BucketName,
@@ -31,6 +33,7 @@ export async function updateSiteSettingsAction(formData: FormData) {
     },
     update: {
       allowAnonymousComments: allow,
+      homeFeedMode,
       mediaStorage,
       r2AccountId,
       r2BucketName,
@@ -40,6 +43,7 @@ export async function updateSiteSettingsAction(formData: FormData) {
     }
   });
 
+  revalidatePath("/");
   revalidatePath("/admin/settings");
   redirect("/admin/settings?saved=1");
 }

@@ -44,7 +44,7 @@ export function isR2Ready(settings: SiteSettings): boolean {
   return true;
 }
 
-function createR2Client(settings: SiteSettings): S3Client | null {
+export function createR2Client(settings: SiteSettings): S3Client | null {
   const accountId = resolveR2AccountId(settings);
   const creds = resolveR2Credentials(settings);
   if (!accountId || !creds) return null;

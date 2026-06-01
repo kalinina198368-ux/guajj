@@ -1,5 +1,8 @@
-import type { Prisma, TgIndexedMessage } from "@/lib/generated/prisma";
+import { Prisma, TgIndexContentType } from "@/lib/generated/prisma";
+import type { Prisma as PrismaTypes, TgIndexedMessage } from "@/lib/generated/prisma";
 import { prisma } from "@/lib/prisma";
+import { itemMatchesVipSearchTab, type VipSearchTab } from "@/lib/vip-result-display";
+import { buildIndexMessagesListWhere } from "@/lib/index-message-admin";
 
 export const VIP_SEARCH_PAGE_SIZE = 15;
 
@@ -15,9 +18,65 @@ function isMysqlDatabase() {
   return (process.env.DATABASE_URL ?? "").startsWith("mysql");
 }
 
-function buildSearchWhere(q: string): Prisma.TgIndexedMessageWhereInput {
+/** 需库表已建 ngram FULLTEXT 索引；未建索引时保持关闭，避免 prisma:error 日志 */
+function isMysqlFulltextSearchEnabled() {
+  return process.env.VIP_SEARCH_FULLTEXT === "1";
+}
+
+function isMissingFulltextIndexError(error: unknown): boolean {
+  if (!(error instanceof Prisma.PrismaClientKnownRequestError)) return false;
+  if (error.code === "P2010") {
+    const meta = error.meta as { code?: string; message?: string } | undefined;
+    return meta?.code === "1191" || String(meta?.message ?? "").includes("FULLTEXT");
+  }
+  return String(error.message).includes("FULLTEXT");
+}
+
+function buildTabWhere(tab: VipSearchTab): PrismaTypes.TgIndexedMessageWhereInput | undefined {
+  switch (tab) {
+    case "video":
+      return {
+        OR: [
+          { contentType: TgIndexContentType.VIDEO },
+          { galleryVideoUrls: { contains: "http" } },
+          { mediaUrl: { contains: ".mp4" } },
+          { mediaUrl: { contains: ".webm" } }
+        ]
+      };
+    case "image":
+      return {
+        AND: [
+          { contentType: { not: TgIndexContentType.VIDEO } },
+          { OR: [{ galleryVideoUrls: null }, { galleryVideoUrls: "" }] },
+          {
+            OR: [
+              { contentType: TgIndexContentType.PHOTO },
+              { galleryImageUrls: { contains: "http" } },
+              { mediaUrl: { contains: ".jpg" } },
+              { mediaUrl: { contains: ".jpeg" } },
+              { mediaUrl: { contains: ".png" } },
+              { mediaUrl: { contains: ".webp" } },
+              { mediaUrl: { contains: "/uploads/" } }
+            ]
+          }
+        ]
+      };
+    case "news":
+    case "post":
+      return {
+        contentType: TgIndexContentType.TEXT,
+        mediaUrl: null,
+        galleryImageUrls: null,
+        galleryVideoUrls: null
+      };
+    default:
+      return undefined;
+  }
+}
+
+function buildSearchWhere(q: string, tab: VipSearchTab = "all"): PrismaTypes.TgIndexedMessageWhereInput {
   const trimmed = q.trim();
-  return {
+  const textWhere: PrismaTypes.TgIndexedMessageWhereInput = {
     OR: [
       { title: { contains: trimmed } },
       { snippet: { contains: trimmed } },
@@ -26,6 +85,9 @@ function buildSearchWhere(q: string): Prisma.TgIndexedMessageWhereInput {
       { sourceUsername: { contains: trimmed } }
     ]
   };
+  const tabWhere = buildTabWhere(tab);
+  if (!tabWhere) return textWhere;
+  return { AND: [textWhere, tabWhere] };
 }
 
 type IndexedMessageRow = {
@@ -51,7 +113,8 @@ type IndexedMessageRow = {
 async function searchIndexedMessagesFulltext(
   trimmed: string,
   safePage: number,
-  pageSize: number
+  pageSize: number,
+  tab: VipSearchTab
 ): Promise<VipSearchResult> {
   const offset = (safePage - 1) * pageSize;
   const like = `%${trimmed}%`;
@@ -80,12 +143,17 @@ async function searchIndexedMessagesFulltext(
     `
   ]);
 
+  let items = rows as TgIndexedMessage[];
+  if (tab !== "all") {
+    items = items.filter((item) => itemMatchesVipSearchTab(item, tab));
+  }
+
   const total = Number(countRows[0]?.cnt ?? 0);
   const totalPages = Math.max(0, Math.ceil(total / pageSize));
   const clampedPage = totalPages > 0 ? Math.min(safePage, totalPages) : 1;
 
   return {
-    items: rows as TgIndexedMessage[],
+    items,
     total,
     page: clampedPage,
     pageSize,
@@ -96,19 +164,24 @@ async function searchIndexedMessagesFulltext(
 async function searchIndexedMessagesContains(
   trimmed: string,
   safePage: number,
-  pageSize: number
+  pageSize: number,
+  tab: VipSearchTab
 ): Promise<VipSearchResult> {
-  const where = buildSearchWhere(trimmed);
+  const where = buildSearchWhere(trimmed, tab);
   const total = await prisma.tgIndexedMessage.count({ where });
   const totalPages = Math.max(0, Math.ceil(total / pageSize));
   const clampedPage = totalPages > 0 ? Math.min(safePage, totalPages) : 1;
 
-  const items = await prisma.tgIndexedMessage.findMany({
+  let items = await prisma.tgIndexedMessage.findMany({
     where,
     orderBy: [{ messageDate: "desc" }, { id: "desc" }],
     skip: (clampedPage - 1) * pageSize,
     take: pageSize
   });
+
+  if (tab !== "all") {
+    items = items.filter((item) => itemMatchesVipSearchTab(item, tab));
+  }
 
   return {
     items,
@@ -122,7 +195,8 @@ async function searchIndexedMessagesContains(
 export async function searchIndexedMessages(
   q: string,
   page: number,
-  pageSize = VIP_SEARCH_PAGE_SIZE
+  pageSize = VIP_SEARCH_PAGE_SIZE,
+  tab: VipSearchTab = "all"
 ): Promise<VipSearchResult> {
   const trimmed = q.trim();
   const safePage = Math.max(1, Math.floor(page) || 1);
@@ -130,22 +204,48 @@ export async function searchIndexedMessages(
     return { items: [], total: 0, page: safePage, pageSize, totalPages: 0 };
   }
 
-  if (isMysqlDatabase()) {
-    return searchIndexedMessagesFulltext(trimmed, safePage, pageSize);
+  if (isMysqlDatabase() && isMysqlFulltextSearchEnabled()) {
+    try {
+      return await searchIndexedMessagesFulltext(trimmed, safePage, pageSize, tab);
+    } catch (error) {
+      if (!isMissingFulltextIndexError(error)) throw error;
+    }
   }
-  return searchIndexedMessagesContains(trimmed, safePage, pageSize);
+  return searchIndexedMessagesContains(trimmed, safePage, pageSize, tab);
 }
 
 export async function getIndexedMessage(id: string) {
   return prisma.tgIndexedMessage.findUnique({ where: { id } });
 }
 
+const homeListOrderBy = [{ isPinned: "desc" as const }, { messageDate: "desc" as const }, { id: "desc" as const }];
+
+/** 自动模式首页：全部索引条目（可按频道 chatId 筛选） */
+export async function listIndexedMessagesForHome(limit = 200, chatIds: string[] = []) {
+  const where = buildIndexMessagesListWhere("", chatIds);
+  return prisma.tgIndexedMessage.findMany({
+    where,
+    orderBy: homeListOrderBy,
+    take: limit
+  });
+}
+
+/** 自动模式首页搜索（最多 80 条，可按频道 chatId 筛选） */
+export async function searchIndexedMessagesForHome(q: string, limit = 80, chatIds: string[] = []) {
+  const where = buildIndexMessagesListWhere(q, chatIds);
+  return prisma.tgIndexedMessage.findMany({
+    where,
+    orderBy: homeListOrderBy,
+    take: limit
+  });
+}
+
 /** 热搜：按标题出现频次近似（演示 / 索引较少时兜底） */
-export async function getVipHotKeywords(limit = 8): Promise<string[]> {
+export async function getVipHotKeywords(limit = 24): Promise<string[]> {
   const rows = await prisma.tgIndexedMessage.findMany({
     select: { title: true },
     orderBy: { messageDate: "desc" },
-    take: 80
+    take: 120
   });
   const seen = new Set<string>();
   const out: string[] = [];

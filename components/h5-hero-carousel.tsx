@@ -7,6 +7,7 @@ import { videoSrcForListThumbnail } from "@/lib/video-tile-preview";
 
 export type H5HeroSlide = {
   id: string;
+  href?: string;
   title: string;
   summary: string;
   coverUrl: string;
@@ -101,7 +102,13 @@ export function H5HeroCarousel({ items }: { items: H5HeroSlide[] }) {
           }}
         >
           {items.map((slide) => (
-            <Link key={slide.id} href={`/post/${slide.id}`} className="h5-hero-card h5-hero-slide" style={{ width: `${pctPerSlide}%` }}>
+            <Link
+              key={slide.id}
+              href={slide.href ?? `/post/${slide.id}`}
+              prefetch={false}
+              className="h5-hero-card h5-hero-slide"
+              style={{ width: `${pctPerSlide}%` }}
+            >
               <HeroSlideInner slide={slide} />
             </Link>
           ))}

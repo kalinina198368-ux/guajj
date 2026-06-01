@@ -4,9 +4,15 @@ import { usePathname } from "next/navigation";
 
 const routes: { test: (p: string) => boolean; title: string; subtitle: string }[] = [
   { test: (p) => p.startsWith("/admin/posts/preview"), title: "内容预览", subtitle: "核对封面、图集与视频" },
+  { test: (p) => p.startsWith("/admin/index-messages/preview"), title: "索引预览", subtitle: "核对图片、视频与混排块" },
+  { test: (p) => p.startsWith("/admin/index-messages"), title: "索引内容", subtitle: "TgIndexedMessage 编辑与批量删除" },
   { test: (p) => p.startsWith("/admin/posts"), title: "内容管理", subtitle: "新建、编辑与检索全站内容" },
+  { test: (p) => p.startsWith("/admin/analytics"), title: "访问统计", subtitle: "PV/UV、IP 与登录用户访问明细" },
+  { test: (p) => p.startsWith("/admin/search-analytics"), title: "搜索统计", subtitle: "首页与 VIP 搜索明细、每日/每周热搜" },
   { test: (p) => p.startsWith("/admin/comments"), title: "评论管理", subtitle: "审核与清理用户评论" },
+  { test: (p) => p.startsWith("/admin/social-users"), title: "登录用户", subtitle: "OAuth 用户与访问行为" },
   { test: (p) => p.startsWith("/admin/media"), title: "媒体库", subtitle: "上传与管理图片、视频资源" },
+  { test: (p) => p.startsWith("/admin/storage"), title: "存储监控", subtitle: "R2 与本地 uploads 用量、图片/视频数量" },
   { test: (p) => p.startsWith("/admin/taxonomy"), title: "分类与标签", subtitle: "维护栏目与话题标签" },
   { test: (p) => p.startsWith("/admin/telegram"), title: "TG 机器人", subtitle: "频道同步与导入配置" },
   { test: (p) => p.startsWith("/admin/settings"), title: "站点设置", subtitle: "全站开关与策略" },

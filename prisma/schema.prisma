@@ -48,6 +48,8 @@ model SiteSettings {
   /** 可选；留空则从环境变量 R2_ACCESS_KEY_ID / R2_SECRET_ACCESS_KEY 读取 */
   r2AccessKeyId          String?  @db.VarChar(128)
   r2SecretAccessKey      String?  @db.VarChar(255)
+  /** manual = 首页展示 Post；auto = 首页展示 TgIndexedMessage */
+  homeFeedMode           String   @default("manual") @db.VarChar(16)
   updatedAt              DateTime @updatedAt
 }
 
@@ -119,6 +121,8 @@ model SocialUser {
   /** OAuth 回调成功建立会话的时间（用于后台「上次登录」） */
   lastLoginAt DateTime?
   comments    Comment[]
+  pageVisits  PageVisit[]
+  searchLogs  SearchLog[]
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
 
@@ -242,8 +246,65 @@ model TgIndexedMessage {
   /** JSON 混排块 [{type:"text"|"video"|"images",...}]，前台与 Post 同款渲染 */
   contentBlocks   String?            @db.LongText
   mediaGroupId    String?            @db.VarChar(64)
+  isPinned        Boolean            @default(false)
+  heat            Int                @default(100)
   createdAt       DateTime           @default(now())
 
   @@unique([chatId, messageId])
   @@index([messageDate])
+  @@index([isPinned, messageDate])
+}
+
+/** 前台页面访问明细（运营统计） */
+model PageVisit {
+  id           String      @id @default(cuid()) @db.VarChar(30)
+  path         String      @db.VarChar(191)
+  postId       String?     @db.VarChar(30)
+  visitorId    String      @db.VarChar(64)
+  ip           String      @db.VarChar(45)
+  socialUserId String?     @db.VarChar(30)
+  socialUser   SocialUser? @relation(fields: [socialUserId], references: [id], onDelete: SetNull)
+  userAgent    String?     @db.VarChar(512)
+  referrer     String?     @db.VarChar(512)
+  createdAt    DateTime    @default(now())
+
+  @@index([createdAt])
+  @@index([path, createdAt])
+  @@index([socialUserId, createdAt])
+  @@index([visitorId, createdAt])
+}
+
+enum SearchSource {
+  HOME
+  VIP
+}
+
+/** 前台关键词搜索明细（首页 / VIP） */
+model SearchLog {
+  id           String       @id @default(cuid()) @db.VarChar(30)
+  source       SearchSource @default(HOME)
+  keyword      String       @db.VarChar(191)
+  visitorId    String       @db.VarChar(64)
+  ip           String       @db.VarChar(45)
+  socialUserId String?      @db.VarChar(30)
+  socialUser   SocialUser?  @relation(fields: [socialUserId], references: [id], onDelete: SetNull)
+  resultCount  Int          @default(0)
+  userAgent    String?      @db.VarChar(512)
+  createdAt    DateTime     @default(now())
+
+  @@index([source, createdAt])
+  @@index([source, keyword, createdAt])
+  @@index([createdAt])
+  @@index([visitorId, createdAt])
+  @@index([socialUserId, createdAt])
+}
+
+/** 按日汇总的全站访问统计 */
+model DailySiteStat {
+  id                String   @id @default(cuid()) @db.VarChar(30)
+  date              DateTime @unique @db.Date
+  pageViews         Int      @default(0)
+  uniqueVisitors    Int      @default(0)
+  loggedInPageViews Int      @default(0)
+  updatedAt         DateTime @updatedAt
 }

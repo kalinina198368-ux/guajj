@@ -21,7 +21,13 @@ function maskUid(uid: string) {
   return `${uid.slice(0, 4)}…${uid.slice(-4)}`;
 }
 
-export default function SocialUsersTable({ rows }: { rows: AdminSocialUserRow[] }) {
+export default function SocialUsersTable({
+  rows,
+  visitCounts
+}: {
+  rows: AdminSocialUserRow[];
+  visitCounts: Map<string, number>;
+}) {
   return (
     <div style={{ overflowX: "auto" }}>
       <table className="admin-table">
@@ -33,6 +39,7 @@ export default function SocialUsersTable({ rows }: { rows: AdminSocialUserRow[] 
             <th>平台 UID</th>
             <th>上次登录</th>
             <th>注册时间</th>
+            <th>近 7 天访问</th>
             <th>评论数</th>
             <th>操作</th>
           </tr>
@@ -85,6 +92,7 @@ export default function SocialUsersTable({ rows }: { rows: AdminSocialUserRow[] 
               </td>
               <td style={{ whiteSpace: "nowrap", fontSize: 13 }}>{formatDateTime(row.lastLoginAt)}</td>
               <td style={{ whiteSpace: "nowrap", fontSize: 13 }}>{formatDateTime(row.createdAt)}</td>
+              <td style={{ textAlign: "center" }}>{visitCounts.get(row.id) ?? 0}</td>
               <td style={{ textAlign: "center" }}>{row._count.comments}</td>
               <td>
                 <form action={deleteSocialUserAction.bind(null, row.id)}>

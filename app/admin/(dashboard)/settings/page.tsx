@@ -16,8 +16,45 @@ export default async function AdminSettingsPage({
       {params.saved ? <p className="admin-flash success">已保存。</p> : null}
 
       <div className="form-card admin-panel" style={{ padding: 22, maxWidth: 640 }}>
-        <h2 style={{ margin: "0 0 16px" }}>评论</h2>
         <form action={updateSiteSettingsAction} className="form-grid">
+          <h2 style={{ margin: "0 0 16px" }}>首页内容源</h2>
+          <div className="field" style={{ marginBottom: 20 }}>
+            <label style={{ display: "block", marginBottom: 10, fontWeight: 700 }}>展示模式</label>
+            <label style={{ display: "flex", alignItems: "flex-start", gap: 10, marginBottom: 10, cursor: "pointer" }}>
+              <input
+                type="radio"
+                name="homeFeedMode"
+                value="manual"
+                defaultChecked={settings.homeFeedMode !== "auto"}
+                style={{ marginTop: 4 }}
+              />
+              <span>
+                <strong>手动模式</strong>
+                <br />
+                <span style={{ color: "var(--muted)", fontSize: 13, fontWeight: 400 }}>
+                  首页列表、搜索、轮播来自后台「内容」中的 Post（可人工编辑发布）。
+                </span>
+              </span>
+            </label>
+            <label style={{ display: "flex", alignItems: "flex-start", gap: 10, cursor: "pointer" }}>
+              <input
+                type="radio"
+                name="homeFeedMode"
+                value="auto"
+                defaultChecked={settings.homeFeedMode === "auto"}
+                style={{ marginTop: 4 }}
+              />
+              <span>
+                <strong>自动模式</strong>
+                <br />
+                <span style={{ color: "var(--muted)", fontSize: 13, fontWeight: 400 }}>
+                  首页来自采集索引 TgIndexedMessage；可在「索引内容」中编辑、置顶与批量删除。
+                </span>
+              </span>
+            </label>
+          </div>
+
+          <h2 style={{ margin: "0 0 16px" }}>评论</h2>
           <div className="field" style={{ marginBottom: 0 }}>
             <label style={{ display: "flex", alignItems: "center", gap: 12, cursor: "pointer" }}>
               <input
