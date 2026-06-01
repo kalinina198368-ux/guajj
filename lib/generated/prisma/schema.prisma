@@ -62,6 +62,10 @@ model SiteSettings {
    * manual = 首页展示 Post；auto = 首页展示 TgIndexedMessage
    */
   homeFeedMode           String   @default("manual") @db.VarChar(16)
+  /**
+   * 前台屏蔽关键词，每行一个；标题/摘要/正文命中则不在首页与搜索中展示
+   */
+  blockedKeywords        String?  @db.LongText
   updatedAt              DateTime @updatedAt
 }
 

@@ -54,6 +54,32 @@ export default async function AdminSettingsPage({
             </label>
           </div>
 
+          <h2 style={{ margin: "22px 0 12px" }}>前台屏蔽关键词</h2>
+          <p style={{ margin: "0 0 10px", color: "var(--muted)", fontSize: 13, lineHeight: 1.55 }}>
+            已入库内容若<strong>标题、摘要或正文</strong>包含以下任意关键词，将不在首页列表、首页搜索、VIP
+            搜索及详情页展示（后台索引管理仍可查看）。每行一个关键词，保存后立即生效。
+          </p>
+          <div className="field" style={{ marginBottom: 20 }}>
+            <textarea
+              id="blockedKeywords"
+              name="blockedKeywords"
+              rows={8}
+              defaultValue={settings.blockedKeywords ?? ""}
+              placeholder={"广告\n代购\n点击链接"}
+              style={{
+                width: "100%",
+                minHeight: 140,
+                padding: "10px 12px",
+                borderRadius: 8,
+                border: "1px solid var(--admin-border)",
+                fontFamily: "inherit",
+                fontSize: 14,
+                lineHeight: 1.5,
+                resize: "vertical"
+              }}
+            />
+          </div>
+
           <h2 style={{ margin: "0 0 16px" }}>评论</h2>
           <div className="field" style={{ marginBottom: 0 }}>
             <label style={{ display: "flex", alignItems: "center", gap: 12, cursor: "pointer" }}>

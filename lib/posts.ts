@@ -1,5 +1,6 @@
 import type { Prisma } from "@/lib/generated/prisma";
 import { PostStatus } from "@/lib/generated/prisma";
+import { buildPostBlockedExcludeWhere, getBlockedKeywords, mergePrismaWhere, postIsBlocked } from "@/lib/blocked-keywords";
 import { prisma } from "@/lib/prisma";
 
 export const postInclude = {
@@ -11,11 +12,15 @@ export const postInclude = {
 const publishedListOrderBy = [{ isPinned: "desc" as const }, { createdAt: "desc" as const }, { id: "desc" as const }];
 
 export async function getPublishedPosts(categoryIds: string[] = []) {
+  const blocked = await getBlockedKeywords();
+  const categoryWhere: Prisma.PostWhereInput =
+    categoryIds.length > 0 ? { categoryId: { in: categoryIds } } : {};
+  const where = mergePrismaWhere(
+    { status: PostStatus.PUBLISHED, ...categoryWhere },
+    buildPostBlockedExcludeWhere(blocked)
+  );
   return prisma.post.findMany({
-    where: {
-      status: PostStatus.PUBLISHED,
-      ...(categoryIds.length > 0 ? { categoryId: { in: categoryIds } } : {})
-    },
+    where,
     include: postInclude,
     orderBy: publishedListOrderBy
   });
@@ -26,17 +31,21 @@ export async function searchPublishedPosts(q: string, categoryIds: string[] = []
   const trimmed = q.trim();
   if (!trimmed) return getPublishedPosts(categoryIds);
 
-  const where: Prisma.PostWhereInput = {
-    status: PostStatus.PUBLISHED,
-    ...(categoryIds.length > 0 ? { categoryId: { in: categoryIds } } : {}),
-    OR: [
-      { title: { contains: trimmed } },
-      { summary: { contains: trimmed } },
-      { body: { contains: trimmed } },
-      { category: { name: { contains: trimmed } } },
-      { tags: { some: { tag: { name: { contains: trimmed } } } } }
-    ]
-  };
+  const blocked = await getBlockedKeywords();
+  const where: Prisma.PostWhereInput = mergePrismaWhere(
+    {
+      status: PostStatus.PUBLISHED,
+      ...(categoryIds.length > 0 ? { categoryId: { in: categoryIds } } : {}),
+      OR: [
+        { title: { contains: trimmed } },
+        { summary: { contains: trimmed } },
+        { body: { contains: trimmed } },
+        { category: { name: { contains: trimmed } } },
+        { tags: { some: { tag: { name: { contains: trimmed } } } } }
+      ]
+    },
+    buildPostBlockedExcludeWhere(blocked)
+  )!;
 
   return prisma.post.findMany({
     where,
@@ -46,10 +55,14 @@ export async function searchPublishedPosts(q: string, categoryIds: string[] = []
 }
 
 export async function getPost(id: string) {
-  return prisma.post.findFirst({
+  const post = await prisma.post.findFirst({
     where: { id, status: PostStatus.PUBLISHED },
     include: postInclude
   });
+  if (!post) return null;
+  const blocked = await getBlockedKeywords();
+  if (postIsBlocked(post, blocked)) return null;
+  return post;
 }
 
 /** 任意状态（仅应在已鉴权的管理预览中使用） */

@@ -1,8 +1,14 @@
 import { Prisma, TgIndexContentType } from "@/lib/generated/prisma";
 import type { Prisma as PrismaTypes, TgIndexedMessage } from "@/lib/generated/prisma";
+import {
+  buildIndexedMessageBlockedExcludeWhere,
+  getBlockedKeywords,
+  indexedMessageIsBlocked,
+  mergePrismaWhere
+} from "@/lib/blocked-keywords";
 import { prisma } from "@/lib/prisma";
-import { itemMatchesVipSearchTab, type VipSearchTab } from "@/lib/vip-result-display";
 import { buildIndexMessagesListWhere } from "@/lib/index-message-admin";
+import { itemMatchesVipSearchTab, type VipSearchTab } from "@/lib/vip-result-display";
 
 export const VIP_SEARCH_PAGE_SIZE = 15;
 
@@ -74,7 +80,11 @@ function buildTabWhere(tab: VipSearchTab): PrismaTypes.TgIndexedMessageWhereInpu
   }
 }
 
-function buildSearchWhere(q: string, tab: VipSearchTab = "all"): PrismaTypes.TgIndexedMessageWhereInput {
+function buildSearchWhere(
+  q: string,
+  tab: VipSearchTab = "all",
+  blocked: string[] = []
+): PrismaTypes.TgIndexedMessageWhereInput {
   const trimmed = q.trim();
   const textWhere: PrismaTypes.TgIndexedMessageWhereInput = {
     OR: [
@@ -86,8 +96,10 @@ function buildSearchWhere(q: string, tab: VipSearchTab = "all"): PrismaTypes.TgI
     ]
   };
   const tabWhere = buildTabWhere(tab);
-  if (!tabWhere) return textWhere;
-  return { AND: [textWhere, tabWhere] };
+  const blockedWhere = buildIndexedMessageBlockedExcludeWhere(blocked);
+  let where: PrismaTypes.TgIndexedMessageWhereInput = textWhere;
+  if (tabWhere) where = { AND: [textWhere, tabWhere] };
+  return mergePrismaWhere(where, blockedWhere) ?? where;
 }
 
 type IndexedMessageRow = {
@@ -165,9 +177,10 @@ async function searchIndexedMessagesContains(
   trimmed: string,
   safePage: number,
   pageSize: number,
-  tab: VipSearchTab
+  tab: VipSearchTab,
+  blocked: string[]
 ): Promise<VipSearchResult> {
-  const where = buildSearchWhere(trimmed, tab);
+  const where = buildSearchWhere(trimmed, tab, blocked);
   const total = await prisma.tgIndexedMessage.count({ where });
   const totalPages = Math.max(0, Math.ceil(total / pageSize));
   const clampedPage = totalPages > 0 ? Math.min(safePage, totalPages) : 1;
@@ -204,25 +217,40 @@ export async function searchIndexedMessages(
     return { items: [], total: 0, page: safePage, pageSize, totalPages: 0 };
   }
 
-  if (isMysqlDatabase() && isMysqlFulltextSearchEnabled()) {
+  const blocked = await getBlockedKeywords();
+
+  if (isMysqlDatabase() && isMysqlFulltextSearchEnabled() && blocked.length === 0) {
     try {
       return await searchIndexedMessagesFulltext(trimmed, safePage, pageSize, tab);
     } catch (error) {
       if (!isMissingFulltextIndexError(error)) throw error;
     }
   }
-  return searchIndexedMessagesContains(trimmed, safePage, pageSize, tab);
+  return searchIndexedMessagesContains(trimmed, safePage, pageSize, tab, blocked);
 }
 
 export async function getIndexedMessage(id: string) {
   return prisma.tgIndexedMessage.findUnique({ where: { id } });
 }
 
+/** 前台详情：命中屏蔽词则视为不存在 */
+export async function getPublicIndexedMessage(id: string) {
+  const item = await getIndexedMessage(id);
+  if (!item) return null;
+  const blocked = await getBlockedKeywords();
+  if (indexedMessageIsBlocked(item, blocked)) return null;
+  return item;
+}
+
 const homeListOrderBy = [{ isPinned: "desc" as const }, { messageDate: "desc" as const }, { id: "desc" as const }];
 
 /** 自动模式首页：全部索引条目（可按频道 chatId 筛选） */
 export async function listIndexedMessagesForHome(limit = 200, chatIds: string[] = []) {
-  const where = buildIndexMessagesListWhere("", chatIds);
+  const blocked = await getBlockedKeywords();
+  const where = mergePrismaWhere(
+    buildIndexMessagesListWhere("", chatIds),
+    buildIndexedMessageBlockedExcludeWhere(blocked)
+  );
   return prisma.tgIndexedMessage.findMany({
     where,
     orderBy: homeListOrderBy,
@@ -232,7 +260,11 @@ export async function listIndexedMessagesForHome(limit = 200, chatIds: string[] 
 
 /** 自动模式首页搜索（最多 80 条，可按频道 chatId 筛选） */
 export async function searchIndexedMessagesForHome(q: string, limit = 80, chatIds: string[] = []) {
-  const where = buildIndexMessagesListWhere(q, chatIds);
+  const blocked = await getBlockedKeywords();
+  const where = mergePrismaWhere(
+    buildIndexMessagesListWhere(q, chatIds),
+    buildIndexedMessageBlockedExcludeWhere(blocked)
+  );
   return prisma.tgIndexedMessage.findMany({
     where,
     orderBy: homeListOrderBy,
@@ -242,7 +274,10 @@ export async function searchIndexedMessagesForHome(q: string, limit = 80, chatId
 
 /** 热搜：按标题出现频次近似（演示 / 索引较少时兜底） */
 export async function getVipHotKeywords(limit = 24): Promise<string[]> {
+  const blocked = await getBlockedKeywords();
+  const blockedWhere = buildIndexedMessageBlockedExcludeWhere(blocked);
   const rows = await prisma.tgIndexedMessage.findMany({
+    where: Object.keys(blockedWhere).length > 0 ? blockedWhere : undefined,
     select: { title: true },
     orderBy: { messageDate: "desc" },
     take: 120

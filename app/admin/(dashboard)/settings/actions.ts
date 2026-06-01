@@ -17,6 +17,7 @@ export async function updateSiteSettingsAction(formData: FormData) {
   const r2PublicBaseUrl = String(formData.get("r2PublicBaseUrl") || "").trim().replace(/\/+$/, "") || null;
   const newAccessKey = String(formData.get("r2AccessKeyId") || "").trim();
   const newSecretKey = String(formData.get("r2SecretAccessKey") || "").trim();
+  const blockedKeywordsRaw = String(formData.get("blockedKeywords") || "");
 
   await prisma.siteSettings.upsert({
     where: { id: SITE_SETTINGS_ID },
@@ -29,7 +30,8 @@ export async function updateSiteSettingsAction(formData: FormData) {
       r2BucketName,
       r2PublicBaseUrl,
       r2AccessKeyId: newAccessKey || null,
-      r2SecretAccessKey: newSecretKey || null
+      r2SecretAccessKey: newSecretKey || null,
+      blockedKeywords: blockedKeywordsRaw.trim() || null
     },
     update: {
       allowAnonymousComments: allow,
@@ -38,12 +40,14 @@ export async function updateSiteSettingsAction(formData: FormData) {
       r2AccountId,
       r2BucketName,
       r2PublicBaseUrl,
+      blockedKeywords: blockedKeywordsRaw.trim() || null,
       ...(newAccessKey ? { r2AccessKeyId: newAccessKey } : {}),
       ...(newSecretKey ? { r2SecretAccessKey: newSecretKey } : {})
     }
   });
 
   revalidatePath("/");
+  revalidatePath("/vip");
   revalidatePath("/admin/settings");
   redirect("/admin/settings?saved=1");
 }

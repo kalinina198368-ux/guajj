@@ -3343,6 +3343,7 @@ export namespace Prisma {
     r2AccessKeyId: string | null
     r2SecretAccessKey: string | null
     homeFeedMode: string | null
+    blockedKeywords: string | null
     updatedAt: Date | null
   }
 
@@ -3356,6 +3357,7 @@ export namespace Prisma {
     r2AccessKeyId: string | null
     r2SecretAccessKey: string | null
     homeFeedMode: string | null
+    blockedKeywords: string | null
     updatedAt: Date | null
   }
 
@@ -3369,6 +3371,7 @@ export namespace Prisma {
     r2AccessKeyId: number
     r2SecretAccessKey: number
     homeFeedMode: number
+    blockedKeywords: number
     updatedAt: number
     _all: number
   }
@@ -3384,6 +3387,7 @@ export namespace Prisma {
     r2AccessKeyId?: true
     r2SecretAccessKey?: true
     homeFeedMode?: true
+    blockedKeywords?: true
     updatedAt?: true
   }
 
@@ -3397,6 +3401,7 @@ export namespace Prisma {
     r2AccessKeyId?: true
     r2SecretAccessKey?: true
     homeFeedMode?: true
+    blockedKeywords?: true
     updatedAt?: true
   }
 
@@ -3410,6 +3415,7 @@ export namespace Prisma {
     r2AccessKeyId?: true
     r2SecretAccessKey?: true
     homeFeedMode?: true
+    blockedKeywords?: true
     updatedAt?: true
     _all?: true
   }
@@ -3496,6 +3502,7 @@ export namespace Prisma {
     r2AccessKeyId: string | null
     r2SecretAccessKey: string | null
     homeFeedMode: string
+    blockedKeywords: string | null
     updatedAt: Date
     _count: SiteSettingsCountAggregateOutputType | null
     _min: SiteSettingsMinAggregateOutputType | null
@@ -3526,6 +3533,7 @@ export namespace Prisma {
     r2AccessKeyId?: boolean
     r2SecretAccessKey?: boolean
     homeFeedMode?: boolean
+    blockedKeywords?: boolean
     updatedAt?: boolean
   }, ExtArgs["result"]["siteSettings"]>
 
@@ -3541,10 +3549,11 @@ export namespace Prisma {
     r2AccessKeyId?: boolean
     r2SecretAccessKey?: boolean
     homeFeedMode?: boolean
+    blockedKeywords?: boolean
     updatedAt?: boolean
   }
 
-  export type SiteSettingsOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "allowAnonymousComments" | "mediaStorage" | "r2AccountId" | "r2BucketName" | "r2PublicBaseUrl" | "r2AccessKeyId" | "r2SecretAccessKey" | "homeFeedMode" | "updatedAt", ExtArgs["result"]["siteSettings"]>
+  export type SiteSettingsOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "allowAnonymousComments" | "mediaStorage" | "r2AccountId" | "r2BucketName" | "r2PublicBaseUrl" | "r2AccessKeyId" | "r2SecretAccessKey" | "homeFeedMode" | "blockedKeywords" | "updatedAt", ExtArgs["result"]["siteSettings"]>
 
   export type $SiteSettingsPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "SiteSettings"
@@ -3574,6 +3583,10 @@ export namespace Prisma {
        * * manual = 首页展示 Post；auto = 首页展示 TgIndexedMessage
        */
       homeFeedMode: string
+      /**
+       * * 前台屏蔽关键词，每行一个；标题/摘要/正文命中则不在首页与搜索中展示
+       */
+      blockedKeywords: string | null
       updatedAt: Date
     }, ExtArgs["result"]["siteSettings"]>
     composites: {}
@@ -3953,6 +3966,7 @@ export namespace Prisma {
     readonly r2AccessKeyId: FieldRef<"SiteSettings", 'String'>
     readonly r2SecretAccessKey: FieldRef<"SiteSettings", 'String'>
     readonly homeFeedMode: FieldRef<"SiteSettings", 'String'>
+    readonly blockedKeywords: FieldRef<"SiteSettings", 'String'>
     readonly updatedAt: FieldRef<"SiteSettings", 'DateTime'>
   }
     
@@ -19246,6 +19260,7 @@ export namespace Prisma {
     r2AccessKeyId: 'r2AccessKeyId',
     r2SecretAccessKey: 'r2SecretAccessKey',
     homeFeedMode: 'homeFeedMode',
+    blockedKeywords: 'blockedKeywords',
     updatedAt: 'updatedAt'
   };
 
@@ -19506,7 +19521,8 @@ export namespace Prisma {
     r2PublicBaseUrl: 'r2PublicBaseUrl',
     r2AccessKeyId: 'r2AccessKeyId',
     r2SecretAccessKey: 'r2SecretAccessKey',
-    homeFeedMode: 'homeFeedMode'
+    homeFeedMode: 'homeFeedMode',
+    blockedKeywords: 'blockedKeywords'
   };
 
   export type SiteSettingsOrderByRelevanceFieldEnum = (typeof SiteSettingsOrderByRelevanceFieldEnum)[keyof typeof SiteSettingsOrderByRelevanceFieldEnum]
@@ -19828,6 +19844,7 @@ export namespace Prisma {
     r2AccessKeyId?: StringNullableFilter<"SiteSettings"> | string | null
     r2SecretAccessKey?: StringNullableFilter<"SiteSettings"> | string | null
     homeFeedMode?: StringFilter<"SiteSettings"> | string
+    blockedKeywords?: StringNullableFilter<"SiteSettings"> | string | null
     updatedAt?: DateTimeFilter<"SiteSettings"> | Date | string
   }
 
@@ -19841,6 +19858,7 @@ export namespace Prisma {
     r2AccessKeyId?: SortOrderInput | SortOrder
     r2SecretAccessKey?: SortOrderInput | SortOrder
     homeFeedMode?: SortOrder
+    blockedKeywords?: SortOrderInput | SortOrder
     updatedAt?: SortOrder
     _relevance?: SiteSettingsOrderByRelevanceInput
   }
@@ -19858,6 +19876,7 @@ export namespace Prisma {
     r2AccessKeyId?: StringNullableFilter<"SiteSettings"> | string | null
     r2SecretAccessKey?: StringNullableFilter<"SiteSettings"> | string | null
     homeFeedMode?: StringFilter<"SiteSettings"> | string
+    blockedKeywords?: StringNullableFilter<"SiteSettings"> | string | null
     updatedAt?: DateTimeFilter<"SiteSettings"> | Date | string
   }, "id">
 
@@ -19871,6 +19890,7 @@ export namespace Prisma {
     r2AccessKeyId?: SortOrderInput | SortOrder
     r2SecretAccessKey?: SortOrderInput | SortOrder
     homeFeedMode?: SortOrder
+    blockedKeywords?: SortOrderInput | SortOrder
     updatedAt?: SortOrder
     _count?: SiteSettingsCountOrderByAggregateInput
     _max?: SiteSettingsMaxOrderByAggregateInput
@@ -19890,6 +19910,7 @@ export namespace Prisma {
     r2AccessKeyId?: StringNullableWithAggregatesFilter<"SiteSettings"> | string | null
     r2SecretAccessKey?: StringNullableWithAggregatesFilter<"SiteSettings"> | string | null
     homeFeedMode?: StringWithAggregatesFilter<"SiteSettings"> | string
+    blockedKeywords?: StringNullableWithAggregatesFilter<"SiteSettings"> | string | null
     updatedAt?: DateTimeWithAggregatesFilter<"SiteSettings"> | Date | string
   }
 
@@ -21108,6 +21129,7 @@ export namespace Prisma {
     r2AccessKeyId?: string | null
     r2SecretAccessKey?: string | null
     homeFeedMode?: string
+    blockedKeywords?: string | null
     updatedAt?: Date | string
   }
 
@@ -21121,6 +21143,7 @@ export namespace Prisma {
     r2AccessKeyId?: string | null
     r2SecretAccessKey?: string | null
     homeFeedMode?: string
+    blockedKeywords?: string | null
     updatedAt?: Date | string
   }
 
@@ -21134,6 +21157,7 @@ export namespace Prisma {
     r2AccessKeyId?: NullableStringFieldUpdateOperationsInput | string | null
     r2SecretAccessKey?: NullableStringFieldUpdateOperationsInput | string | null
     homeFeedMode?: StringFieldUpdateOperationsInput | string
+    blockedKeywords?: NullableStringFieldUpdateOperationsInput | string | null
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
@@ -21147,6 +21171,7 @@ export namespace Prisma {
     r2AccessKeyId?: NullableStringFieldUpdateOperationsInput | string | null
     r2SecretAccessKey?: NullableStringFieldUpdateOperationsInput | string | null
     homeFeedMode?: StringFieldUpdateOperationsInput | string
+    blockedKeywords?: NullableStringFieldUpdateOperationsInput | string | null
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
@@ -21160,6 +21185,7 @@ export namespace Prisma {
     r2AccessKeyId?: string | null
     r2SecretAccessKey?: string | null
     homeFeedMode?: string
+    blockedKeywords?: string | null
     updatedAt?: Date | string
   }
 
@@ -21173,6 +21199,7 @@ export namespace Prisma {
     r2AccessKeyId?: NullableStringFieldUpdateOperationsInput | string | null
     r2SecretAccessKey?: NullableStringFieldUpdateOperationsInput | string | null
     homeFeedMode?: StringFieldUpdateOperationsInput | string
+    blockedKeywords?: NullableStringFieldUpdateOperationsInput | string | null
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
@@ -21186,6 +21213,7 @@ export namespace Prisma {
     r2AccessKeyId?: NullableStringFieldUpdateOperationsInput | string | null
     r2SecretAccessKey?: NullableStringFieldUpdateOperationsInput | string | null
     homeFeedMode?: StringFieldUpdateOperationsInput | string
+    blockedKeywords?: NullableStringFieldUpdateOperationsInput | string | null
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
@@ -22578,6 +22606,7 @@ export namespace Prisma {
     r2AccessKeyId?: SortOrder
     r2SecretAccessKey?: SortOrder
     homeFeedMode?: SortOrder
+    blockedKeywords?: SortOrder
     updatedAt?: SortOrder
   }
 
@@ -22591,6 +22620,7 @@ export namespace Prisma {
     r2AccessKeyId?: SortOrder
     r2SecretAccessKey?: SortOrder
     homeFeedMode?: SortOrder
+    blockedKeywords?: SortOrder
     updatedAt?: SortOrder
   }
 
@@ -22604,6 +22634,7 @@ export namespace Prisma {
     r2AccessKeyId?: SortOrder
     r2SecretAccessKey?: SortOrder
     homeFeedMode?: SortOrder
+    blockedKeywords?: SortOrder
     updatedAt?: SortOrder
   }
 

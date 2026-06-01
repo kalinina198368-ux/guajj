@@ -15,7 +15,7 @@ import {
   formatDuration,
   formatMessageDate
 } from "@/lib/tg-index-display";
-import { getIndexedMessage } from "@/lib/tg-index-search";
+import { getPublicIndexedMessage } from "@/lib/tg-index-search";
 import { stripRepostAttributionFromText } from "@/lib/strip-repost-attribution";
 
 export const dynamic = "force-dynamic";
@@ -31,7 +31,7 @@ export async function generateMetadata({
   params: Promise<{ id: string }>;
 }): Promise<Metadata> {
   const { id } = await params;
-  const item = await getIndexedMessage(id);
+  const item = await getPublicIndexedMessage(id);
   if (!item) return { title: "未找到 · VIP搜索" };
   return { title: `${item.title} · VIP搜索`, description: item.snippet };
 }
@@ -50,7 +50,7 @@ export default async function VipDetailPage({
   const page = parsePage(query.page);
   const backHref = q ? buildVipListHref(q, page) : "/vip";
 
-  const item = await getIndexedMessage(id);
+  const item = await getPublicIndexedMessage(id);
   if (!item) notFound();
 
   const duration = formatDuration(item.durationSec);
