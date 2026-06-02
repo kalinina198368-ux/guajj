@@ -1,11 +1,12 @@
 import { getSiteSettings } from "@/lib/site-settings";
 import { isR2Ready } from "@/lib/media-storage";
+import AccountPasswordForm from "./account-password-form";
 import { updateSiteSettingsAction } from "./actions";
 
 export default async function AdminSettingsPage({
   searchParams
 }: {
-  searchParams: Promise<{ saved?: string }>;
+  searchParams: Promise<{ saved?: string; pwd?: string }>;
 }) {
   const params = await searchParams;
   const settings = await getSiteSettings();
@@ -181,6 +182,8 @@ export default async function AdminSettingsPage({
           </button>
         </form>
       </div>
+
+      <AccountPasswordForm pwdStatus={params.pwd} />
     </>
   );
 }

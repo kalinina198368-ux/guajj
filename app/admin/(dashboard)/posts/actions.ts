@@ -1,5 +1,6 @@
 "use server";
 
+import { adminPath } from "@/lib/admin-path";
 import { PostStatus, PostType } from "@/lib/generated/prisma";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
@@ -39,7 +40,7 @@ function validatePost(data: ReturnType<typeof readPostForm>) {
 export async function createPostAction(formData: FormData) {
   await requireAdmin();
   const data = readPostForm(formData);
-  if (!validatePost(data)) redirect("/admin/posts?error=missing");
+  if (!validatePost(data)) redirect(`${adminPath("/posts")}?error=missing`);
 
   await prisma.post.create({
     data: {
@@ -63,14 +64,14 @@ export async function createPostAction(formData: FormData) {
   });
 
   revalidatePath("/");
-  revalidatePath("/admin/posts");
-  redirect("/admin/posts?saved=1");
+  revalidatePath(`${adminPath("/posts")}`);
+  redirect(`${adminPath("/posts")}?saved=1`);
 }
 
 export async function updatePostAction(id: string, formData: FormData) {
   await requireAdmin();
   const data = readPostForm(formData);
-  if (!validatePost(data)) redirect(`/admin/posts?edit=${id}&error=missing`);
+  if (!validatePost(data)) redirect(`${adminPath("/posts")}?edit=${id}&error=missing`);
 
   await prisma.postTag.deleteMany({ where: { postId: id } });
   await prisma.post.update({
@@ -97,14 +98,14 @@ export async function updatePostAction(id: string, formData: FormData) {
 
   revalidatePath("/");
   revalidatePath(`/post/${id}`);
-  revalidatePath("/admin/posts");
-  redirect("/admin/posts?saved=1");
+  revalidatePath(`${adminPath("/posts")}`);
+  redirect(`${adminPath("/posts")}?saved=1`);
 }
 
 export async function deletePostAction(id: string) {
   await requireAdmin();
   await prisma.post.delete({ where: { id } });
   revalidatePath("/");
-  revalidatePath("/admin/posts");
-  redirect("/admin/posts?deleted=1");
+  revalidatePath(`${adminPath("/posts")}`);
+  redirect(`${adminPath("/posts")}?deleted=1`);
 }

@@ -1,4 +1,5 @@
-import Link from "next/link";
+import { adminPath } from "@/lib/admin-path";
+import AdminLink from "@/components/admin-link";
 import type { Category, Post, PostStatus, PostTag, Tag } from "@/lib/generated/prisma";
 import { deletePostAction } from "./actions";
 
@@ -22,7 +23,7 @@ function buildPostsUrl(opts: { edit?: string; q?: string; page?: number; perPage
   const pp = opts.perPage ?? 10;
   if (pp !== 10) p.set("perPage", String(pp));
   const s = p.toString();
-  return s ? `/admin/posts?${s}` : "/admin/posts";
+  return s ? `${adminPath("/posts")}?${s}` : `${adminPath("/posts")}`;
 }
 
 function formatUpdatedAt(value: Date) {
@@ -122,7 +123,7 @@ export default function PostTable({
                   <td style={{ whiteSpace: "nowrap", fontSize: 13 }}>{formatUpdatedAt(post.updatedAt)}</td>
                   <td>
                     <div className="admin-table-actions">
-                      <Link
+                      <AdminLink
                         className="admin-icon-action"
                         href={buildPostsUrl({
                           edit: post.id,
@@ -134,7 +135,7 @@ export default function PostTable({
                         aria-label="编辑"
                       >
                         <IconPencil />
-                      </Link>
+                      </AdminLink>
                       <form action={deletePostAction.bind(null, post.id)} title="删除">
                         <button className="admin-icon-action danger" type="submit" aria-label="删除">
                           <IconTrash />
@@ -161,19 +162,19 @@ export default function PostTable({
                   {n}
                 </span>
               ) : (
-                <Link
+                <AdminLink
                   key={n}
                   href={buildPostsUrl({ edit: editId, q: listQuery || undefined, perPage: n })}
                   className="admin-per-page-opt"
                 >
                   {n}
-                </Link>
+                </AdminLink>
               )
             )}
           </div>
           <div className="admin-pagination-pages">
             {page > 1 ? (
-              <Link href={buildPostsUrl({ edit: editId, q: listQuery || undefined, page: page - 1, perPage: pageSize })}>上一页</Link>
+              <AdminLink href={buildPostsUrl({ edit: editId, q: listQuery || undefined, page: page - 1, perPage: pageSize })}>上一页</AdminLink>
             ) : (
               <span style={{ opacity: 0.4 }}>上一页</span>
             )}
@@ -181,7 +182,7 @@ export default function PostTable({
               第 {page} / {totalPages} 页
             </span>
             {page < totalPages ? (
-              <Link href={buildPostsUrl({ edit: editId, q: listQuery || undefined, page: page + 1, perPage: pageSize })}>下一页</Link>
+              <AdminLink href={buildPostsUrl({ edit: editId, q: listQuery || undefined, page: page + 1, perPage: pageSize })}>下一页</AdminLink>
             ) : (
               <span style={{ opacity: 0.4 }}>下一页</span>
             )}

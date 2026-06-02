@@ -12,6 +12,9 @@ const poll =
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  env: {
+    NEXT_PUBLIC_ADMIN_PATH_PREFIX: process.env.ADMIN_PATH_PREFIX ?? ""
+  },
   turbopack: {
     root: path.resolve(".")
   },

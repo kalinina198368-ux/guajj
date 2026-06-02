@@ -1,4 +1,5 @@
-import Link from "next/link";
+import { adminPath } from "@/lib/admin-path";
+import AdminLink from "@/components/admin-link";
 import { notFound } from "next/navigation";
 import { PostRichContent } from "@/components/post-rich-content";
 import { buildRenderableBlocks } from "@/lib/post-content-blocks";
@@ -27,13 +28,13 @@ export default async function AdminPostPreviewPage({ params }: { params: Promise
     <div style={{ maxWidth: 900, margin: "0 auto" }}>
       <div className="admin-page-toolbar">
         <span className="chip">{statusLabel[post.status] || post.status}</span>
-        <Link className="btn-admin-ghost" href={`/admin/posts?edit=${post.id}`} style={{ textDecoration: "none", display: "inline-flex" }}>
+        <AdminLink className="btn-admin-ghost" href={`${adminPath("/posts")}?edit=${post.id}`} style={{ textDecoration: "none", display: "inline-flex" }}>
           返回编辑
-        </Link>
+        </AdminLink>
         {post.status === "PUBLISHED" ? (
-          <Link className="btn btn-admin-primary" href={`/post/${post.id}`} target="_blank" rel="noreferrer" style={{ textDecoration: "none" }}>
+          <AdminLink className="btn btn-admin-primary" href={`/post/${post.id}`} target="_blank" rel="noreferrer" style={{ textDecoration: "none" }}>
             打开前台详情
-          </Link>
+          </AdminLink>
         ) : null}
       </div>
       <p className="admin-page-note">草稿与下架内容在前台 `/post/…` 不会展示；此处核对摘要、混排块与媒体是否正常。</p>

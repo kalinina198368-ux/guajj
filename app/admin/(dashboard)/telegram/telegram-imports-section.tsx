@@ -1,4 +1,5 @@
-import Link from "next/link";
+import { adminPath } from "@/lib/admin-path";
+import AdminLink from "@/components/admin-link";
 import type { Post, TelegramImport } from "@/lib/generated/prisma";
 
 export type TelegramImportRow = TelegramImport & { post: Post | null };
@@ -10,7 +11,7 @@ function importsListUrl(opts: { page?: number; size?: number }) {
   if (opts.page && opts.page > 1) p.set("iPage", String(opts.page));
   if (opts.size && opts.size !== 10) p.set("iSize", String(opts.size));
   const s = p.toString();
-  return s ? `/admin/telegram?${s}` : "/admin/telegram";
+  return s ? `${adminPath("/telegram")}?${s}` : `${adminPath("/telegram")}`;
 }
 
 function snippet(raw: string, max = 96) {
@@ -77,10 +78,10 @@ export default function TelegramImportsSection({
           </div>
           <p className="tg-imports-sub">最近采集的频道消息，实时更新</p>
         </div>
-        <Link className="tg-imports-all-link" href="/admin/posts">
+        <AdminLink className="tg-imports-all-link" href={adminPath("/posts")}>
           查看全部内容
           <span aria-hidden> ›</span>
-        </Link>
+        </AdminLink>
       </header>
 
       <div className="tg-imports-table-wrap">
@@ -150,9 +151,9 @@ export default function TelegramImportsSection({
                     </td>
                     <td>
                       {item.post ? (
-                        <Link className="tg-imports-post-link" href={`/admin/posts?edit=${item.post.id}`}>
+                        <AdminLink className="tg-imports-post-link" href={`${adminPath("/posts")}?edit=${item.post.id}`}>
                           {item.post.title}
-                        </Link>
+                        </AdminLink>
                       ) : (
                         <span className="tg-imports-none">未生成</span>
                       )}
@@ -182,21 +183,21 @@ export default function TelegramImportsSection({
             <span className="tg-imports-size-label">每页</span>
             <div className="tg-imports-size-links">
               {PAGE_SIZES.map((sz) => (
-                <Link
+                <AdminLink
                   key={sz}
                   href={importsListUrl({ page: 1, size: sz })}
                   className={sz === pageSize ? "is-active" : ""}
                 >
                   {sz} 条
-                </Link>
+                </AdminLink>
               ))}
             </div>
           </div>
           <div className="tg-imports-pages">
             {page > 1 ? (
-              <Link className="tg-imports-page-arrow" href={importsListUrl({ page: page - 1, size: pageSize })} aria-label="上一页">
+              <AdminLink className="tg-imports-page-arrow" href={importsListUrl({ page: page - 1, size: pageSize })} aria-label="上一页">
                 ‹
-              </Link>
+              </AdminLink>
             ) : (
               <span className="tg-imports-page-arrow is-disabled">‹</span>
             )}
@@ -210,15 +211,15 @@ export default function TelegramImportsSection({
                   {p}
                 </span>
               ) : (
-                <Link key={p} href={importsListUrl({ page: p, size: pageSize })} className="tg-imports-page-num">
+                <AdminLink key={p} href={importsListUrl({ page: p, size: pageSize })} className="tg-imports-page-num">
                   {p}
-                </Link>
+                </AdminLink>
               )
             )}
             {page < totalPages ? (
-              <Link className="tg-imports-page-arrow" href={importsListUrl({ page: page + 1, size: pageSize })} aria-label="下一页">
+              <AdminLink className="tg-imports-page-arrow" href={importsListUrl({ page: page + 1, size: pageSize })} aria-label="下一页">
                 ›
-              </Link>
+              </AdminLink>
             ) : (
               <span className="tg-imports-page-arrow is-disabled">›</span>
             )}

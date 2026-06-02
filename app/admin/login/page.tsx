@@ -1,4 +1,5 @@
 import { redirect } from "next/navigation";
+import { adminPath } from "@/lib/admin-path";
 import { getAdminSession } from "@/lib/auth";
 import LoginForm from "./login-form";
 
@@ -8,7 +9,7 @@ export default async function LoginPage({
   searchParams: Promise<{ error?: string }>;
 }) {
   const session = await getAdminSession();
-  if (session) redirect("/admin");
+  if (session) redirect(adminPath());
   const params = await searchParams;
 
   return (

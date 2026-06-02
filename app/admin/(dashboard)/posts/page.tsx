@@ -1,4 +1,5 @@
-import Link from "next/link";
+import { adminPath } from "@/lib/admin-path";
+import AdminLink from "@/components/admin-link";
 import type { Prisma } from "@/lib/generated/prisma";
 import { prisma } from "@/lib/prisma";
 import PostForm from "./post-form";
@@ -67,10 +68,10 @@ export default async function AdminPostsPage({
     if (params.edit) p.set("edit", params.edit);
     if (pageSize !== 10) p.set("perPage", String(pageSize));
     const s = p.toString();
-    return s ? `/admin/posts?${s}` : "/admin/posts";
+    return s ? `${adminPath("/posts")}?${s}` : `${adminPath("/posts")}`;
   })();
 
-  const newPostHref = pageSize === 10 ? "/admin/posts" : `/admin/posts?perPage=${pageSize}`;
+  const newPostHref = pageSize === 10 ? `${adminPath("/posts")}` : `${adminPath("/posts")}?perPage=${pageSize}`;
 
   return (
     <>
@@ -80,7 +81,7 @@ export default async function AdminPostsPage({
         <PostForm post={editingPost} categories={categories} tags={tags} hasError={params.error === "missing"} />
         <section className="admin-panel">
           <div className="admin-list-toolbar">
-            <form method="get" action="/admin/posts" className="admin-post-search">
+            <form method="get" action={adminPath("/posts")} className="admin-post-search">
               {params.edit ? <input type="hidden" name="edit" value={params.edit} /> : null}
               {pageSize !== 10 ? <input type="hidden" name="perPage" value={String(pageSize)} /> : null}
               <input
@@ -94,14 +95,14 @@ export default async function AdminPostsPage({
                 查询
               </button>
               {q ? (
-                <Link className="btn-admin-ghost" href={clearSearchHref} style={{ textDecoration: "none", display: "inline-flex" }}>
+                <AdminLink className="btn-admin-ghost" href={clearSearchHref} style={{ textDecoration: "none", display: "inline-flex" }}>
                   清除
-                </Link>
+                </AdminLink>
               ) : null}
             </form>
-            <Link className="btn btn-admin-primary" href={newPostHref} style={{ textDecoration: "none", whiteSpace: "nowrap" }}>
+            <AdminLink className="btn btn-admin-primary" href={newPostHref} style={{ textDecoration: "none", whiteSpace: "nowrap" }}>
               ＋ 新建内容
-            </Link>
+            </AdminLink>
           </div>
           {q ? <p className="admin-list-meta">关键词「{q}」本页 {posts.length} 条 · 共 {total} 条匹配</p> : null}
           <PostTable

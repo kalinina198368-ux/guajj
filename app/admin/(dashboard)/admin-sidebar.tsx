@@ -1,8 +1,11 @@
 "use client";
 
 import type { ReactNode } from "react";
-import Link from "next/link";
+import AdminLink from "@/components/admin-link";
+import { normalizeAdminPathname } from "@/lib/admin-path";
+import { useAdminPath } from "@/lib/admin-path-context";
 import { usePathname } from "next/navigation";
+import { useMemo } from "react";
 import LogoutButton from "./logout-button";
 
 type NavItem = { href: string; label: string; icon: ReactNode; end?: boolean };
@@ -111,48 +114,52 @@ function IconUsers() {
   );
 }
 
-const navItems: NavItem[] = [
-  { href: "/admin", label: "概览", icon: <IconOverview />, end: true },
-  { href: "/admin/analytics", label: "访问统计", icon: <IconChart /> },
-  { href: "/admin/search-analytics", label: "搜索统计", icon: <IconSearch /> },
-  { href: "/admin/posts", label: "内容", icon: <IconDoc /> },
-  { href: "/admin/index-messages", label: "索引内容", icon: <IconDoc /> },
-  { href: "/admin/comments", label: "评论", icon: <IconChat /> },
-  { href: "/admin/social-users", label: "登录用户", icon: <IconUsers /> },
-  { href: "/admin/media", label: "媒体", icon: <IconImage /> },
-  { href: "/admin/storage", label: "存储监控", icon: <IconStorage /> },
-  { href: "/admin/taxonomy", label: "分类标签", icon: <IconTags /> },
-  { href: "/admin/telegram", label: "TG机器人", icon: <IconSend /> },
-  { href: "/admin/settings", label: "设置", icon: <IconSettings /> }
-];
-
 function isActive(pathname: string, item: NavItem) {
   if (item.end) return pathname === item.href;
   return pathname === item.href || pathname.startsWith(`${item.href}/`);
 }
 
 export default function AdminSidebar({ username }: { username: string }) {
-  const pathname = usePathname() || "";
+  const { path } = useAdminPath();
+  const pathname = normalizeAdminPathname(usePathname() || "");
+
+  const navItems: NavItem[] = useMemo(
+    () => [
+      { href: path(), label: "概览", icon: <IconOverview />, end: true },
+      { href: path("/analytics"), label: "访问统计", icon: <IconChart /> },
+      { href: path("/search-analytics"), label: "搜索统计", icon: <IconSearch /> },
+      { href: path("/posts"), label: "内容", icon: <IconDoc /> },
+      { href: path("/index-messages"), label: "索引内容", icon: <IconDoc /> },
+      { href: path("/comments"), label: "评论", icon: <IconChat /> },
+      { href: path("/social-users"), label: "登录用户", icon: <IconUsers /> },
+      { href: path("/media"), label: "媒体", icon: <IconImage /> },
+      { href: path("/storage"), label: "存储监控", icon: <IconStorage /> },
+      { href: path("/taxonomy"), label: "分类标签", icon: <IconTags /> },
+      { href: path("/telegram"), label: "TG机器人", icon: <IconSend /> },
+      { href: path("/settings"), label: "设置", icon: <IconSettings /> }
+    ],
+    [path]
+  );
 
   return (
     <aside className="admin-side">
-      <Link href="/" className="admin-sidebar-brand">
+      <AdminLink href="/" className="admin-sidebar-brand">
         <span className="admin-sidebar-logo" aria-hidden>
           🍉
         </span>
         <span className="admin-sidebar-title">吃瓜网</span>
-      </Link>
+      </AdminLink>
 
       <nav className="admin-sidebar-nav">
         {navItems.map((item) => (
-          <Link
+          <AdminLink
             key={item.href}
             href={item.href}
             className={`admin-nav-link${isActive(pathname, item) ? " is-active" : ""}`}
           >
             <span className="admin-nav-icon">{item.icon}</span>
             {item.label}
-          </Link>
+          </AdminLink>
         ))}
       </nav>
 

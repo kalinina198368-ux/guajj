@@ -1,4 +1,5 @@
-import Link from "next/link";
+import { adminPath } from "@/lib/admin-path";
+import AdminLink from "@/components/admin-link";
 import { notFound } from "next/navigation";
 import { AdminIndexMediaPreview } from "@/components/admin-index-media-preview";
 import { PostRichContent } from "@/components/post-rich-content";
@@ -26,12 +27,12 @@ export default async function AdminIndexMessagePreviewPage({ params }: { params:
     <div style={{ maxWidth: 900, margin: "0 auto" }}>
       <div className="admin-page-toolbar">
         <span className="chip">{contentTypeLabel(item.contentType)}</span>
-        <Link className="btn-admin-ghost" href={`/admin/index-messages?edit=${item.id}`} style={{ textDecoration: "none", display: "inline-flex" }}>
+        <AdminLink className="btn-admin-ghost" href={`${adminPath("/index-messages")}?edit=${item.id}`} style={{ textDecoration: "none", display: "inline-flex" }}>
           返回编辑
-        </Link>
-        <Link className="btn btn-admin-primary" href={`/vip/${item.id}`} target="_blank" rel="noreferrer" style={{ textDecoration: "none" }}>
+        </AdminLink>
+        <AdminLink className="btn btn-admin-primary" href={`/vip/${item.id}`} target="_blank" rel="noreferrer" style={{ textDecoration: "none" }}>
           打开前台详情
-        </Link>
+        </AdminLink>
       </div>
       <p className="admin-page-note">核对摘要、混排块与媒体是否正常。若图片 404，请检查文件是否在 public/uploads 或 R2 公网地址可访问。</p>
 

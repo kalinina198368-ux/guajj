@@ -1,4 +1,4 @@
-import Link from "next/link";
+import AdminLink from "@/components/admin-link";
 import type { Comment, Post, SocialUser } from "@/lib/generated/prisma";
 import { deleteCommentAction } from "./actions";
 
@@ -40,9 +40,9 @@ export default function CommentTable({ rows }: { rows: AdminCommentRow[] }) {
             <tr key={row.id}>
               <td style={{ whiteSpace: "nowrap", fontSize: 13 }}>{formatDateTime(row.createdAt)}</td>
               <td>
-                <Link href={`/post/${row.post.id}`} target="_blank" rel="noreferrer">
+                <AdminLink href={`/post/${row.post.id}`} target="_blank" rel="noreferrer">
                   {row.post.title}
-                </Link>
+                </AdminLink>
               </td>
               <td>
                 {row.author.nickname}

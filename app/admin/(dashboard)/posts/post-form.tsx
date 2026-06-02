@@ -1,4 +1,5 @@
-import Link from "next/link";
+import { adminPath } from "@/lib/admin-path";
+import AdminLink from "@/components/admin-link";
 import type { Category, Post, PostTag, Tag } from "@/lib/generated/prisma";
 import { createPostAction, updatePostAction } from "./actions";
 import { buildAllVideoUrls } from "@/lib/post-gallery";
@@ -38,9 +39,9 @@ export default function PostForm({
         <h2 style={{ margin: 0, fontSize: 18, fontWeight: 800, color: "#111827" }}>{post ? "编辑内容" : "新增内容"}</h2>
         {post?.id ? (
           <p style={{ margin: "10px 0 0", display: "flex", flexWrap: "wrap", gap: 10, alignItems: "center" }}>
-            <Link className="btn-admin-ghost" href={`/admin/posts/preview/${post.id}`} style={{ textDecoration: "none", display: "inline-flex", fontSize: 13 }}>
+            <AdminLink className="btn-admin-ghost" href={`${adminPath("/posts/preview")}/${post.id}`} style={{ textDecoration: "none", display: "inline-flex", fontSize: 13 }}>
               预览封面 / 图集 / 视频
-            </Link>
+            </AdminLink>
             {post.status === "DRAFT" ? (
               <span style={{ color: "var(--muted)", fontSize: 13 }}>草稿在前台不可访问，可预览或改为「发布」。</span>
             ) : null}

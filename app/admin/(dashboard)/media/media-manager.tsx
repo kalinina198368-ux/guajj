@@ -1,10 +1,12 @@
 "use client";
 
+import { useAdminPath } from "@/lib/admin-path-context";
 import { useRouter } from "next/navigation";
 import type { MediaAsset } from "@/lib/generated/prisma";
 
 export default function MediaManager({ media, maxUploadMb }: { media: MediaAsset[]; maxUploadMb: number }) {
   const router = useRouter();
+  const { apiPath } = useAdminPath();
   const maxBytes = maxUploadMb * 1024 * 1024;
 
   async function upload(event: React.FormEvent<HTMLFormElement>) {
@@ -15,7 +17,7 @@ export default function MediaManager({ media, maxUploadMb }: { media: MediaAsset
       alert(`文件约 ${(f.size / (1024 * 1024)).toFixed(1)} MB，超过当前上限 ${maxUploadMb} MB。\n可在服务器设置环境变量 ADMIN_UPLOAD_MAX_MB，并同步调大 Nginx 的 client_max_body_size。`);
       return;
     }
-    const res = await fetch("/api/admin/media", { method: "POST", body: form });
+    const res = await fetch(apiPath("media"), { method: "POST", body: form });
     if (!res.ok) {
       let msg = `上传失败（HTTP ${res.status}）`;
       try {

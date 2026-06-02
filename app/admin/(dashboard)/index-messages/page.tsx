@@ -1,4 +1,5 @@
-import Link from "next/link";
+import { adminPath } from "@/lib/admin-path";
+import AdminLink from "@/components/admin-link";
 import { prisma } from "@/lib/prisma";
 import {
   buildIndexMessagesListWhere,
@@ -66,7 +67,7 @@ export default async function AdminIndexMessagesPage({
     if (params.edit) p.set("edit", params.edit);
     if (pageSize !== 10) p.set("perPage", String(pageSize));
     const s = p.toString();
-    return s ? `/admin/index-messages?${s}` : "/admin/index-messages";
+    return s ? `${adminPath("/index-messages")}?${s}` : `${adminPath("/index-messages")}`;
   })();
 
   const hasFilter = Boolean(q || selectedChatIds.length);
@@ -85,7 +86,7 @@ export default async function AdminIndexMessagesPage({
         <IndexMessageForm item={editing} hasError={params.error === "missing"} />
         <section className="admin-panel">
           <div className="admin-list-toolbar admin-list-toolbar-stack">
-            <form method="get" action="/admin/index-messages" className="admin-index-filter-form">
+            <form method="get" action={adminPath("/index-messages")} className="admin-index-filter-form">
               {params.edit ? <input type="hidden" name="edit" value={params.edit} /> : null}
               {pageSize !== 10 ? <input type="hidden" name="perPage" value={String(pageSize)} /> : null}
               <IndexChannelFilter channels={channelOptions} selectedChatIds={selectedChatIds} />
@@ -101,9 +102,9 @@ export default async function AdminIndexMessagesPage({
                   查询
                 </button>
                 {hasFilter ? (
-                  <Link className="btn-admin-ghost" href={clearSearchHref} style={{ textDecoration: "none", display: "inline-flex" }}>
+                  <AdminLink className="btn-admin-ghost" href={clearSearchHref} style={{ textDecoration: "none", display: "inline-flex" }}>
                     清除筛选
-                  </Link>
+                  </AdminLink>
                 ) : null}
               </div>
             </form>

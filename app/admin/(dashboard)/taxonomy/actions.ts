@@ -1,5 +1,6 @@
 "use server";
 
+import { adminPath } from "@/lib/admin-path";
 import { Prisma } from "@/lib/generated/prisma";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
@@ -16,15 +17,15 @@ function slugify(input: string, fallbackPrefix: "cat" | "tag") {
 }
 
 function taxonomyPaths() {
-  revalidatePath("/admin/taxonomy");
-  revalidatePath("/admin/posts");
-  revalidatePath("/admin/telegram");
+  revalidatePath(`${adminPath("/taxonomy")}`);
+  revalidatePath(`${adminPath("/posts")}`);
+  revalidatePath(`${adminPath("/telegram")}`);
   revalidatePath("/");
 }
 
 function handleUnique(e: unknown) {
   if (e instanceof Prisma.PrismaClientKnownRequestError && e.code === "P2002") {
-    redirect("/admin/taxonomy?error=duplicate");
+    redirect(`${adminPath("/taxonomy")}?error=duplicate`);
   }
   throw e;
 }
@@ -32,7 +33,7 @@ function handleUnique(e: unknown) {
 export async function createCategoryAction(formData: FormData) {
   await requireAdmin();
   const name = String(formData.get("name") || "").trim();
-  if (!name) redirect("/admin/taxonomy?error=name");
+  if (!name) redirect(`${adminPath("/taxonomy")}?error=name`);
   const slugRaw = String(formData.get("slug") || "").trim();
   const slug = slugify(slugRaw || name, "cat");
   try {
@@ -41,13 +42,13 @@ export async function createCategoryAction(formData: FormData) {
     handleUnique(e);
   }
   taxonomyPaths();
-  redirect("/admin/taxonomy?saved=category");
+  redirect(`${adminPath("/taxonomy")}?saved=category`);
 }
 
 export async function updateCategoryAction(id: string, formData: FormData) {
   await requireAdmin();
   const name = String(formData.get("name") || "").trim();
-  if (!name) redirect("/admin/taxonomy?error=name");
+  if (!name) redirect(`${adminPath("/taxonomy")}?error=name`);
   const slugRaw = String(formData.get("slug") || "").trim();
   const slug = slugify(slugRaw || name, "cat");
   try {
@@ -56,22 +57,22 @@ export async function updateCategoryAction(id: string, formData: FormData) {
     handleUnique(e);
   }
   taxonomyPaths();
-  redirect("/admin/taxonomy?saved=category");
+  redirect(`${adminPath("/taxonomy")}?saved=category`);
 }
 
 export async function deleteCategoryAction(id: string) {
   await requireAdmin();
   const count = await prisma.post.count({ where: { categoryId: id } });
-  if (count > 0) redirect("/admin/taxonomy?error=category-in-use");
+  if (count > 0) redirect(`${adminPath("/taxonomy")}?error=category-in-use`);
   await prisma.category.delete({ where: { id } });
   taxonomyPaths();
-  redirect("/admin/taxonomy?saved=category");
+  redirect(`${adminPath("/taxonomy")}?saved=category`);
 }
 
 export async function createTagAction(formData: FormData) {
   await requireAdmin();
   const name = String(formData.get("name") || "").trim();
-  if (!name) redirect("/admin/taxonomy?error=name");
+  if (!name) redirect(`${adminPath("/taxonomy")}?error=name`);
   const slugRaw = String(formData.get("slug") || "").trim();
   const slug = slugify(slugRaw || name, "tag");
   try {
@@ -80,13 +81,13 @@ export async function createTagAction(formData: FormData) {
     handleUnique(e);
   }
   taxonomyPaths();
-  redirect("/admin/taxonomy?saved=tag");
+  redirect(`${adminPath("/taxonomy")}?saved=tag`);
 }
 
 export async function updateTagAction(id: string, formData: FormData) {
   await requireAdmin();
   const name = String(formData.get("name") || "").trim();
-  if (!name) redirect("/admin/taxonomy?error=name");
+  if (!name) redirect(`${adminPath("/taxonomy")}?error=name`);
   const slugRaw = String(formData.get("slug") || "").trim();
   const slug = slugify(slugRaw || name, "tag");
   try {
@@ -95,12 +96,12 @@ export async function updateTagAction(id: string, formData: FormData) {
     handleUnique(e);
   }
   taxonomyPaths();
-  redirect("/admin/taxonomy?saved=tag");
+  redirect(`${adminPath("/taxonomy")}?saved=tag`);
 }
 
 export async function deleteTagAction(id: string) {
   await requireAdmin();
   await prisma.tag.delete({ where: { id } });
   taxonomyPaths();
-  redirect("/admin/taxonomy?saved=tag");
+  redirect(`${adminPath("/taxonomy")}?saved=tag`);
 }

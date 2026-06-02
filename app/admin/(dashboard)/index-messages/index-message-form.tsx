@@ -1,4 +1,5 @@
-import Link from "next/link";
+import { adminPath } from "@/lib/admin-path";
+import AdminLink from "@/components/admin-link";
 import { AdminIndexMediaPreview } from "@/components/admin-index-media-preview";
 import type { TgIndexedMessage } from "@/lib/generated/prisma";
 import { TgIndexContentType } from "@/lib/generated/prisma";
@@ -39,16 +40,16 @@ export default function IndexMessageForm({
           <span style={{ color: "var(--muted)" }}>
             chat {item.chatId} · msg {item.messageId}
           </span>
-          <Link
+          <AdminLink
             className="btn-admin-ghost"
-            href={`/admin/index-messages/preview/${item.id}`}
+            href={`${adminPath("/index-messages/preview")}/${item.id}`}
             style={{ textDecoration: "none", display: "inline-flex", fontSize: 13 }}
           >
             预览媒体 / 混排
-          </Link>
-          <Link href={`/vip/${item.id}`} target="_blank" rel="noreferrer" style={{ fontWeight: 700, fontSize: 13 }}>
+          </AdminLink>
+          <AdminLink href={`/vip/${item.id}`} target="_blank" rel="noreferrer" style={{ fontWeight: 700, fontSize: 13 }}>
             前台详情
-          </Link>
+          </AdminLink>
         </p>
       </div>
       {hasError ? (

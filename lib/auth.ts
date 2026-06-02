@@ -1,6 +1,7 @@
 import crypto from "crypto";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
+import { adminPath } from "@/lib/admin-path";
 
 const COOKIE_NAME = "cg_admin";
 
@@ -37,7 +38,7 @@ export async function getAdminSession() {
 
 export async function requireAdmin() {
   const session = await getAdminSession();
-  if (!session) redirect("/admin/login");
+  if (!session) redirect(adminPath("/login"));
   return session;
 }
 
@@ -53,5 +54,10 @@ export async function setAdminCookie(token: string) {
 
 export async function clearAdminCookie() {
   const store = await cookies();
-  store.delete(COOKIE_NAME);
+  store.set(COOKIE_NAME, "", {
+    httpOnly: true,
+    sameSite: "lax",
+    path: "/",
+    maxAge: 0
+  });
 }

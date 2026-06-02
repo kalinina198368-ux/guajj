@@ -1,7 +1,7 @@
 "use client";
 
-import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useAdminPath } from "@/lib/admin-path-context";
+import AdminLink from "@/components/admin-link";
 import { useState } from "react";
 import type { TgIndexedMessage } from "@/lib/generated/prisma";
 import { batchDeleteIndexMessagesAction, deleteIndexMessageAction } from "./actions";
@@ -16,13 +16,16 @@ export type IndexListPagination = {
 
 const PAGE_SIZES = [10, 50, 100] as const;
 
-function buildUrl(opts: {
-  edit?: string;
-  q?: string;
-  page?: number;
-  perPage?: number;
-  chatIds?: string[];
-}) {
+function buildUrl(
+  listPath: string,
+  opts: {
+    edit?: string;
+    q?: string;
+    page?: number;
+    perPage?: number;
+    chatIds?: string[];
+  }
+) {
   const p = new URLSearchParams();
   if (opts.edit) p.set("edit", opts.edit);
   if (opts.q) p.set("q", opts.q);
@@ -31,7 +34,7 @@ function buildUrl(opts: {
   const pp = opts.perPage ?? 10;
   if (pp !== 10) p.set("perPage", String(pp));
   const s = p.toString();
-  return s ? `/admin/index-messages?${s}` : "/admin/index-messages";
+  return s ? `${listPath}?${s}` : listPath;
 }
 
 function formatDate(value: Date) {
@@ -63,8 +66,12 @@ export default function IndexMessageTable({
   pagination: IndexListPagination;
 }) {
   const { total, page, pageSize, totalPages, editId } = pagination;
-  const router = useRouter();
+  const { path } = useAdminPath();
+  const listPath = path("/index-messages");
+  const previewBase = path("/index-messages/preview");
   const [selected, setSelected] = useState<Set<string>>(new Set());
+
+  const url = (opts: Parameters<typeof buildUrl>[1]) => buildUrl(listPath, opts);
 
   const allOnPage = rows.map((r) => r.id);
   const allChecked = allOnPage.length > 0 && allOnPage.every((id) => selected.has(id));
@@ -159,9 +166,9 @@ export default function IndexMessageTable({
                   <td style={{ whiteSpace: "nowrap", fontSize: 13 }}>{formatDate(row.messageDate)}</td>
                   <td>
                     <div className="admin-table-actions">
-                      <Link
+                      <AdminLink
                         className="admin-icon-action"
-                        href={`/admin/index-messages/preview/${row.id}`}
+                        href={`${previewBase}/${row.id}`}
                         title="预览媒体"
                         aria-label="预览媒体"
                       >
@@ -169,23 +176,23 @@ export default function IndexMessageTable({
                           <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
                           <circle cx="12" cy="12" r="3" />
                         </svg>
-                      </Link>
+                      </AdminLink>
                       <button
                         type="button"
                         className="admin-icon-action"
                         title="编辑"
                         aria-label="编辑"
-                        onClick={() =>
-                          router.push(
-                            buildUrl({
+                        onClick={() => {
+                          window.location.assign(
+                            url({
                               edit: row.id,
                               q: listQuery || undefined,
                               chatIds: selectedChatIds,
                               page,
                               perPage: pageSize
                             })
-                          )
-                        }
+                          );
+                        }}
                       >
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden>
                           <path d="M12 20h9M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z" />
@@ -228,20 +235,20 @@ export default function IndexMessageTable({
                   {n}
                 </span>
               ) : (
-                <Link
+                <AdminLink
                   key={n}
-                  href={buildUrl({ edit: editId, q: listQuery || undefined, chatIds: selectedChatIds, perPage: n })}
+                  href={url({ edit: editId, q: listQuery || undefined, chatIds: selectedChatIds, perPage: n })}
                   className="admin-per-page-opt"
                 >
                   {n}
-                </Link>
+                </AdminLink>
               )
             )}
           </div>
           <div className="admin-pagination-pages">
             {page > 1 ? (
-              <Link
-                href={buildUrl({
+              <AdminLink
+                href={url({
                   edit: editId,
                   q: listQuery || undefined,
                   chatIds: selectedChatIds,
@@ -250,7 +257,7 @@ export default function IndexMessageTable({
                 })}
               >
                 上一页
-              </Link>
+              </AdminLink>
             ) : (
               <span style={{ opacity: 0.4 }}>上一页</span>
             )}
@@ -258,8 +265,8 @@ export default function IndexMessageTable({
               第 {page} / {totalPages} 页
             </span>
             {page < totalPages ? (
-              <Link
-                href={buildUrl({
+              <AdminLink
+                href={url({
                   edit: editId,
                   q: listQuery || undefined,
                   chatIds: selectedChatIds,
@@ -268,7 +275,7 @@ export default function IndexMessageTable({
                 })}
               >
                 下一页
-              </Link>
+              </AdminLink>
             ) : (
               <span style={{ opacity: 0.4 }}>下一页</span>
             )}

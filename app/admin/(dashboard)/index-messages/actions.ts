@@ -1,5 +1,6 @@
 "use server";
 
+import { adminPath } from "@/lib/admin-path";
 import { TgIndexContentType } from "@/lib/generated/prisma";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
@@ -34,7 +35,7 @@ function validateIndex(data: ReturnType<typeof readIndexForm>) {
 export async function updateIndexMessageAction(id: string, formData: FormData) {
   await requireAdmin();
   const data = readIndexForm(formData);
-  if (!validateIndex(data)) redirect(`/admin/index-messages?edit=${id}&error=missing`);
+  if (!validateIndex(data)) redirect(`${adminPath("/index-messages")}?edit=${id}&error=missing`);
 
   await prisma.tgIndexedMessage.update({
     where: { id },
@@ -58,8 +59,8 @@ export async function updateIndexMessageAction(id: string, formData: FormData) {
   revalidatePath("/");
   revalidatePath("/vip");
   revalidatePath(`/vip/${id}`);
-  revalidatePath("/admin/index-messages");
-  redirect("/admin/index-messages?saved=1");
+  revalidatePath(`${adminPath("/index-messages")}`);
+  redirect(`${adminPath("/index-messages")}?saved=1`);
 }
 
 export async function deleteIndexMessageAction(id: string) {
@@ -67,20 +68,20 @@ export async function deleteIndexMessageAction(id: string) {
   await prisma.tgIndexedMessage.delete({ where: { id } });
   revalidatePath("/");
   revalidatePath("/vip");
-  revalidatePath("/admin/index-messages");
-  redirect("/admin/index-messages?deleted=1");
+  revalidatePath(`${adminPath("/index-messages")}`);
+  redirect(`${adminPath("/index-messages")}?deleted=1`);
 }
 
 export async function batchDeleteIndexMessagesAction(formData: FormData) {
   await requireAdmin();
   const ids = formData.getAll("ids").map(String).filter(Boolean);
   if (ids.length === 0) {
-    redirect("/admin/index-messages?error=empty");
+    redirect(`${adminPath("/index-messages")}?error=empty`);
   }
 
   await prisma.tgIndexedMessage.deleteMany({ where: { id: { in: ids } } });
   revalidatePath("/");
   revalidatePath("/vip");
-  revalidatePath("/admin/index-messages");
-  redirect(`/admin/index-messages?deleted=${ids.length}`);
+  revalidatePath(`${adminPath("/index-messages")}`);
+  redirect(`${adminPath("/index-messages")}?deleted=${ids.length}`);
 }

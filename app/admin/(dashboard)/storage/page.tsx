@@ -1,4 +1,5 @@
-import Link from "next/link";
+import { adminPath } from "@/lib/admin-path";
+import AdminLink from "@/components/admin-link";
 import { formatBytes, getStorageMonitorReport, type StorageScanResult, type StorageStats } from "@/lib/storage-stats";
 import StorageRefreshButton from "./refresh-button";
 
@@ -155,7 +156,7 @@ export default async function AdminStoragePage() {
         {!report.r2Ready ? (
           <>
             {" "}
-            若使用 R2，请先在 <Link href="/admin/settings">站点设置</Link> 中配置并选择 R2 存储。
+            若使用 R2，请先在 <AdminLink href={adminPath("/settings")}>站点设置</AdminLink> 中配置并选择 R2 存储。
           </>
         ) : null}
       </p>

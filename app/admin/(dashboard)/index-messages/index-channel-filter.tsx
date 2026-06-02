@@ -1,5 +1,6 @@
 "use client";
 
+import { useAdminPath } from "@/lib/admin-path-context";
 import type { IndexChannelOption } from "@/lib/index-message-admin";
 
 type Props = {
@@ -8,10 +9,12 @@ type Props = {
 };
 
 export default function IndexChannelFilter({ channels, selectedChatIds }: Props) {
+  const { path } = useAdminPath();
+
   if (channels.length === 0) {
     return (
       <p className="admin-channel-filter-empty">
-        暂无频道。请先在 <a href="/admin/telegram">TG 机器人</a> 配置源频道并运行采集。
+        暂无频道。请先在 <a href={path("/telegram")}>TG 机器人</a> 配置源频道并运行采集。
       </p>
     );
   }

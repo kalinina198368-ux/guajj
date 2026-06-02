@@ -1,5 +1,6 @@
 "use server";
 
+import { adminPath } from "@/lib/admin-path";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { requireAdmin } from "@/lib/auth";
@@ -11,9 +12,9 @@ export async function deleteCommentAction(commentId: string) {
     where: { id: commentId },
     select: { postId: true }
   });
-  if (!row) redirect("/admin/comments");
+  if (!row) redirect(`${adminPath("/comments")}`);
   await prisma.comment.delete({ where: { id: commentId } });
-  revalidatePath("/admin/comments");
+  revalidatePath(`${adminPath("/comments")}`);
   revalidatePath(`/post/${row.postId}`);
-  redirect("/admin/comments?deleted=1");
+  redirect(`${adminPath("/comments")}?deleted=1`);
 }

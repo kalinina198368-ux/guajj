@@ -1,3 +1,4 @@
+import { isAdminAreaRequest, isLegacyAdminRequest, mapToInternalAdminPath } from "@/lib/admin-path";
 import { isDocumentNavigation, shouldTrackPageVisit } from "@/lib/analytics-edge";
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
@@ -17,8 +18,21 @@ function collectUrl(request: NextRequest) {
 
 export async function middleware(request: NextRequest) {
   const pathname = request.nextUrl.pathname;
+
+  if (isLegacyAdminRequest(pathname)) {
+    return new NextResponse(null, { status: 404 });
+  }
+
+  const internalAdmin = mapToInternalAdminPath(pathname);
+  if (internalAdmin) {
+    const url = request.nextUrl.clone();
+    url.pathname = internalAdmin;
+    return NextResponse.rewrite(url);
+  }
+
   if (
     request.method !== "GET" ||
+    isAdminAreaRequest(pathname) ||
     !shouldTrackPageVisit(pathname) ||
     !isDocumentNavigation(request.headers)
   ) {
@@ -62,5 +76,5 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/((?!admin|api|_next/static|_next/image|uploads|favicon.ico|\\.well-known).*)"]
+  matcher: ["/((?!_next/static|_next/image|uploads|favicon.ico|\\.well-known).*)"]
 };
