@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import {
   buildReferralLink,
   readGuestIdentityBackup,
@@ -26,9 +26,13 @@ export function MyPageClient(props: MyPageClientProps) {
   const [recoverSecret, setRecoverSecret] = useState("");
   const [recoverMsg, setRecoverMsg] = useState("");
   const [recovering, setRecovering] = useState(false);
+  const [secretKey, setSecretKey] = useState<string | null>(null);
 
-  const backup = readGuestIdentityBackup();
-  const secretKey = backup?.publicId === props.publicId ? backup.secretKey : null;
+  useEffect(() => {
+    const backup = readGuestIdentityBackup();
+    setSecretKey(backup?.publicId === props.publicId ? backup.secretKey : null);
+  }, [props.publicId]);
+
   const referralLink = buildReferralLink(props.publicId);
 
   const copyText = useCallback(async (field: string, text: string) => {

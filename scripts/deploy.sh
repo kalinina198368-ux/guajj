@@ -17,6 +17,9 @@ git pull "$REMOTE" "$BRANCH"
 echo ">>> npm ci"
 npm ci
 
+echo ">>> npm run db:migrate（同步数据库结构，部署必跑）"
+npm run db:migrate
+
 echo ">>> npm run build（内含 prisma generate）"
 npm run build
 
