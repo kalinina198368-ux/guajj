@@ -24,6 +24,11 @@ export type AdminUser = $Result.DefaultSelection<Prisma.$AdminUserPayload>
  */
 export type SiteSettings = $Result.DefaultSelection<Prisma.$SiteSettingsPayload>
 /**
+ * Model GuestUser
+ * * 前台匿名加密身份（GUA-xxx），用于搜索配额与裂变推广
+ */
+export type GuestUser = $Result.DefaultSelection<Prisma.$GuestUserPayload>
+/**
  * Model Category
  * 
  */
@@ -306,6 +311,16 @@ export class PrismaClient<
     * ```
     */
   get siteSettings(): Prisma.SiteSettingsDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.guestUser`: Exposes CRUD operations for the **GuestUser** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more GuestUsers
+    * const guestUsers = await prisma.guestUser.findMany()
+    * ```
+    */
+  get guestUser(): Prisma.GuestUserDelegate<ExtArgs, ClientOptions>;
 
   /**
    * `prisma.category`: Exposes CRUD operations for the **Category** model.
@@ -899,6 +914,7 @@ export namespace Prisma {
   export const ModelName: {
     AdminUser: 'AdminUser',
     SiteSettings: 'SiteSettings',
+    GuestUser: 'GuestUser',
     Category: 'Category',
     Tag: 'Tag',
     PostTag: 'PostTag',
@@ -932,7 +948,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "adminUser" | "siteSettings" | "category" | "tag" | "postTag" | "post" | "socialUser" | "oAuthLoginState" | "comment" | "mediaAsset" | "telegramConfig" | "telegramImport" | "tgSourceChannel" | "tgIndexedMessage" | "pageVisit" | "searchLog" | "dailySiteStat"
+      modelProps: "adminUser" | "siteSettings" | "guestUser" | "category" | "tag" | "postTag" | "post" | "socialUser" | "oAuthLoginState" | "comment" | "mediaAsset" | "telegramConfig" | "telegramImport" | "tgSourceChannel" | "tgIndexedMessage" | "pageVisit" | "searchLog" | "dailySiteStat"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -1065,6 +1081,72 @@ export namespace Prisma {
           count: {
             args: Prisma.SiteSettingsCountArgs<ExtArgs>
             result: $Utils.Optional<SiteSettingsCountAggregateOutputType> | number
+          }
+        }
+      }
+      GuestUser: {
+        payload: Prisma.$GuestUserPayload<ExtArgs>
+        fields: Prisma.GuestUserFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.GuestUserFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$GuestUserPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.GuestUserFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$GuestUserPayload>
+          }
+          findFirst: {
+            args: Prisma.GuestUserFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$GuestUserPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.GuestUserFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$GuestUserPayload>
+          }
+          findMany: {
+            args: Prisma.GuestUserFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$GuestUserPayload>[]
+          }
+          create: {
+            args: Prisma.GuestUserCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$GuestUserPayload>
+          }
+          createMany: {
+            args: Prisma.GuestUserCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          delete: {
+            args: Prisma.GuestUserDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$GuestUserPayload>
+          }
+          update: {
+            args: Prisma.GuestUserUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$GuestUserPayload>
+          }
+          deleteMany: {
+            args: Prisma.GuestUserDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.GuestUserUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          upsert: {
+            args: Prisma.GuestUserUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$GuestUserPayload>
+          }
+          aggregate: {
+            args: Prisma.GuestUserAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateGuestUser>
+          }
+          groupBy: {
+            args: Prisma.GuestUserGroupByArgs<ExtArgs>
+            result: $Utils.Optional<GuestUserGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.GuestUserCountArgs<ExtArgs>
+            result: $Utils.Optional<GuestUserCountAggregateOutputType> | number
           }
         }
       }
@@ -2156,6 +2238,7 @@ export namespace Prisma {
   export type GlobalOmitConfig = {
     adminUser?: AdminUserOmit
     siteSettings?: SiteSettingsOmit
+    guestUser?: GuestUserOmit
     category?: CategoryOmit
     tag?: TagOmit
     postTag?: PostTagOmit
@@ -2244,6 +2327,46 @@ export namespace Prisma {
   /**
    * Count Types
    */
+
+
+  /**
+   * Count Type GuestUserCountOutputType
+   */
+
+  export type GuestUserCountOutputType = {
+    referrals: number
+    searchLogs: number
+  }
+
+  export type GuestUserCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    referrals?: boolean | GuestUserCountOutputTypeCountReferralsArgs
+    searchLogs?: boolean | GuestUserCountOutputTypeCountSearchLogsArgs
+  }
+
+  // Custom InputTypes
+  /**
+   * GuestUserCountOutputType without action
+   */
+  export type GuestUserCountOutputTypeDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the GuestUserCountOutputType
+     */
+    select?: GuestUserCountOutputTypeSelect<ExtArgs> | null
+  }
+
+  /**
+   * GuestUserCountOutputType without action
+   */
+  export type GuestUserCountOutputTypeCountReferralsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: GuestUserWhereInput
+  }
+
+  /**
+   * GuestUserCountOutputType without action
+   */
+  export type GuestUserCountOutputTypeCountSearchLogsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: SearchLogWhereInput
+  }
 
 
   /**
@@ -3329,8 +3452,20 @@ export namespace Prisma {
 
   export type AggregateSiteSettings = {
     _count: SiteSettingsCountAggregateOutputType | null
+    _avg: SiteSettingsAvgAggregateOutputType | null
+    _sum: SiteSettingsSumAggregateOutputType | null
     _min: SiteSettingsMinAggregateOutputType | null
     _max: SiteSettingsMaxAggregateOutputType | null
+  }
+
+  export type SiteSettingsAvgAggregateOutputType = {
+    dailySearchLimit: number | null
+    referralSearchBonus: number | null
+  }
+
+  export type SiteSettingsSumAggregateOutputType = {
+    dailySearchLimit: number | null
+    referralSearchBonus: number | null
   }
 
   export type SiteSettingsMinAggregateOutputType = {
@@ -3344,6 +3479,8 @@ export namespace Prisma {
     r2SecretAccessKey: string | null
     homeFeedMode: string | null
     blockedKeywords: string | null
+    dailySearchLimit: number | null
+    referralSearchBonus: number | null
     updatedAt: Date | null
   }
 
@@ -3358,6 +3495,8 @@ export namespace Prisma {
     r2SecretAccessKey: string | null
     homeFeedMode: string | null
     blockedKeywords: string | null
+    dailySearchLimit: number | null
+    referralSearchBonus: number | null
     updatedAt: Date | null
   }
 
@@ -3372,10 +3511,22 @@ export namespace Prisma {
     r2SecretAccessKey: number
     homeFeedMode: number
     blockedKeywords: number
+    dailySearchLimit: number
+    referralSearchBonus: number
     updatedAt: number
     _all: number
   }
 
+
+  export type SiteSettingsAvgAggregateInputType = {
+    dailySearchLimit?: true
+    referralSearchBonus?: true
+  }
+
+  export type SiteSettingsSumAggregateInputType = {
+    dailySearchLimit?: true
+    referralSearchBonus?: true
+  }
 
   export type SiteSettingsMinAggregateInputType = {
     id?: true
@@ -3388,6 +3539,8 @@ export namespace Prisma {
     r2SecretAccessKey?: true
     homeFeedMode?: true
     blockedKeywords?: true
+    dailySearchLimit?: true
+    referralSearchBonus?: true
     updatedAt?: true
   }
 
@@ -3402,6 +3555,8 @@ export namespace Prisma {
     r2SecretAccessKey?: true
     homeFeedMode?: true
     blockedKeywords?: true
+    dailySearchLimit?: true
+    referralSearchBonus?: true
     updatedAt?: true
   }
 
@@ -3416,6 +3571,8 @@ export namespace Prisma {
     r2SecretAccessKey?: true
     homeFeedMode?: true
     blockedKeywords?: true
+    dailySearchLimit?: true
+    referralSearchBonus?: true
     updatedAt?: true
     _all?: true
   }
@@ -3458,6 +3615,18 @@ export namespace Prisma {
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
      * 
+     * Select which fields to average
+    **/
+    _avg?: SiteSettingsAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: SiteSettingsSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
      * Select which fields to find the minimum value
     **/
     _min?: SiteSettingsMinAggregateInputType
@@ -3488,6 +3657,8 @@ export namespace Prisma {
     take?: number
     skip?: number
     _count?: SiteSettingsCountAggregateInputType | true
+    _avg?: SiteSettingsAvgAggregateInputType
+    _sum?: SiteSettingsSumAggregateInputType
     _min?: SiteSettingsMinAggregateInputType
     _max?: SiteSettingsMaxAggregateInputType
   }
@@ -3503,8 +3674,12 @@ export namespace Prisma {
     r2SecretAccessKey: string | null
     homeFeedMode: string
     blockedKeywords: string | null
+    dailySearchLimit: number
+    referralSearchBonus: number
     updatedAt: Date
     _count: SiteSettingsCountAggregateOutputType | null
+    _avg: SiteSettingsAvgAggregateOutputType | null
+    _sum: SiteSettingsSumAggregateOutputType | null
     _min: SiteSettingsMinAggregateOutputType | null
     _max: SiteSettingsMaxAggregateOutputType | null
   }
@@ -3534,6 +3709,8 @@ export namespace Prisma {
     r2SecretAccessKey?: boolean
     homeFeedMode?: boolean
     blockedKeywords?: boolean
+    dailySearchLimit?: boolean
+    referralSearchBonus?: boolean
     updatedAt?: boolean
   }, ExtArgs["result"]["siteSettings"]>
 
@@ -3550,10 +3727,12 @@ export namespace Prisma {
     r2SecretAccessKey?: boolean
     homeFeedMode?: boolean
     blockedKeywords?: boolean
+    dailySearchLimit?: boolean
+    referralSearchBonus?: boolean
     updatedAt?: boolean
   }
 
-  export type SiteSettingsOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "allowAnonymousComments" | "mediaStorage" | "r2AccountId" | "r2BucketName" | "r2PublicBaseUrl" | "r2AccessKeyId" | "r2SecretAccessKey" | "homeFeedMode" | "blockedKeywords" | "updatedAt", ExtArgs["result"]["siteSettings"]>
+  export type SiteSettingsOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "allowAnonymousComments" | "mediaStorage" | "r2AccountId" | "r2BucketName" | "r2PublicBaseUrl" | "r2AccessKeyId" | "r2SecretAccessKey" | "homeFeedMode" | "blockedKeywords" | "dailySearchLimit" | "referralSearchBonus" | "updatedAt", ExtArgs["result"]["siteSettings"]>
 
   export type $SiteSettingsPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "SiteSettings"
@@ -3587,6 +3766,14 @@ export namespace Prisma {
        * * 前台屏蔽关键词，每行一个；标题/摘要/正文命中则不在首页与搜索中展示
        */
       blockedKeywords: string | null
+      /**
+       * * 匿名用户每日搜索次数上限（基础值，不含邀请奖励）
+       */
+      dailySearchLimit: number
+      /**
+       * * 每成功邀请一位新用户，邀请人额外获得的搜索次数
+       */
+      referralSearchBonus: number
       updatedAt: Date
     }, ExtArgs["result"]["siteSettings"]>
     composites: {}
@@ -3967,6 +4154,8 @@ export namespace Prisma {
     readonly r2SecretAccessKey: FieldRef<"SiteSettings", 'String'>
     readonly homeFeedMode: FieldRef<"SiteSettings", 'String'>
     readonly blockedKeywords: FieldRef<"SiteSettings", 'String'>
+    readonly dailySearchLimit: FieldRef<"SiteSettings", 'Int'>
+    readonly referralSearchBonus: FieldRef<"SiteSettings", 'Int'>
     readonly updatedAt: FieldRef<"SiteSettings", 'DateTime'>
   }
     
@@ -4286,6 +4475,1113 @@ export namespace Prisma {
      * Omit specific fields from the SiteSettings
      */
     omit?: SiteSettingsOmit<ExtArgs> | null
+  }
+
+
+  /**
+   * Model GuestUser
+   */
+
+  export type AggregateGuestUser = {
+    _count: GuestUserCountAggregateOutputType | null
+    _avg: GuestUserAvgAggregateOutputType | null
+    _sum: GuestUserSumAggregateOutputType | null
+    _min: GuestUserMinAggregateOutputType | null
+    _max: GuestUserMaxAggregateOutputType | null
+  }
+
+  export type GuestUserAvgAggregateOutputType = {
+    searchBonus: number | null
+  }
+
+  export type GuestUserSumAggregateOutputType = {
+    searchBonus: number | null
+  }
+
+  export type GuestUserMinAggregateOutputType = {
+    id: string | null
+    publicId: string | null
+    secretKeyHash: string | null
+    referrerId: string | null
+    searchBonus: number | null
+    registerIp: string | null
+    lastLoginIp: string | null
+    lastLoginAt: Date | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type GuestUserMaxAggregateOutputType = {
+    id: string | null
+    publicId: string | null
+    secretKeyHash: string | null
+    referrerId: string | null
+    searchBonus: number | null
+    registerIp: string | null
+    lastLoginIp: string | null
+    lastLoginAt: Date | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type GuestUserCountAggregateOutputType = {
+    id: number
+    publicId: number
+    secretKeyHash: number
+    referrerId: number
+    searchBonus: number
+    registerIp: number
+    lastLoginIp: number
+    lastLoginAt: number
+    createdAt: number
+    updatedAt: number
+    _all: number
+  }
+
+
+  export type GuestUserAvgAggregateInputType = {
+    searchBonus?: true
+  }
+
+  export type GuestUserSumAggregateInputType = {
+    searchBonus?: true
+  }
+
+  export type GuestUserMinAggregateInputType = {
+    id?: true
+    publicId?: true
+    secretKeyHash?: true
+    referrerId?: true
+    searchBonus?: true
+    registerIp?: true
+    lastLoginIp?: true
+    lastLoginAt?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type GuestUserMaxAggregateInputType = {
+    id?: true
+    publicId?: true
+    secretKeyHash?: true
+    referrerId?: true
+    searchBonus?: true
+    registerIp?: true
+    lastLoginIp?: true
+    lastLoginAt?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type GuestUserCountAggregateInputType = {
+    id?: true
+    publicId?: true
+    secretKeyHash?: true
+    referrerId?: true
+    searchBonus?: true
+    registerIp?: true
+    lastLoginIp?: true
+    lastLoginAt?: true
+    createdAt?: true
+    updatedAt?: true
+    _all?: true
+  }
+
+  export type GuestUserAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which GuestUser to aggregate.
+     */
+    where?: GuestUserWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of GuestUsers to fetch.
+     */
+    orderBy?: GuestUserOrderByWithRelationInput | GuestUserOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: GuestUserWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` GuestUsers from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` GuestUsers.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned GuestUsers
+    **/
+    _count?: true | GuestUserCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: GuestUserAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: GuestUserSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: GuestUserMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: GuestUserMaxAggregateInputType
+  }
+
+  export type GetGuestUserAggregateType<T extends GuestUserAggregateArgs> = {
+        [P in keyof T & keyof AggregateGuestUser]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateGuestUser[P]>
+      : GetScalarType<T[P], AggregateGuestUser[P]>
+  }
+
+
+
+
+  export type GuestUserGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: GuestUserWhereInput
+    orderBy?: GuestUserOrderByWithAggregationInput | GuestUserOrderByWithAggregationInput[]
+    by: GuestUserScalarFieldEnum[] | GuestUserScalarFieldEnum
+    having?: GuestUserScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: GuestUserCountAggregateInputType | true
+    _avg?: GuestUserAvgAggregateInputType
+    _sum?: GuestUserSumAggregateInputType
+    _min?: GuestUserMinAggregateInputType
+    _max?: GuestUserMaxAggregateInputType
+  }
+
+  export type GuestUserGroupByOutputType = {
+    id: string
+    publicId: string
+    secretKeyHash: string
+    referrerId: string | null
+    searchBonus: number
+    registerIp: string | null
+    lastLoginIp: string | null
+    lastLoginAt: Date | null
+    createdAt: Date
+    updatedAt: Date
+    _count: GuestUserCountAggregateOutputType | null
+    _avg: GuestUserAvgAggregateOutputType | null
+    _sum: GuestUserSumAggregateOutputType | null
+    _min: GuestUserMinAggregateOutputType | null
+    _max: GuestUserMaxAggregateOutputType | null
+  }
+
+  type GetGuestUserGroupByPayload<T extends GuestUserGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<GuestUserGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof GuestUserGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], GuestUserGroupByOutputType[P]>
+            : GetScalarType<T[P], GuestUserGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type GuestUserSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    publicId?: boolean
+    secretKeyHash?: boolean
+    referrerId?: boolean
+    searchBonus?: boolean
+    registerIp?: boolean
+    lastLoginIp?: boolean
+    lastLoginAt?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    referrer?: boolean | GuestUser$referrerArgs<ExtArgs>
+    referrals?: boolean | GuestUser$referralsArgs<ExtArgs>
+    searchLogs?: boolean | GuestUser$searchLogsArgs<ExtArgs>
+    _count?: boolean | GuestUserCountOutputTypeDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["guestUser"]>
+
+
+
+  export type GuestUserSelectScalar = {
+    id?: boolean
+    publicId?: boolean
+    secretKeyHash?: boolean
+    referrerId?: boolean
+    searchBonus?: boolean
+    registerIp?: boolean
+    lastLoginIp?: boolean
+    lastLoginAt?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }
+
+  export type GuestUserOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "publicId" | "secretKeyHash" | "referrerId" | "searchBonus" | "registerIp" | "lastLoginIp" | "lastLoginAt" | "createdAt" | "updatedAt", ExtArgs["result"]["guestUser"]>
+  export type GuestUserInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    referrer?: boolean | GuestUser$referrerArgs<ExtArgs>
+    referrals?: boolean | GuestUser$referralsArgs<ExtArgs>
+    searchLogs?: boolean | GuestUser$searchLogsArgs<ExtArgs>
+    _count?: boolean | GuestUserCountOutputTypeDefaultArgs<ExtArgs>
+  }
+
+  export type $GuestUserPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "GuestUser"
+    objects: {
+      referrer: Prisma.$GuestUserPayload<ExtArgs> | null
+      referrals: Prisma.$GuestUserPayload<ExtArgs>[]
+      searchLogs: Prisma.$SearchLogPayload<ExtArgs>[]
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      publicId: string
+      secretKeyHash: string
+      referrerId: string | null
+      /**
+       * * 邀请奖励累计获得的额外搜索次数
+       */
+      searchBonus: number
+      /**
+       * * 注册时的客户端 IP
+       */
+      registerIp: string | null
+      /**
+       * * 最近一次登录/恢复会话时的 IP
+       */
+      lastLoginIp: string | null
+      /**
+       * * 最近一次登录/恢复会话时间
+       */
+      lastLoginAt: Date | null
+      createdAt: Date
+      updatedAt: Date
+    }, ExtArgs["result"]["guestUser"]>
+    composites: {}
+  }
+
+  type GuestUserGetPayload<S extends boolean | null | undefined | GuestUserDefaultArgs> = $Result.GetResult<Prisma.$GuestUserPayload, S>
+
+  type GuestUserCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<GuestUserFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: GuestUserCountAggregateInputType | true
+    }
+
+  export interface GuestUserDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['GuestUser'], meta: { name: 'GuestUser' } }
+    /**
+     * Find zero or one GuestUser that matches the filter.
+     * @param {GuestUserFindUniqueArgs} args - Arguments to find a GuestUser
+     * @example
+     * // Get one GuestUser
+     * const guestUser = await prisma.guestUser.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends GuestUserFindUniqueArgs>(args: SelectSubset<T, GuestUserFindUniqueArgs<ExtArgs>>): Prisma__GuestUserClient<$Result.GetResult<Prisma.$GuestUserPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one GuestUser that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {GuestUserFindUniqueOrThrowArgs} args - Arguments to find a GuestUser
+     * @example
+     * // Get one GuestUser
+     * const guestUser = await prisma.guestUser.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends GuestUserFindUniqueOrThrowArgs>(args: SelectSubset<T, GuestUserFindUniqueOrThrowArgs<ExtArgs>>): Prisma__GuestUserClient<$Result.GetResult<Prisma.$GuestUserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first GuestUser that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {GuestUserFindFirstArgs} args - Arguments to find a GuestUser
+     * @example
+     * // Get one GuestUser
+     * const guestUser = await prisma.guestUser.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends GuestUserFindFirstArgs>(args?: SelectSubset<T, GuestUserFindFirstArgs<ExtArgs>>): Prisma__GuestUserClient<$Result.GetResult<Prisma.$GuestUserPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first GuestUser that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {GuestUserFindFirstOrThrowArgs} args - Arguments to find a GuestUser
+     * @example
+     * // Get one GuestUser
+     * const guestUser = await prisma.guestUser.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends GuestUserFindFirstOrThrowArgs>(args?: SelectSubset<T, GuestUserFindFirstOrThrowArgs<ExtArgs>>): Prisma__GuestUserClient<$Result.GetResult<Prisma.$GuestUserPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more GuestUsers that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {GuestUserFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all GuestUsers
+     * const guestUsers = await prisma.guestUser.findMany()
+     * 
+     * // Get first 10 GuestUsers
+     * const guestUsers = await prisma.guestUser.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const guestUserWithIdOnly = await prisma.guestUser.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends GuestUserFindManyArgs>(args?: SelectSubset<T, GuestUserFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$GuestUserPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a GuestUser.
+     * @param {GuestUserCreateArgs} args - Arguments to create a GuestUser.
+     * @example
+     * // Create one GuestUser
+     * const GuestUser = await prisma.guestUser.create({
+     *   data: {
+     *     // ... data to create a GuestUser
+     *   }
+     * })
+     * 
+     */
+    create<T extends GuestUserCreateArgs>(args: SelectSubset<T, GuestUserCreateArgs<ExtArgs>>): Prisma__GuestUserClient<$Result.GetResult<Prisma.$GuestUserPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many GuestUsers.
+     * @param {GuestUserCreateManyArgs} args - Arguments to create many GuestUsers.
+     * @example
+     * // Create many GuestUsers
+     * const guestUser = await prisma.guestUser.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends GuestUserCreateManyArgs>(args?: SelectSubset<T, GuestUserCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Delete a GuestUser.
+     * @param {GuestUserDeleteArgs} args - Arguments to delete one GuestUser.
+     * @example
+     * // Delete one GuestUser
+     * const GuestUser = await prisma.guestUser.delete({
+     *   where: {
+     *     // ... filter to delete one GuestUser
+     *   }
+     * })
+     * 
+     */
+    delete<T extends GuestUserDeleteArgs>(args: SelectSubset<T, GuestUserDeleteArgs<ExtArgs>>): Prisma__GuestUserClient<$Result.GetResult<Prisma.$GuestUserPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one GuestUser.
+     * @param {GuestUserUpdateArgs} args - Arguments to update one GuestUser.
+     * @example
+     * // Update one GuestUser
+     * const guestUser = await prisma.guestUser.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends GuestUserUpdateArgs>(args: SelectSubset<T, GuestUserUpdateArgs<ExtArgs>>): Prisma__GuestUserClient<$Result.GetResult<Prisma.$GuestUserPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more GuestUsers.
+     * @param {GuestUserDeleteManyArgs} args - Arguments to filter GuestUsers to delete.
+     * @example
+     * // Delete a few GuestUsers
+     * const { count } = await prisma.guestUser.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends GuestUserDeleteManyArgs>(args?: SelectSubset<T, GuestUserDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more GuestUsers.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {GuestUserUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many GuestUsers
+     * const guestUser = await prisma.guestUser.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends GuestUserUpdateManyArgs>(args: SelectSubset<T, GuestUserUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create or update one GuestUser.
+     * @param {GuestUserUpsertArgs} args - Arguments to update or create a GuestUser.
+     * @example
+     * // Update or create a GuestUser
+     * const guestUser = await prisma.guestUser.upsert({
+     *   create: {
+     *     // ... data to create a GuestUser
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the GuestUser we want to update
+     *   }
+     * })
+     */
+    upsert<T extends GuestUserUpsertArgs>(args: SelectSubset<T, GuestUserUpsertArgs<ExtArgs>>): Prisma__GuestUserClient<$Result.GetResult<Prisma.$GuestUserPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of GuestUsers.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {GuestUserCountArgs} args - Arguments to filter GuestUsers to count.
+     * @example
+     * // Count the number of GuestUsers
+     * const count = await prisma.guestUser.count({
+     *   where: {
+     *     // ... the filter for the GuestUsers we want to count
+     *   }
+     * })
+    **/
+    count<T extends GuestUserCountArgs>(
+      args?: Subset<T, GuestUserCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], GuestUserCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a GuestUser.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {GuestUserAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends GuestUserAggregateArgs>(args: Subset<T, GuestUserAggregateArgs>): Prisma.PrismaPromise<GetGuestUserAggregateType<T>>
+
+    /**
+     * Group by GuestUser.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {GuestUserGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends GuestUserGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: GuestUserGroupByArgs['orderBy'] }
+        : { orderBy?: GuestUserGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, GuestUserGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetGuestUserGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the GuestUser model
+   */
+  readonly fields: GuestUserFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for GuestUser.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__GuestUserClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    referrer<T extends GuestUser$referrerArgs<ExtArgs> = {}>(args?: Subset<T, GuestUser$referrerArgs<ExtArgs>>): Prisma__GuestUserClient<$Result.GetResult<Prisma.$GuestUserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+    referrals<T extends GuestUser$referralsArgs<ExtArgs> = {}>(args?: Subset<T, GuestUser$referralsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$GuestUserPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    searchLogs<T extends GuestUser$searchLogsArgs<ExtArgs> = {}>(args?: Subset<T, GuestUser$searchLogsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$SearchLogPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the GuestUser model
+   */
+  interface GuestUserFieldRefs {
+    readonly id: FieldRef<"GuestUser", 'String'>
+    readonly publicId: FieldRef<"GuestUser", 'String'>
+    readonly secretKeyHash: FieldRef<"GuestUser", 'String'>
+    readonly referrerId: FieldRef<"GuestUser", 'String'>
+    readonly searchBonus: FieldRef<"GuestUser", 'Int'>
+    readonly registerIp: FieldRef<"GuestUser", 'String'>
+    readonly lastLoginIp: FieldRef<"GuestUser", 'String'>
+    readonly lastLoginAt: FieldRef<"GuestUser", 'DateTime'>
+    readonly createdAt: FieldRef<"GuestUser", 'DateTime'>
+    readonly updatedAt: FieldRef<"GuestUser", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * GuestUser findUnique
+   */
+  export type GuestUserFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the GuestUser
+     */
+    select?: GuestUserSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the GuestUser
+     */
+    omit?: GuestUserOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: GuestUserInclude<ExtArgs> | null
+    /**
+     * Filter, which GuestUser to fetch.
+     */
+    where: GuestUserWhereUniqueInput
+  }
+
+  /**
+   * GuestUser findUniqueOrThrow
+   */
+  export type GuestUserFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the GuestUser
+     */
+    select?: GuestUserSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the GuestUser
+     */
+    omit?: GuestUserOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: GuestUserInclude<ExtArgs> | null
+    /**
+     * Filter, which GuestUser to fetch.
+     */
+    where: GuestUserWhereUniqueInput
+  }
+
+  /**
+   * GuestUser findFirst
+   */
+  export type GuestUserFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the GuestUser
+     */
+    select?: GuestUserSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the GuestUser
+     */
+    omit?: GuestUserOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: GuestUserInclude<ExtArgs> | null
+    /**
+     * Filter, which GuestUser to fetch.
+     */
+    where?: GuestUserWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of GuestUsers to fetch.
+     */
+    orderBy?: GuestUserOrderByWithRelationInput | GuestUserOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for GuestUsers.
+     */
+    cursor?: GuestUserWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` GuestUsers from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` GuestUsers.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of GuestUsers.
+     */
+    distinct?: GuestUserScalarFieldEnum | GuestUserScalarFieldEnum[]
+  }
+
+  /**
+   * GuestUser findFirstOrThrow
+   */
+  export type GuestUserFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the GuestUser
+     */
+    select?: GuestUserSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the GuestUser
+     */
+    omit?: GuestUserOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: GuestUserInclude<ExtArgs> | null
+    /**
+     * Filter, which GuestUser to fetch.
+     */
+    where?: GuestUserWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of GuestUsers to fetch.
+     */
+    orderBy?: GuestUserOrderByWithRelationInput | GuestUserOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for GuestUsers.
+     */
+    cursor?: GuestUserWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` GuestUsers from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` GuestUsers.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of GuestUsers.
+     */
+    distinct?: GuestUserScalarFieldEnum | GuestUserScalarFieldEnum[]
+  }
+
+  /**
+   * GuestUser findMany
+   */
+  export type GuestUserFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the GuestUser
+     */
+    select?: GuestUserSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the GuestUser
+     */
+    omit?: GuestUserOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: GuestUserInclude<ExtArgs> | null
+    /**
+     * Filter, which GuestUsers to fetch.
+     */
+    where?: GuestUserWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of GuestUsers to fetch.
+     */
+    orderBy?: GuestUserOrderByWithRelationInput | GuestUserOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing GuestUsers.
+     */
+    cursor?: GuestUserWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` GuestUsers from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` GuestUsers.
+     */
+    skip?: number
+    distinct?: GuestUserScalarFieldEnum | GuestUserScalarFieldEnum[]
+  }
+
+  /**
+   * GuestUser create
+   */
+  export type GuestUserCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the GuestUser
+     */
+    select?: GuestUserSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the GuestUser
+     */
+    omit?: GuestUserOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: GuestUserInclude<ExtArgs> | null
+    /**
+     * The data needed to create a GuestUser.
+     */
+    data: XOR<GuestUserCreateInput, GuestUserUncheckedCreateInput>
+  }
+
+  /**
+   * GuestUser createMany
+   */
+  export type GuestUserCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many GuestUsers.
+     */
+    data: GuestUserCreateManyInput | GuestUserCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * GuestUser update
+   */
+  export type GuestUserUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the GuestUser
+     */
+    select?: GuestUserSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the GuestUser
+     */
+    omit?: GuestUserOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: GuestUserInclude<ExtArgs> | null
+    /**
+     * The data needed to update a GuestUser.
+     */
+    data: XOR<GuestUserUpdateInput, GuestUserUncheckedUpdateInput>
+    /**
+     * Choose, which GuestUser to update.
+     */
+    where: GuestUserWhereUniqueInput
+  }
+
+  /**
+   * GuestUser updateMany
+   */
+  export type GuestUserUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update GuestUsers.
+     */
+    data: XOR<GuestUserUpdateManyMutationInput, GuestUserUncheckedUpdateManyInput>
+    /**
+     * Filter which GuestUsers to update
+     */
+    where?: GuestUserWhereInput
+    /**
+     * Limit how many GuestUsers to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * GuestUser upsert
+   */
+  export type GuestUserUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the GuestUser
+     */
+    select?: GuestUserSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the GuestUser
+     */
+    omit?: GuestUserOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: GuestUserInclude<ExtArgs> | null
+    /**
+     * The filter to search for the GuestUser to update in case it exists.
+     */
+    where: GuestUserWhereUniqueInput
+    /**
+     * In case the GuestUser found by the `where` argument doesn't exist, create a new GuestUser with this data.
+     */
+    create: XOR<GuestUserCreateInput, GuestUserUncheckedCreateInput>
+    /**
+     * In case the GuestUser was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<GuestUserUpdateInput, GuestUserUncheckedUpdateInput>
+  }
+
+  /**
+   * GuestUser delete
+   */
+  export type GuestUserDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the GuestUser
+     */
+    select?: GuestUserSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the GuestUser
+     */
+    omit?: GuestUserOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: GuestUserInclude<ExtArgs> | null
+    /**
+     * Filter which GuestUser to delete.
+     */
+    where: GuestUserWhereUniqueInput
+  }
+
+  /**
+   * GuestUser deleteMany
+   */
+  export type GuestUserDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which GuestUsers to delete
+     */
+    where?: GuestUserWhereInput
+    /**
+     * Limit how many GuestUsers to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * GuestUser.referrer
+   */
+  export type GuestUser$referrerArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the GuestUser
+     */
+    select?: GuestUserSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the GuestUser
+     */
+    omit?: GuestUserOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: GuestUserInclude<ExtArgs> | null
+    where?: GuestUserWhereInput
+  }
+
+  /**
+   * GuestUser.referrals
+   */
+  export type GuestUser$referralsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the GuestUser
+     */
+    select?: GuestUserSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the GuestUser
+     */
+    omit?: GuestUserOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: GuestUserInclude<ExtArgs> | null
+    where?: GuestUserWhereInput
+    orderBy?: GuestUserOrderByWithRelationInput | GuestUserOrderByWithRelationInput[]
+    cursor?: GuestUserWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: GuestUserScalarFieldEnum | GuestUserScalarFieldEnum[]
+  }
+
+  /**
+   * GuestUser.searchLogs
+   */
+  export type GuestUser$searchLogsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SearchLog
+     */
+    select?: SearchLogSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SearchLog
+     */
+    omit?: SearchLogOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SearchLogInclude<ExtArgs> | null
+    where?: SearchLogWhereInput
+    orderBy?: SearchLogOrderByWithRelationInput | SearchLogOrderByWithRelationInput[]
+    cursor?: SearchLogWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: SearchLogScalarFieldEnum | SearchLogScalarFieldEnum[]
+  }
+
+  /**
+   * GuestUser without action
+   */
+  export type GuestUserDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the GuestUser
+     */
+    select?: GuestUserSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the GuestUser
+     */
+    omit?: GuestUserOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: GuestUserInclude<ExtArgs> | null
   }
 
 
@@ -17291,6 +18587,7 @@ export namespace Prisma {
     visitorId: string | null
     ip: string | null
     socialUserId: string | null
+    guestUserId: string | null
     resultCount: number | null
     userAgent: string | null
     createdAt: Date | null
@@ -17303,6 +18600,7 @@ export namespace Prisma {
     visitorId: string | null
     ip: string | null
     socialUserId: string | null
+    guestUserId: string | null
     resultCount: number | null
     userAgent: string | null
     createdAt: Date | null
@@ -17315,6 +18613,7 @@ export namespace Prisma {
     visitorId: number
     ip: number
     socialUserId: number
+    guestUserId: number
     resultCount: number
     userAgent: number
     createdAt: number
@@ -17337,6 +18636,7 @@ export namespace Prisma {
     visitorId?: true
     ip?: true
     socialUserId?: true
+    guestUserId?: true
     resultCount?: true
     userAgent?: true
     createdAt?: true
@@ -17349,6 +18649,7 @@ export namespace Prisma {
     visitorId?: true
     ip?: true
     socialUserId?: true
+    guestUserId?: true
     resultCount?: true
     userAgent?: true
     createdAt?: true
@@ -17361,6 +18662,7 @@ export namespace Prisma {
     visitorId?: true
     ip?: true
     socialUserId?: true
+    guestUserId?: true
     resultCount?: true
     userAgent?: true
     createdAt?: true
@@ -17460,6 +18762,7 @@ export namespace Prisma {
     visitorId: string
     ip: string
     socialUserId: string | null
+    guestUserId: string | null
     resultCount: number
     userAgent: string | null
     createdAt: Date
@@ -17491,10 +18794,12 @@ export namespace Prisma {
     visitorId?: boolean
     ip?: boolean
     socialUserId?: boolean
+    guestUserId?: boolean
     resultCount?: boolean
     userAgent?: boolean
     createdAt?: boolean
     socialUser?: boolean | SearchLog$socialUserArgs<ExtArgs>
+    guestUser?: boolean | SearchLog$guestUserArgs<ExtArgs>
   }, ExtArgs["result"]["searchLog"]>
 
 
@@ -17506,20 +18811,23 @@ export namespace Prisma {
     visitorId?: boolean
     ip?: boolean
     socialUserId?: boolean
+    guestUserId?: boolean
     resultCount?: boolean
     userAgent?: boolean
     createdAt?: boolean
   }
 
-  export type SearchLogOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "source" | "keyword" | "visitorId" | "ip" | "socialUserId" | "resultCount" | "userAgent" | "createdAt", ExtArgs["result"]["searchLog"]>
+  export type SearchLogOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "source" | "keyword" | "visitorId" | "ip" | "socialUserId" | "guestUserId" | "resultCount" | "userAgent" | "createdAt", ExtArgs["result"]["searchLog"]>
   export type SearchLogInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     socialUser?: boolean | SearchLog$socialUserArgs<ExtArgs>
+    guestUser?: boolean | SearchLog$guestUserArgs<ExtArgs>
   }
 
   export type $SearchLogPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "SearchLog"
     objects: {
       socialUser: Prisma.$SocialUserPayload<ExtArgs> | null
+      guestUser: Prisma.$GuestUserPayload<ExtArgs> | null
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -17528,6 +18836,7 @@ export namespace Prisma {
       visitorId: string
       ip: string
       socialUserId: string | null
+      guestUserId: string | null
       resultCount: number
       userAgent: string | null
       createdAt: Date
@@ -17872,6 +19181,7 @@ export namespace Prisma {
   export interface Prisma__SearchLogClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
     socialUser<T extends SearchLog$socialUserArgs<ExtArgs> = {}>(args?: Subset<T, SearchLog$socialUserArgs<ExtArgs>>): Prisma__SocialUserClient<$Result.GetResult<Prisma.$SocialUserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+    guestUser<T extends SearchLog$guestUserArgs<ExtArgs> = {}>(args?: Subset<T, SearchLog$guestUserArgs<ExtArgs>>): Prisma__GuestUserClient<$Result.GetResult<Prisma.$GuestUserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -17907,6 +19217,7 @@ export namespace Prisma {
     readonly visitorId: FieldRef<"SearchLog", 'String'>
     readonly ip: FieldRef<"SearchLog", 'String'>
     readonly socialUserId: FieldRef<"SearchLog", 'String'>
+    readonly guestUserId: FieldRef<"SearchLog", 'String'>
     readonly resultCount: FieldRef<"SearchLog", 'Int'>
     readonly userAgent: FieldRef<"SearchLog", 'String'>
     readonly createdAt: FieldRef<"SearchLog", 'DateTime'>
@@ -18269,6 +19580,25 @@ export namespace Prisma {
      */
     include?: SocialUserInclude<ExtArgs> | null
     where?: SocialUserWhereInput
+  }
+
+  /**
+   * SearchLog.guestUser
+   */
+  export type SearchLog$guestUserArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the GuestUser
+     */
+    select?: GuestUserSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the GuestUser
+     */
+    omit?: GuestUserOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: GuestUserInclude<ExtArgs> | null
+    where?: GuestUserWhereInput
   }
 
   /**
@@ -19261,10 +20591,28 @@ export namespace Prisma {
     r2SecretAccessKey: 'r2SecretAccessKey',
     homeFeedMode: 'homeFeedMode',
     blockedKeywords: 'blockedKeywords',
+    dailySearchLimit: 'dailySearchLimit',
+    referralSearchBonus: 'referralSearchBonus',
     updatedAt: 'updatedAt'
   };
 
   export type SiteSettingsScalarFieldEnum = (typeof SiteSettingsScalarFieldEnum)[keyof typeof SiteSettingsScalarFieldEnum]
+
+
+  export const GuestUserScalarFieldEnum: {
+    id: 'id',
+    publicId: 'publicId',
+    secretKeyHash: 'secretKeyHash',
+    referrerId: 'referrerId',
+    searchBonus: 'searchBonus',
+    registerIp: 'registerIp',
+    lastLoginIp: 'lastLoginIp',
+    lastLoginAt: 'lastLoginAt',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt'
+  };
+
+  export type GuestUserScalarFieldEnum = (typeof GuestUserScalarFieldEnum)[keyof typeof GuestUserScalarFieldEnum]
 
 
   export const CategoryScalarFieldEnum: {
@@ -19468,6 +20816,7 @@ export namespace Prisma {
     visitorId: 'visitorId',
     ip: 'ip',
     socialUserId: 'socialUserId',
+    guestUserId: 'guestUserId',
     resultCount: 'resultCount',
     userAgent: 'userAgent',
     createdAt: 'createdAt'
@@ -19526,6 +20875,18 @@ export namespace Prisma {
   };
 
   export type SiteSettingsOrderByRelevanceFieldEnum = (typeof SiteSettingsOrderByRelevanceFieldEnum)[keyof typeof SiteSettingsOrderByRelevanceFieldEnum]
+
+
+  export const GuestUserOrderByRelevanceFieldEnum: {
+    id: 'id',
+    publicId: 'publicId',
+    secretKeyHash: 'secretKeyHash',
+    referrerId: 'referrerId',
+    registerIp: 'registerIp',
+    lastLoginIp: 'lastLoginIp'
+  };
+
+  export type GuestUserOrderByRelevanceFieldEnum = (typeof GuestUserOrderByRelevanceFieldEnum)[keyof typeof GuestUserOrderByRelevanceFieldEnum]
 
 
   export const CategoryOrderByRelevanceFieldEnum: {
@@ -19687,6 +21048,7 @@ export namespace Prisma {
     visitorId: 'visitorId',
     ip: 'ip',
     socialUserId: 'socialUserId',
+    guestUserId: 'guestUserId',
     userAgent: 'userAgent'
   };
 
@@ -19727,6 +21089,13 @@ export namespace Prisma {
 
 
   /**
+   * Reference to a field of type 'Int'
+   */
+  export type IntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Int'>
+    
+
+
+  /**
    * Reference to a field of type 'PostType'
    */
   export type EnumPostTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'PostType'>
@@ -19737,13 +21106,6 @@ export namespace Prisma {
    * Reference to a field of type 'PostStatus'
    */
   export type EnumPostStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'PostStatus'>
-    
-
-
-  /**
-   * Reference to a field of type 'Int'
-   */
-  export type IntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Int'>
     
 
 
@@ -19845,6 +21207,8 @@ export namespace Prisma {
     r2SecretAccessKey?: StringNullableFilter<"SiteSettings"> | string | null
     homeFeedMode?: StringFilter<"SiteSettings"> | string
     blockedKeywords?: StringNullableFilter<"SiteSettings"> | string | null
+    dailySearchLimit?: IntFilter<"SiteSettings"> | number
+    referralSearchBonus?: IntFilter<"SiteSettings"> | number
     updatedAt?: DateTimeFilter<"SiteSettings"> | Date | string
   }
 
@@ -19859,6 +21223,8 @@ export namespace Prisma {
     r2SecretAccessKey?: SortOrderInput | SortOrder
     homeFeedMode?: SortOrder
     blockedKeywords?: SortOrderInput | SortOrder
+    dailySearchLimit?: SortOrder
+    referralSearchBonus?: SortOrder
     updatedAt?: SortOrder
     _relevance?: SiteSettingsOrderByRelevanceInput
   }
@@ -19877,6 +21243,8 @@ export namespace Prisma {
     r2SecretAccessKey?: StringNullableFilter<"SiteSettings"> | string | null
     homeFeedMode?: StringFilter<"SiteSettings"> | string
     blockedKeywords?: StringNullableFilter<"SiteSettings"> | string | null
+    dailySearchLimit?: IntFilter<"SiteSettings"> | number
+    referralSearchBonus?: IntFilter<"SiteSettings"> | number
     updatedAt?: DateTimeFilter<"SiteSettings"> | Date | string
   }, "id">
 
@@ -19891,10 +21259,14 @@ export namespace Prisma {
     r2SecretAccessKey?: SortOrderInput | SortOrder
     homeFeedMode?: SortOrder
     blockedKeywords?: SortOrderInput | SortOrder
+    dailySearchLimit?: SortOrder
+    referralSearchBonus?: SortOrder
     updatedAt?: SortOrder
     _count?: SiteSettingsCountOrderByAggregateInput
+    _avg?: SiteSettingsAvgOrderByAggregateInput
     _max?: SiteSettingsMaxOrderByAggregateInput
     _min?: SiteSettingsMinOrderByAggregateInput
+    _sum?: SiteSettingsSumOrderByAggregateInput
   }
 
   export type SiteSettingsScalarWhereWithAggregatesInput = {
@@ -19911,7 +21283,98 @@ export namespace Prisma {
     r2SecretAccessKey?: StringNullableWithAggregatesFilter<"SiteSettings"> | string | null
     homeFeedMode?: StringWithAggregatesFilter<"SiteSettings"> | string
     blockedKeywords?: StringNullableWithAggregatesFilter<"SiteSettings"> | string | null
+    dailySearchLimit?: IntWithAggregatesFilter<"SiteSettings"> | number
+    referralSearchBonus?: IntWithAggregatesFilter<"SiteSettings"> | number
     updatedAt?: DateTimeWithAggregatesFilter<"SiteSettings"> | Date | string
+  }
+
+  export type GuestUserWhereInput = {
+    AND?: GuestUserWhereInput | GuestUserWhereInput[]
+    OR?: GuestUserWhereInput[]
+    NOT?: GuestUserWhereInput | GuestUserWhereInput[]
+    id?: StringFilter<"GuestUser"> | string
+    publicId?: StringFilter<"GuestUser"> | string
+    secretKeyHash?: StringFilter<"GuestUser"> | string
+    referrerId?: StringNullableFilter<"GuestUser"> | string | null
+    searchBonus?: IntFilter<"GuestUser"> | number
+    registerIp?: StringNullableFilter<"GuestUser"> | string | null
+    lastLoginIp?: StringNullableFilter<"GuestUser"> | string | null
+    lastLoginAt?: DateTimeNullableFilter<"GuestUser"> | Date | string | null
+    createdAt?: DateTimeFilter<"GuestUser"> | Date | string
+    updatedAt?: DateTimeFilter<"GuestUser"> | Date | string
+    referrer?: XOR<GuestUserNullableScalarRelationFilter, GuestUserWhereInput> | null
+    referrals?: GuestUserListRelationFilter
+    searchLogs?: SearchLogListRelationFilter
+  }
+
+  export type GuestUserOrderByWithRelationInput = {
+    id?: SortOrder
+    publicId?: SortOrder
+    secretKeyHash?: SortOrder
+    referrerId?: SortOrderInput | SortOrder
+    searchBonus?: SortOrder
+    registerIp?: SortOrderInput | SortOrder
+    lastLoginIp?: SortOrderInput | SortOrder
+    lastLoginAt?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    referrer?: GuestUserOrderByWithRelationInput
+    referrals?: GuestUserOrderByRelationAggregateInput
+    searchLogs?: SearchLogOrderByRelationAggregateInput
+    _relevance?: GuestUserOrderByRelevanceInput
+  }
+
+  export type GuestUserWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    publicId?: string
+    AND?: GuestUserWhereInput | GuestUserWhereInput[]
+    OR?: GuestUserWhereInput[]
+    NOT?: GuestUserWhereInput | GuestUserWhereInput[]
+    secretKeyHash?: StringFilter<"GuestUser"> | string
+    referrerId?: StringNullableFilter<"GuestUser"> | string | null
+    searchBonus?: IntFilter<"GuestUser"> | number
+    registerIp?: StringNullableFilter<"GuestUser"> | string | null
+    lastLoginIp?: StringNullableFilter<"GuestUser"> | string | null
+    lastLoginAt?: DateTimeNullableFilter<"GuestUser"> | Date | string | null
+    createdAt?: DateTimeFilter<"GuestUser"> | Date | string
+    updatedAt?: DateTimeFilter<"GuestUser"> | Date | string
+    referrer?: XOR<GuestUserNullableScalarRelationFilter, GuestUserWhereInput> | null
+    referrals?: GuestUserListRelationFilter
+    searchLogs?: SearchLogListRelationFilter
+  }, "id" | "publicId">
+
+  export type GuestUserOrderByWithAggregationInput = {
+    id?: SortOrder
+    publicId?: SortOrder
+    secretKeyHash?: SortOrder
+    referrerId?: SortOrderInput | SortOrder
+    searchBonus?: SortOrder
+    registerIp?: SortOrderInput | SortOrder
+    lastLoginIp?: SortOrderInput | SortOrder
+    lastLoginAt?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    _count?: GuestUserCountOrderByAggregateInput
+    _avg?: GuestUserAvgOrderByAggregateInput
+    _max?: GuestUserMaxOrderByAggregateInput
+    _min?: GuestUserMinOrderByAggregateInput
+    _sum?: GuestUserSumOrderByAggregateInput
+  }
+
+  export type GuestUserScalarWhereWithAggregatesInput = {
+    AND?: GuestUserScalarWhereWithAggregatesInput | GuestUserScalarWhereWithAggregatesInput[]
+    OR?: GuestUserScalarWhereWithAggregatesInput[]
+    NOT?: GuestUserScalarWhereWithAggregatesInput | GuestUserScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"GuestUser"> | string
+    publicId?: StringWithAggregatesFilter<"GuestUser"> | string
+    secretKeyHash?: StringWithAggregatesFilter<"GuestUser"> | string
+    referrerId?: StringNullableWithAggregatesFilter<"GuestUser"> | string | null
+    searchBonus?: IntWithAggregatesFilter<"GuestUser"> | number
+    registerIp?: StringNullableWithAggregatesFilter<"GuestUser"> | string | null
+    lastLoginIp?: StringNullableWithAggregatesFilter<"GuestUser"> | string | null
+    lastLoginAt?: DateTimeNullableWithAggregatesFilter<"GuestUser"> | Date | string | null
+    createdAt?: DateTimeWithAggregatesFilter<"GuestUser"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"GuestUser"> | Date | string
   }
 
   export type CategoryWhereInput = {
@@ -20935,10 +22398,12 @@ export namespace Prisma {
     visitorId?: StringFilter<"SearchLog"> | string
     ip?: StringFilter<"SearchLog"> | string
     socialUserId?: StringNullableFilter<"SearchLog"> | string | null
+    guestUserId?: StringNullableFilter<"SearchLog"> | string | null
     resultCount?: IntFilter<"SearchLog"> | number
     userAgent?: StringNullableFilter<"SearchLog"> | string | null
     createdAt?: DateTimeFilter<"SearchLog"> | Date | string
     socialUser?: XOR<SocialUserNullableScalarRelationFilter, SocialUserWhereInput> | null
+    guestUser?: XOR<GuestUserNullableScalarRelationFilter, GuestUserWhereInput> | null
   }
 
   export type SearchLogOrderByWithRelationInput = {
@@ -20948,10 +22413,12 @@ export namespace Prisma {
     visitorId?: SortOrder
     ip?: SortOrder
     socialUserId?: SortOrderInput | SortOrder
+    guestUserId?: SortOrderInput | SortOrder
     resultCount?: SortOrder
     userAgent?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     socialUser?: SocialUserOrderByWithRelationInput
+    guestUser?: GuestUserOrderByWithRelationInput
     _relevance?: SearchLogOrderByRelevanceInput
   }
 
@@ -20965,10 +22432,12 @@ export namespace Prisma {
     visitorId?: StringFilter<"SearchLog"> | string
     ip?: StringFilter<"SearchLog"> | string
     socialUserId?: StringNullableFilter<"SearchLog"> | string | null
+    guestUserId?: StringNullableFilter<"SearchLog"> | string | null
     resultCount?: IntFilter<"SearchLog"> | number
     userAgent?: StringNullableFilter<"SearchLog"> | string | null
     createdAt?: DateTimeFilter<"SearchLog"> | Date | string
     socialUser?: XOR<SocialUserNullableScalarRelationFilter, SocialUserWhereInput> | null
+    guestUser?: XOR<GuestUserNullableScalarRelationFilter, GuestUserWhereInput> | null
   }, "id">
 
   export type SearchLogOrderByWithAggregationInput = {
@@ -20978,6 +22447,7 @@ export namespace Prisma {
     visitorId?: SortOrder
     ip?: SortOrder
     socialUserId?: SortOrderInput | SortOrder
+    guestUserId?: SortOrderInput | SortOrder
     resultCount?: SortOrder
     userAgent?: SortOrderInput | SortOrder
     createdAt?: SortOrder
@@ -20998,6 +22468,7 @@ export namespace Prisma {
     visitorId?: StringWithAggregatesFilter<"SearchLog"> | string
     ip?: StringWithAggregatesFilter<"SearchLog"> | string
     socialUserId?: StringNullableWithAggregatesFilter<"SearchLog"> | string | null
+    guestUserId?: StringNullableWithAggregatesFilter<"SearchLog"> | string | null
     resultCount?: IntWithAggregatesFilter<"SearchLog"> | number
     userAgent?: StringNullableWithAggregatesFilter<"SearchLog"> | string | null
     createdAt?: DateTimeWithAggregatesFilter<"SearchLog"> | Date | string
@@ -21130,6 +22601,8 @@ export namespace Prisma {
     r2SecretAccessKey?: string | null
     homeFeedMode?: string
     blockedKeywords?: string | null
+    dailySearchLimit?: number
+    referralSearchBonus?: number
     updatedAt?: Date | string
   }
 
@@ -21144,6 +22617,8 @@ export namespace Prisma {
     r2SecretAccessKey?: string | null
     homeFeedMode?: string
     blockedKeywords?: string | null
+    dailySearchLimit?: number
+    referralSearchBonus?: number
     updatedAt?: Date | string
   }
 
@@ -21158,6 +22633,8 @@ export namespace Prisma {
     r2SecretAccessKey?: NullableStringFieldUpdateOperationsInput | string | null
     homeFeedMode?: StringFieldUpdateOperationsInput | string
     blockedKeywords?: NullableStringFieldUpdateOperationsInput | string | null
+    dailySearchLimit?: IntFieldUpdateOperationsInput | number
+    referralSearchBonus?: IntFieldUpdateOperationsInput | number
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
@@ -21172,6 +22649,8 @@ export namespace Prisma {
     r2SecretAccessKey?: NullableStringFieldUpdateOperationsInput | string | null
     homeFeedMode?: StringFieldUpdateOperationsInput | string
     blockedKeywords?: NullableStringFieldUpdateOperationsInput | string | null
+    dailySearchLimit?: IntFieldUpdateOperationsInput | number
+    referralSearchBonus?: IntFieldUpdateOperationsInput | number
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
@@ -21186,6 +22665,8 @@ export namespace Prisma {
     r2SecretAccessKey?: string | null
     homeFeedMode?: string
     blockedKeywords?: string | null
+    dailySearchLimit?: number
+    referralSearchBonus?: number
     updatedAt?: Date | string
   }
 
@@ -21200,6 +22681,8 @@ export namespace Prisma {
     r2SecretAccessKey?: NullableStringFieldUpdateOperationsInput | string | null
     homeFeedMode?: StringFieldUpdateOperationsInput | string
     blockedKeywords?: NullableStringFieldUpdateOperationsInput | string | null
+    dailySearchLimit?: IntFieldUpdateOperationsInput | number
+    referralSearchBonus?: IntFieldUpdateOperationsInput | number
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
@@ -21214,6 +22697,106 @@ export namespace Prisma {
     r2SecretAccessKey?: NullableStringFieldUpdateOperationsInput | string | null
     homeFeedMode?: StringFieldUpdateOperationsInput | string
     blockedKeywords?: NullableStringFieldUpdateOperationsInput | string | null
+    dailySearchLimit?: IntFieldUpdateOperationsInput | number
+    referralSearchBonus?: IntFieldUpdateOperationsInput | number
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type GuestUserCreateInput = {
+    id?: string
+    publicId: string
+    secretKeyHash: string
+    searchBonus?: number
+    registerIp?: string | null
+    lastLoginIp?: string | null
+    lastLoginAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    referrer?: GuestUserCreateNestedOneWithoutReferralsInput
+    referrals?: GuestUserCreateNestedManyWithoutReferrerInput
+    searchLogs?: SearchLogCreateNestedManyWithoutGuestUserInput
+  }
+
+  export type GuestUserUncheckedCreateInput = {
+    id?: string
+    publicId: string
+    secretKeyHash: string
+    referrerId?: string | null
+    searchBonus?: number
+    registerIp?: string | null
+    lastLoginIp?: string | null
+    lastLoginAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    referrals?: GuestUserUncheckedCreateNestedManyWithoutReferrerInput
+    searchLogs?: SearchLogUncheckedCreateNestedManyWithoutGuestUserInput
+  }
+
+  export type GuestUserUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    publicId?: StringFieldUpdateOperationsInput | string
+    secretKeyHash?: StringFieldUpdateOperationsInput | string
+    searchBonus?: IntFieldUpdateOperationsInput | number
+    registerIp?: NullableStringFieldUpdateOperationsInput | string | null
+    lastLoginIp?: NullableStringFieldUpdateOperationsInput | string | null
+    lastLoginAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    referrer?: GuestUserUpdateOneWithoutReferralsNestedInput
+    referrals?: GuestUserUpdateManyWithoutReferrerNestedInput
+    searchLogs?: SearchLogUpdateManyWithoutGuestUserNestedInput
+  }
+
+  export type GuestUserUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    publicId?: StringFieldUpdateOperationsInput | string
+    secretKeyHash?: StringFieldUpdateOperationsInput | string
+    referrerId?: NullableStringFieldUpdateOperationsInput | string | null
+    searchBonus?: IntFieldUpdateOperationsInput | number
+    registerIp?: NullableStringFieldUpdateOperationsInput | string | null
+    lastLoginIp?: NullableStringFieldUpdateOperationsInput | string | null
+    lastLoginAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    referrals?: GuestUserUncheckedUpdateManyWithoutReferrerNestedInput
+    searchLogs?: SearchLogUncheckedUpdateManyWithoutGuestUserNestedInput
+  }
+
+  export type GuestUserCreateManyInput = {
+    id?: string
+    publicId: string
+    secretKeyHash: string
+    referrerId?: string | null
+    searchBonus?: number
+    registerIp?: string | null
+    lastLoginIp?: string | null
+    lastLoginAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type GuestUserUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    publicId?: StringFieldUpdateOperationsInput | string
+    secretKeyHash?: StringFieldUpdateOperationsInput | string
+    searchBonus?: IntFieldUpdateOperationsInput | number
+    registerIp?: NullableStringFieldUpdateOperationsInput | string | null
+    lastLoginIp?: NullableStringFieldUpdateOperationsInput | string | null
+    lastLoginAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type GuestUserUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    publicId?: StringFieldUpdateOperationsInput | string
+    secretKeyHash?: StringFieldUpdateOperationsInput | string
+    referrerId?: NullableStringFieldUpdateOperationsInput | string | null
+    searchBonus?: IntFieldUpdateOperationsInput | number
+    registerIp?: NullableStringFieldUpdateOperationsInput | string | null
+    lastLoginIp?: NullableStringFieldUpdateOperationsInput | string | null
+    lastLoginAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
@@ -22341,6 +23924,7 @@ export namespace Prisma {
     userAgent?: string | null
     createdAt?: Date | string
     socialUser?: SocialUserCreateNestedOneWithoutSearchLogsInput
+    guestUser?: GuestUserCreateNestedOneWithoutSearchLogsInput
   }
 
   export type SearchLogUncheckedCreateInput = {
@@ -22350,6 +23934,7 @@ export namespace Prisma {
     visitorId: string
     ip: string
     socialUserId?: string | null
+    guestUserId?: string | null
     resultCount?: number
     userAgent?: string | null
     createdAt?: Date | string
@@ -22365,6 +23950,7 @@ export namespace Prisma {
     userAgent?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     socialUser?: SocialUserUpdateOneWithoutSearchLogsNestedInput
+    guestUser?: GuestUserUpdateOneWithoutSearchLogsNestedInput
   }
 
   export type SearchLogUncheckedUpdateInput = {
@@ -22374,6 +23960,7 @@ export namespace Prisma {
     visitorId?: StringFieldUpdateOperationsInput | string
     ip?: StringFieldUpdateOperationsInput | string
     socialUserId?: NullableStringFieldUpdateOperationsInput | string | null
+    guestUserId?: NullableStringFieldUpdateOperationsInput | string | null
     resultCount?: IntFieldUpdateOperationsInput | number
     userAgent?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -22386,6 +23973,7 @@ export namespace Prisma {
     visitorId: string
     ip: string
     socialUserId?: string | null
+    guestUserId?: string | null
     resultCount?: number
     userAgent?: string | null
     createdAt?: Date | string
@@ -22409,6 +23997,7 @@ export namespace Prisma {
     visitorId?: StringFieldUpdateOperationsInput | string
     ip?: StringFieldUpdateOperationsInput | string
     socialUserId?: NullableStringFieldUpdateOperationsInput | string | null
+    guestUserId?: NullableStringFieldUpdateOperationsInput | string | null
     resultCount?: IntFieldUpdateOperationsInput | number
     userAgent?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -22585,6 +24174,17 @@ export namespace Prisma {
     not?: NestedStringNullableFilter<$PrismaModel> | string | null
   }
 
+  export type IntFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel>
+    in?: number[]
+    notIn?: number[]
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntFilter<$PrismaModel> | number
+  }
+
   export type SortOrderInput = {
     sort: SortOrder
     nulls?: NullsOrder
@@ -22607,7 +24207,14 @@ export namespace Prisma {
     r2SecretAccessKey?: SortOrder
     homeFeedMode?: SortOrder
     blockedKeywords?: SortOrder
+    dailySearchLimit?: SortOrder
+    referralSearchBonus?: SortOrder
     updatedAt?: SortOrder
+  }
+
+  export type SiteSettingsAvgOrderByAggregateInput = {
+    dailySearchLimit?: SortOrder
+    referralSearchBonus?: SortOrder
   }
 
   export type SiteSettingsMaxOrderByAggregateInput = {
@@ -22621,6 +24228,8 @@ export namespace Prisma {
     r2SecretAccessKey?: SortOrder
     homeFeedMode?: SortOrder
     blockedKeywords?: SortOrder
+    dailySearchLimit?: SortOrder
+    referralSearchBonus?: SortOrder
     updatedAt?: SortOrder
   }
 
@@ -22635,7 +24244,14 @@ export namespace Prisma {
     r2SecretAccessKey?: SortOrder
     homeFeedMode?: SortOrder
     blockedKeywords?: SortOrder
+    dailySearchLimit?: SortOrder
+    referralSearchBonus?: SortOrder
     updatedAt?: SortOrder
+  }
+
+  export type SiteSettingsSumOrderByAggregateInput = {
+    dailySearchLimit?: SortOrder
+    referralSearchBonus?: SortOrder
   }
 
   export type BoolWithAggregatesFilter<$PrismaModel = never> = {
@@ -22662,6 +24278,125 @@ export namespace Prisma {
     _count?: NestedIntNullableFilter<$PrismaModel>
     _min?: NestedStringNullableFilter<$PrismaModel>
     _max?: NestedStringNullableFilter<$PrismaModel>
+  }
+
+  export type IntWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel>
+    in?: number[]
+    notIn?: number[]
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntWithAggregatesFilter<$PrismaModel> | number
+    _count?: NestedIntFilter<$PrismaModel>
+    _avg?: NestedFloatFilter<$PrismaModel>
+    _sum?: NestedIntFilter<$PrismaModel>
+    _min?: NestedIntFilter<$PrismaModel>
+    _max?: NestedIntFilter<$PrismaModel>
+  }
+
+  export type DateTimeNullableFilter<$PrismaModel = never> = {
+    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
+    in?: Date[] | string[] | null
+    notIn?: Date[] | string[] | null
+    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    not?: NestedDateTimeNullableFilter<$PrismaModel> | Date | string | null
+  }
+
+  export type GuestUserNullableScalarRelationFilter = {
+    is?: GuestUserWhereInput | null
+    isNot?: GuestUserWhereInput | null
+  }
+
+  export type GuestUserListRelationFilter = {
+    every?: GuestUserWhereInput
+    some?: GuestUserWhereInput
+    none?: GuestUserWhereInput
+  }
+
+  export type SearchLogListRelationFilter = {
+    every?: SearchLogWhereInput
+    some?: SearchLogWhereInput
+    none?: SearchLogWhereInput
+  }
+
+  export type GuestUserOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type SearchLogOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type GuestUserOrderByRelevanceInput = {
+    fields: GuestUserOrderByRelevanceFieldEnum | GuestUserOrderByRelevanceFieldEnum[]
+    sort: SortOrder
+    search: string
+  }
+
+  export type GuestUserCountOrderByAggregateInput = {
+    id?: SortOrder
+    publicId?: SortOrder
+    secretKeyHash?: SortOrder
+    referrerId?: SortOrder
+    searchBonus?: SortOrder
+    registerIp?: SortOrder
+    lastLoginIp?: SortOrder
+    lastLoginAt?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type GuestUserAvgOrderByAggregateInput = {
+    searchBonus?: SortOrder
+  }
+
+  export type GuestUserMaxOrderByAggregateInput = {
+    id?: SortOrder
+    publicId?: SortOrder
+    secretKeyHash?: SortOrder
+    referrerId?: SortOrder
+    searchBonus?: SortOrder
+    registerIp?: SortOrder
+    lastLoginIp?: SortOrder
+    lastLoginAt?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type GuestUserMinOrderByAggregateInput = {
+    id?: SortOrder
+    publicId?: SortOrder
+    secretKeyHash?: SortOrder
+    referrerId?: SortOrder
+    searchBonus?: SortOrder
+    registerIp?: SortOrder
+    lastLoginIp?: SortOrder
+    lastLoginAt?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type GuestUserSumOrderByAggregateInput = {
+    searchBonus?: SortOrder
+  }
+
+  export type DateTimeNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
+    in?: Date[] | string[] | null
+    notIn?: Date[] | string[] | null
+    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    not?: NestedDateTimeNullableWithAggregatesFilter<$PrismaModel> | Date | string | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedDateTimeNullableFilter<$PrismaModel>
+    _max?: NestedDateTimeNullableFilter<$PrismaModel>
   }
 
   export type PostListRelationFilter = {
@@ -22788,28 +24523,6 @@ export namespace Prisma {
     not?: NestedEnumPostStatusFilter<$PrismaModel> | $Enums.PostStatus
   }
 
-  export type IntFilter<$PrismaModel = never> = {
-    equals?: number | IntFieldRefInput<$PrismaModel>
-    in?: number[]
-    notIn?: number[]
-    lt?: number | IntFieldRefInput<$PrismaModel>
-    lte?: number | IntFieldRefInput<$PrismaModel>
-    gt?: number | IntFieldRefInput<$PrismaModel>
-    gte?: number | IntFieldRefInput<$PrismaModel>
-    not?: NestedIntFilter<$PrismaModel> | number
-  }
-
-  export type DateTimeNullableFilter<$PrismaModel = never> = {
-    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
-    in?: Date[] | string[] | null
-    notIn?: Date[] | string[] | null
-    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    not?: NestedDateTimeNullableFilter<$PrismaModel> | Date | string | null
-  }
-
   export type CategoryScalarRelationFilter = {
     is?: CategoryWhereInput
     isNot?: CategoryWhereInput
@@ -22934,53 +24647,13 @@ export namespace Prisma {
     _max?: NestedEnumPostStatusFilter<$PrismaModel>
   }
 
-  export type IntWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: number | IntFieldRefInput<$PrismaModel>
-    in?: number[]
-    notIn?: number[]
-    lt?: number | IntFieldRefInput<$PrismaModel>
-    lte?: number | IntFieldRefInput<$PrismaModel>
-    gt?: number | IntFieldRefInput<$PrismaModel>
-    gte?: number | IntFieldRefInput<$PrismaModel>
-    not?: NestedIntWithAggregatesFilter<$PrismaModel> | number
-    _count?: NestedIntFilter<$PrismaModel>
-    _avg?: NestedFloatFilter<$PrismaModel>
-    _sum?: NestedIntFilter<$PrismaModel>
-    _min?: NestedIntFilter<$PrismaModel>
-    _max?: NestedIntFilter<$PrismaModel>
-  }
-
-  export type DateTimeNullableWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
-    in?: Date[] | string[] | null
-    notIn?: Date[] | string[] | null
-    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    not?: NestedDateTimeNullableWithAggregatesFilter<$PrismaModel> | Date | string | null
-    _count?: NestedIntNullableFilter<$PrismaModel>
-    _min?: NestedDateTimeNullableFilter<$PrismaModel>
-    _max?: NestedDateTimeNullableFilter<$PrismaModel>
-  }
-
   export type PageVisitListRelationFilter = {
     every?: PageVisitWhereInput
     some?: PageVisitWhereInput
     none?: PageVisitWhereInput
   }
 
-  export type SearchLogListRelationFilter = {
-    every?: SearchLogWhereInput
-    some?: SearchLogWhereInput
-    none?: SearchLogWhereInput
-  }
-
   export type PageVisitOrderByRelationAggregateInput = {
-    _count?: SortOrder
-  }
-
-  export type SearchLogOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
@@ -23545,6 +25218,7 @@ export namespace Prisma {
     visitorId?: SortOrder
     ip?: SortOrder
     socialUserId?: SortOrder
+    guestUserId?: SortOrder
     resultCount?: SortOrder
     userAgent?: SortOrder
     createdAt?: SortOrder
@@ -23561,6 +25235,7 @@ export namespace Prisma {
     visitorId?: SortOrder
     ip?: SortOrder
     socialUserId?: SortOrder
+    guestUserId?: SortOrder
     resultCount?: SortOrder
     userAgent?: SortOrder
     createdAt?: SortOrder
@@ -23573,6 +25248,7 @@ export namespace Prisma {
     visitorId?: SortOrder
     ip?: SortOrder
     socialUserId?: SortOrder
+    guestUserId?: SortOrder
     resultCount?: SortOrder
     userAgent?: SortOrder
     createdAt?: SortOrder
@@ -23651,6 +25327,118 @@ export namespace Prisma {
 
   export type NullableStringFieldUpdateOperationsInput = {
     set?: string | null
+  }
+
+  export type IntFieldUpdateOperationsInput = {
+    set?: number
+    increment?: number
+    decrement?: number
+    multiply?: number
+    divide?: number
+  }
+
+  export type GuestUserCreateNestedOneWithoutReferralsInput = {
+    create?: XOR<GuestUserCreateWithoutReferralsInput, GuestUserUncheckedCreateWithoutReferralsInput>
+    connectOrCreate?: GuestUserCreateOrConnectWithoutReferralsInput
+    connect?: GuestUserWhereUniqueInput
+  }
+
+  export type GuestUserCreateNestedManyWithoutReferrerInput = {
+    create?: XOR<GuestUserCreateWithoutReferrerInput, GuestUserUncheckedCreateWithoutReferrerInput> | GuestUserCreateWithoutReferrerInput[] | GuestUserUncheckedCreateWithoutReferrerInput[]
+    connectOrCreate?: GuestUserCreateOrConnectWithoutReferrerInput | GuestUserCreateOrConnectWithoutReferrerInput[]
+    createMany?: GuestUserCreateManyReferrerInputEnvelope
+    connect?: GuestUserWhereUniqueInput | GuestUserWhereUniqueInput[]
+  }
+
+  export type SearchLogCreateNestedManyWithoutGuestUserInput = {
+    create?: XOR<SearchLogCreateWithoutGuestUserInput, SearchLogUncheckedCreateWithoutGuestUserInput> | SearchLogCreateWithoutGuestUserInput[] | SearchLogUncheckedCreateWithoutGuestUserInput[]
+    connectOrCreate?: SearchLogCreateOrConnectWithoutGuestUserInput | SearchLogCreateOrConnectWithoutGuestUserInput[]
+    createMany?: SearchLogCreateManyGuestUserInputEnvelope
+    connect?: SearchLogWhereUniqueInput | SearchLogWhereUniqueInput[]
+  }
+
+  export type GuestUserUncheckedCreateNestedManyWithoutReferrerInput = {
+    create?: XOR<GuestUserCreateWithoutReferrerInput, GuestUserUncheckedCreateWithoutReferrerInput> | GuestUserCreateWithoutReferrerInput[] | GuestUserUncheckedCreateWithoutReferrerInput[]
+    connectOrCreate?: GuestUserCreateOrConnectWithoutReferrerInput | GuestUserCreateOrConnectWithoutReferrerInput[]
+    createMany?: GuestUserCreateManyReferrerInputEnvelope
+    connect?: GuestUserWhereUniqueInput | GuestUserWhereUniqueInput[]
+  }
+
+  export type SearchLogUncheckedCreateNestedManyWithoutGuestUserInput = {
+    create?: XOR<SearchLogCreateWithoutGuestUserInput, SearchLogUncheckedCreateWithoutGuestUserInput> | SearchLogCreateWithoutGuestUserInput[] | SearchLogUncheckedCreateWithoutGuestUserInput[]
+    connectOrCreate?: SearchLogCreateOrConnectWithoutGuestUserInput | SearchLogCreateOrConnectWithoutGuestUserInput[]
+    createMany?: SearchLogCreateManyGuestUserInputEnvelope
+    connect?: SearchLogWhereUniqueInput | SearchLogWhereUniqueInput[]
+  }
+
+  export type NullableDateTimeFieldUpdateOperationsInput = {
+    set?: Date | string | null
+  }
+
+  export type GuestUserUpdateOneWithoutReferralsNestedInput = {
+    create?: XOR<GuestUserCreateWithoutReferralsInput, GuestUserUncheckedCreateWithoutReferralsInput>
+    connectOrCreate?: GuestUserCreateOrConnectWithoutReferralsInput
+    upsert?: GuestUserUpsertWithoutReferralsInput
+    disconnect?: GuestUserWhereInput | boolean
+    delete?: GuestUserWhereInput | boolean
+    connect?: GuestUserWhereUniqueInput
+    update?: XOR<XOR<GuestUserUpdateToOneWithWhereWithoutReferralsInput, GuestUserUpdateWithoutReferralsInput>, GuestUserUncheckedUpdateWithoutReferralsInput>
+  }
+
+  export type GuestUserUpdateManyWithoutReferrerNestedInput = {
+    create?: XOR<GuestUserCreateWithoutReferrerInput, GuestUserUncheckedCreateWithoutReferrerInput> | GuestUserCreateWithoutReferrerInput[] | GuestUserUncheckedCreateWithoutReferrerInput[]
+    connectOrCreate?: GuestUserCreateOrConnectWithoutReferrerInput | GuestUserCreateOrConnectWithoutReferrerInput[]
+    upsert?: GuestUserUpsertWithWhereUniqueWithoutReferrerInput | GuestUserUpsertWithWhereUniqueWithoutReferrerInput[]
+    createMany?: GuestUserCreateManyReferrerInputEnvelope
+    set?: GuestUserWhereUniqueInput | GuestUserWhereUniqueInput[]
+    disconnect?: GuestUserWhereUniqueInput | GuestUserWhereUniqueInput[]
+    delete?: GuestUserWhereUniqueInput | GuestUserWhereUniqueInput[]
+    connect?: GuestUserWhereUniqueInput | GuestUserWhereUniqueInput[]
+    update?: GuestUserUpdateWithWhereUniqueWithoutReferrerInput | GuestUserUpdateWithWhereUniqueWithoutReferrerInput[]
+    updateMany?: GuestUserUpdateManyWithWhereWithoutReferrerInput | GuestUserUpdateManyWithWhereWithoutReferrerInput[]
+    deleteMany?: GuestUserScalarWhereInput | GuestUserScalarWhereInput[]
+  }
+
+  export type SearchLogUpdateManyWithoutGuestUserNestedInput = {
+    create?: XOR<SearchLogCreateWithoutGuestUserInput, SearchLogUncheckedCreateWithoutGuestUserInput> | SearchLogCreateWithoutGuestUserInput[] | SearchLogUncheckedCreateWithoutGuestUserInput[]
+    connectOrCreate?: SearchLogCreateOrConnectWithoutGuestUserInput | SearchLogCreateOrConnectWithoutGuestUserInput[]
+    upsert?: SearchLogUpsertWithWhereUniqueWithoutGuestUserInput | SearchLogUpsertWithWhereUniqueWithoutGuestUserInput[]
+    createMany?: SearchLogCreateManyGuestUserInputEnvelope
+    set?: SearchLogWhereUniqueInput | SearchLogWhereUniqueInput[]
+    disconnect?: SearchLogWhereUniqueInput | SearchLogWhereUniqueInput[]
+    delete?: SearchLogWhereUniqueInput | SearchLogWhereUniqueInput[]
+    connect?: SearchLogWhereUniqueInput | SearchLogWhereUniqueInput[]
+    update?: SearchLogUpdateWithWhereUniqueWithoutGuestUserInput | SearchLogUpdateWithWhereUniqueWithoutGuestUserInput[]
+    updateMany?: SearchLogUpdateManyWithWhereWithoutGuestUserInput | SearchLogUpdateManyWithWhereWithoutGuestUserInput[]
+    deleteMany?: SearchLogScalarWhereInput | SearchLogScalarWhereInput[]
+  }
+
+  export type GuestUserUncheckedUpdateManyWithoutReferrerNestedInput = {
+    create?: XOR<GuestUserCreateWithoutReferrerInput, GuestUserUncheckedCreateWithoutReferrerInput> | GuestUserCreateWithoutReferrerInput[] | GuestUserUncheckedCreateWithoutReferrerInput[]
+    connectOrCreate?: GuestUserCreateOrConnectWithoutReferrerInput | GuestUserCreateOrConnectWithoutReferrerInput[]
+    upsert?: GuestUserUpsertWithWhereUniqueWithoutReferrerInput | GuestUserUpsertWithWhereUniqueWithoutReferrerInput[]
+    createMany?: GuestUserCreateManyReferrerInputEnvelope
+    set?: GuestUserWhereUniqueInput | GuestUserWhereUniqueInput[]
+    disconnect?: GuestUserWhereUniqueInput | GuestUserWhereUniqueInput[]
+    delete?: GuestUserWhereUniqueInput | GuestUserWhereUniqueInput[]
+    connect?: GuestUserWhereUniqueInput | GuestUserWhereUniqueInput[]
+    update?: GuestUserUpdateWithWhereUniqueWithoutReferrerInput | GuestUserUpdateWithWhereUniqueWithoutReferrerInput[]
+    updateMany?: GuestUserUpdateManyWithWhereWithoutReferrerInput | GuestUserUpdateManyWithWhereWithoutReferrerInput[]
+    deleteMany?: GuestUserScalarWhereInput | GuestUserScalarWhereInput[]
+  }
+
+  export type SearchLogUncheckedUpdateManyWithoutGuestUserNestedInput = {
+    create?: XOR<SearchLogCreateWithoutGuestUserInput, SearchLogUncheckedCreateWithoutGuestUserInput> | SearchLogCreateWithoutGuestUserInput[] | SearchLogUncheckedCreateWithoutGuestUserInput[]
+    connectOrCreate?: SearchLogCreateOrConnectWithoutGuestUserInput | SearchLogCreateOrConnectWithoutGuestUserInput[]
+    upsert?: SearchLogUpsertWithWhereUniqueWithoutGuestUserInput | SearchLogUpsertWithWhereUniqueWithoutGuestUserInput[]
+    createMany?: SearchLogCreateManyGuestUserInputEnvelope
+    set?: SearchLogWhereUniqueInput | SearchLogWhereUniqueInput[]
+    disconnect?: SearchLogWhereUniqueInput | SearchLogWhereUniqueInput[]
+    delete?: SearchLogWhereUniqueInput | SearchLogWhereUniqueInput[]
+    connect?: SearchLogWhereUniqueInput | SearchLogWhereUniqueInput[]
+    update?: SearchLogUpdateWithWhereUniqueWithoutGuestUserInput | SearchLogUpdateWithWhereUniqueWithoutGuestUserInput[]
+    updateMany?: SearchLogUpdateManyWithWhereWithoutGuestUserInput | SearchLogUpdateManyWithWhereWithoutGuestUserInput[]
+    deleteMany?: SearchLogScalarWhereInput | SearchLogScalarWhereInput[]
   }
 
   export type PostCreateNestedManyWithoutCategoryInput = {
@@ -23819,18 +25607,6 @@ export namespace Prisma {
 
   export type EnumPostStatusFieldUpdateOperationsInput = {
     set?: $Enums.PostStatus
-  }
-
-  export type IntFieldUpdateOperationsInput = {
-    set?: number
-    increment?: number
-    decrement?: number
-    multiply?: number
-    divide?: number
-  }
-
-  export type NullableDateTimeFieldUpdateOperationsInput = {
-    set?: Date | string | null
   }
 
   export type CategoryUpdateOneRequiredWithoutPostsNestedInput = {
@@ -24191,6 +25967,12 @@ export namespace Prisma {
     connect?: SocialUserWhereUniqueInput
   }
 
+  export type GuestUserCreateNestedOneWithoutSearchLogsInput = {
+    create?: XOR<GuestUserCreateWithoutSearchLogsInput, GuestUserUncheckedCreateWithoutSearchLogsInput>
+    connectOrCreate?: GuestUserCreateOrConnectWithoutSearchLogsInput
+    connect?: GuestUserWhereUniqueInput
+  }
+
   export type EnumSearchSourceFieldUpdateOperationsInput = {
     set?: $Enums.SearchSource
   }
@@ -24203,6 +25985,16 @@ export namespace Prisma {
     delete?: SocialUserWhereInput | boolean
     connect?: SocialUserWhereUniqueInput
     update?: XOR<XOR<SocialUserUpdateToOneWithWhereWithoutSearchLogsInput, SocialUserUpdateWithoutSearchLogsInput>, SocialUserUncheckedUpdateWithoutSearchLogsInput>
+  }
+
+  export type GuestUserUpdateOneWithoutSearchLogsNestedInput = {
+    create?: XOR<GuestUserCreateWithoutSearchLogsInput, GuestUserUncheckedCreateWithoutSearchLogsInput>
+    connectOrCreate?: GuestUserCreateOrConnectWithoutSearchLogsInput
+    upsert?: GuestUserUpsertWithoutSearchLogsInput
+    disconnect?: GuestUserWhereInput | boolean
+    delete?: GuestUserWhereInput | boolean
+    connect?: GuestUserWhereUniqueInput
+    update?: XOR<XOR<GuestUserUpdateToOneWithWhereWithoutSearchLogsInput, GuestUserUpdateWithoutSearchLogsInput>, GuestUserUncheckedUpdateWithoutSearchLogsInput>
   }
 
   export type NestedStringFilter<$PrismaModel = never> = {
@@ -24331,51 +26123,6 @@ export namespace Prisma {
     not?: NestedIntNullableFilter<$PrismaModel> | number | null
   }
 
-  export type NestedEnumPostTypeFilter<$PrismaModel = never> = {
-    equals?: $Enums.PostType | EnumPostTypeFieldRefInput<$PrismaModel>
-    in?: $Enums.PostType[]
-    notIn?: $Enums.PostType[]
-    not?: NestedEnumPostTypeFilter<$PrismaModel> | $Enums.PostType
-  }
-
-  export type NestedEnumPostStatusFilter<$PrismaModel = never> = {
-    equals?: $Enums.PostStatus | EnumPostStatusFieldRefInput<$PrismaModel>
-    in?: $Enums.PostStatus[]
-    notIn?: $Enums.PostStatus[]
-    not?: NestedEnumPostStatusFilter<$PrismaModel> | $Enums.PostStatus
-  }
-
-  export type NestedDateTimeNullableFilter<$PrismaModel = never> = {
-    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
-    in?: Date[] | string[] | null
-    notIn?: Date[] | string[] | null
-    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    not?: NestedDateTimeNullableFilter<$PrismaModel> | Date | string | null
-  }
-
-  export type NestedEnumPostTypeWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: $Enums.PostType | EnumPostTypeFieldRefInput<$PrismaModel>
-    in?: $Enums.PostType[]
-    notIn?: $Enums.PostType[]
-    not?: NestedEnumPostTypeWithAggregatesFilter<$PrismaModel> | $Enums.PostType
-    _count?: NestedIntFilter<$PrismaModel>
-    _min?: NestedEnumPostTypeFilter<$PrismaModel>
-    _max?: NestedEnumPostTypeFilter<$PrismaModel>
-  }
-
-  export type NestedEnumPostStatusWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: $Enums.PostStatus | EnumPostStatusFieldRefInput<$PrismaModel>
-    in?: $Enums.PostStatus[]
-    notIn?: $Enums.PostStatus[]
-    not?: NestedEnumPostStatusWithAggregatesFilter<$PrismaModel> | $Enums.PostStatus
-    _count?: NestedIntFilter<$PrismaModel>
-    _min?: NestedEnumPostStatusFilter<$PrismaModel>
-    _max?: NestedEnumPostStatusFilter<$PrismaModel>
-  }
-
   export type NestedIntWithAggregatesFilter<$PrismaModel = never> = {
     equals?: number | IntFieldRefInput<$PrismaModel>
     in?: number[]
@@ -24403,6 +26150,17 @@ export namespace Prisma {
     not?: NestedFloatFilter<$PrismaModel> | number
   }
 
+  export type NestedDateTimeNullableFilter<$PrismaModel = never> = {
+    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
+    in?: Date[] | string[] | null
+    notIn?: Date[] | string[] | null
+    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    not?: NestedDateTimeNullableFilter<$PrismaModel> | Date | string | null
+  }
+
   export type NestedDateTimeNullableWithAggregatesFilter<$PrismaModel = never> = {
     equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
     in?: Date[] | string[] | null
@@ -24415,6 +26173,40 @@ export namespace Prisma {
     _count?: NestedIntNullableFilter<$PrismaModel>
     _min?: NestedDateTimeNullableFilter<$PrismaModel>
     _max?: NestedDateTimeNullableFilter<$PrismaModel>
+  }
+
+  export type NestedEnumPostTypeFilter<$PrismaModel = never> = {
+    equals?: $Enums.PostType | EnumPostTypeFieldRefInput<$PrismaModel>
+    in?: $Enums.PostType[]
+    notIn?: $Enums.PostType[]
+    not?: NestedEnumPostTypeFilter<$PrismaModel> | $Enums.PostType
+  }
+
+  export type NestedEnumPostStatusFilter<$PrismaModel = never> = {
+    equals?: $Enums.PostStatus | EnumPostStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.PostStatus[]
+    notIn?: $Enums.PostStatus[]
+    not?: NestedEnumPostStatusFilter<$PrismaModel> | $Enums.PostStatus
+  }
+
+  export type NestedEnumPostTypeWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.PostType | EnumPostTypeFieldRefInput<$PrismaModel>
+    in?: $Enums.PostType[]
+    notIn?: $Enums.PostType[]
+    not?: NestedEnumPostTypeWithAggregatesFilter<$PrismaModel> | $Enums.PostType
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumPostTypeFilter<$PrismaModel>
+    _max?: NestedEnumPostTypeFilter<$PrismaModel>
+  }
+
+  export type NestedEnumPostStatusWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.PostStatus | EnumPostStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.PostStatus[]
+    notIn?: $Enums.PostStatus[]
+    not?: NestedEnumPostStatusWithAggregatesFilter<$PrismaModel> | $Enums.PostStatus
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumPostStatusFilter<$PrismaModel>
+    _max?: NestedEnumPostStatusFilter<$PrismaModel>
   }
 
   export type NestedEnumMediaTypeFilter<$PrismaModel = never> = {
@@ -24493,6 +26285,214 @@ export namespace Prisma {
     _count?: NestedIntFilter<$PrismaModel>
     _min?: NestedEnumSearchSourceFilter<$PrismaModel>
     _max?: NestedEnumSearchSourceFilter<$PrismaModel>
+  }
+
+  export type GuestUserCreateWithoutReferralsInput = {
+    id?: string
+    publicId: string
+    secretKeyHash: string
+    searchBonus?: number
+    registerIp?: string | null
+    lastLoginIp?: string | null
+    lastLoginAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    referrer?: GuestUserCreateNestedOneWithoutReferralsInput
+    searchLogs?: SearchLogCreateNestedManyWithoutGuestUserInput
+  }
+
+  export type GuestUserUncheckedCreateWithoutReferralsInput = {
+    id?: string
+    publicId: string
+    secretKeyHash: string
+    referrerId?: string | null
+    searchBonus?: number
+    registerIp?: string | null
+    lastLoginIp?: string | null
+    lastLoginAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    searchLogs?: SearchLogUncheckedCreateNestedManyWithoutGuestUserInput
+  }
+
+  export type GuestUserCreateOrConnectWithoutReferralsInput = {
+    where: GuestUserWhereUniqueInput
+    create: XOR<GuestUserCreateWithoutReferralsInput, GuestUserUncheckedCreateWithoutReferralsInput>
+  }
+
+  export type GuestUserCreateWithoutReferrerInput = {
+    id?: string
+    publicId: string
+    secretKeyHash: string
+    searchBonus?: number
+    registerIp?: string | null
+    lastLoginIp?: string | null
+    lastLoginAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    referrals?: GuestUserCreateNestedManyWithoutReferrerInput
+    searchLogs?: SearchLogCreateNestedManyWithoutGuestUserInput
+  }
+
+  export type GuestUserUncheckedCreateWithoutReferrerInput = {
+    id?: string
+    publicId: string
+    secretKeyHash: string
+    searchBonus?: number
+    registerIp?: string | null
+    lastLoginIp?: string | null
+    lastLoginAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    referrals?: GuestUserUncheckedCreateNestedManyWithoutReferrerInput
+    searchLogs?: SearchLogUncheckedCreateNestedManyWithoutGuestUserInput
+  }
+
+  export type GuestUserCreateOrConnectWithoutReferrerInput = {
+    where: GuestUserWhereUniqueInput
+    create: XOR<GuestUserCreateWithoutReferrerInput, GuestUserUncheckedCreateWithoutReferrerInput>
+  }
+
+  export type GuestUserCreateManyReferrerInputEnvelope = {
+    data: GuestUserCreateManyReferrerInput | GuestUserCreateManyReferrerInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type SearchLogCreateWithoutGuestUserInput = {
+    id?: string
+    source?: $Enums.SearchSource
+    keyword: string
+    visitorId: string
+    ip: string
+    resultCount?: number
+    userAgent?: string | null
+    createdAt?: Date | string
+    socialUser?: SocialUserCreateNestedOneWithoutSearchLogsInput
+  }
+
+  export type SearchLogUncheckedCreateWithoutGuestUserInput = {
+    id?: string
+    source?: $Enums.SearchSource
+    keyword: string
+    visitorId: string
+    ip: string
+    socialUserId?: string | null
+    resultCount?: number
+    userAgent?: string | null
+    createdAt?: Date | string
+  }
+
+  export type SearchLogCreateOrConnectWithoutGuestUserInput = {
+    where: SearchLogWhereUniqueInput
+    create: XOR<SearchLogCreateWithoutGuestUserInput, SearchLogUncheckedCreateWithoutGuestUserInput>
+  }
+
+  export type SearchLogCreateManyGuestUserInputEnvelope = {
+    data: SearchLogCreateManyGuestUserInput | SearchLogCreateManyGuestUserInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type GuestUserUpsertWithoutReferralsInput = {
+    update: XOR<GuestUserUpdateWithoutReferralsInput, GuestUserUncheckedUpdateWithoutReferralsInput>
+    create: XOR<GuestUserCreateWithoutReferralsInput, GuestUserUncheckedCreateWithoutReferralsInput>
+    where?: GuestUserWhereInput
+  }
+
+  export type GuestUserUpdateToOneWithWhereWithoutReferralsInput = {
+    where?: GuestUserWhereInput
+    data: XOR<GuestUserUpdateWithoutReferralsInput, GuestUserUncheckedUpdateWithoutReferralsInput>
+  }
+
+  export type GuestUserUpdateWithoutReferralsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    publicId?: StringFieldUpdateOperationsInput | string
+    secretKeyHash?: StringFieldUpdateOperationsInput | string
+    searchBonus?: IntFieldUpdateOperationsInput | number
+    registerIp?: NullableStringFieldUpdateOperationsInput | string | null
+    lastLoginIp?: NullableStringFieldUpdateOperationsInput | string | null
+    lastLoginAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    referrer?: GuestUserUpdateOneWithoutReferralsNestedInput
+    searchLogs?: SearchLogUpdateManyWithoutGuestUserNestedInput
+  }
+
+  export type GuestUserUncheckedUpdateWithoutReferralsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    publicId?: StringFieldUpdateOperationsInput | string
+    secretKeyHash?: StringFieldUpdateOperationsInput | string
+    referrerId?: NullableStringFieldUpdateOperationsInput | string | null
+    searchBonus?: IntFieldUpdateOperationsInput | number
+    registerIp?: NullableStringFieldUpdateOperationsInput | string | null
+    lastLoginIp?: NullableStringFieldUpdateOperationsInput | string | null
+    lastLoginAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    searchLogs?: SearchLogUncheckedUpdateManyWithoutGuestUserNestedInput
+  }
+
+  export type GuestUserUpsertWithWhereUniqueWithoutReferrerInput = {
+    where: GuestUserWhereUniqueInput
+    update: XOR<GuestUserUpdateWithoutReferrerInput, GuestUserUncheckedUpdateWithoutReferrerInput>
+    create: XOR<GuestUserCreateWithoutReferrerInput, GuestUserUncheckedCreateWithoutReferrerInput>
+  }
+
+  export type GuestUserUpdateWithWhereUniqueWithoutReferrerInput = {
+    where: GuestUserWhereUniqueInput
+    data: XOR<GuestUserUpdateWithoutReferrerInput, GuestUserUncheckedUpdateWithoutReferrerInput>
+  }
+
+  export type GuestUserUpdateManyWithWhereWithoutReferrerInput = {
+    where: GuestUserScalarWhereInput
+    data: XOR<GuestUserUpdateManyMutationInput, GuestUserUncheckedUpdateManyWithoutReferrerInput>
+  }
+
+  export type GuestUserScalarWhereInput = {
+    AND?: GuestUserScalarWhereInput | GuestUserScalarWhereInput[]
+    OR?: GuestUserScalarWhereInput[]
+    NOT?: GuestUserScalarWhereInput | GuestUserScalarWhereInput[]
+    id?: StringFilter<"GuestUser"> | string
+    publicId?: StringFilter<"GuestUser"> | string
+    secretKeyHash?: StringFilter<"GuestUser"> | string
+    referrerId?: StringNullableFilter<"GuestUser"> | string | null
+    searchBonus?: IntFilter<"GuestUser"> | number
+    registerIp?: StringNullableFilter<"GuestUser"> | string | null
+    lastLoginIp?: StringNullableFilter<"GuestUser"> | string | null
+    lastLoginAt?: DateTimeNullableFilter<"GuestUser"> | Date | string | null
+    createdAt?: DateTimeFilter<"GuestUser"> | Date | string
+    updatedAt?: DateTimeFilter<"GuestUser"> | Date | string
+  }
+
+  export type SearchLogUpsertWithWhereUniqueWithoutGuestUserInput = {
+    where: SearchLogWhereUniqueInput
+    update: XOR<SearchLogUpdateWithoutGuestUserInput, SearchLogUncheckedUpdateWithoutGuestUserInput>
+    create: XOR<SearchLogCreateWithoutGuestUserInput, SearchLogUncheckedCreateWithoutGuestUserInput>
+  }
+
+  export type SearchLogUpdateWithWhereUniqueWithoutGuestUserInput = {
+    where: SearchLogWhereUniqueInput
+    data: XOR<SearchLogUpdateWithoutGuestUserInput, SearchLogUncheckedUpdateWithoutGuestUserInput>
+  }
+
+  export type SearchLogUpdateManyWithWhereWithoutGuestUserInput = {
+    where: SearchLogScalarWhereInput
+    data: XOR<SearchLogUpdateManyMutationInput, SearchLogUncheckedUpdateManyWithoutGuestUserInput>
+  }
+
+  export type SearchLogScalarWhereInput = {
+    AND?: SearchLogScalarWhereInput | SearchLogScalarWhereInput[]
+    OR?: SearchLogScalarWhereInput[]
+    NOT?: SearchLogScalarWhereInput | SearchLogScalarWhereInput[]
+    id?: StringFilter<"SearchLog"> | string
+    source?: EnumSearchSourceFilter<"SearchLog"> | $Enums.SearchSource
+    keyword?: StringFilter<"SearchLog"> | string
+    visitorId?: StringFilter<"SearchLog"> | string
+    ip?: StringFilter<"SearchLog"> | string
+    socialUserId?: StringNullableFilter<"SearchLog"> | string | null
+    guestUserId?: StringNullableFilter<"SearchLog"> | string | null
+    resultCount?: IntFilter<"SearchLog"> | number
+    userAgent?: StringNullableFilter<"SearchLog"> | string | null
+    createdAt?: DateTimeFilter<"SearchLog"> | Date | string
   }
 
   export type PostCreateWithoutCategoryInput = {
@@ -25057,6 +27057,7 @@ export namespace Prisma {
     resultCount?: number
     userAgent?: string | null
     createdAt?: Date | string
+    guestUser?: GuestUserCreateNestedOneWithoutSearchLogsInput
   }
 
   export type SearchLogUncheckedCreateWithoutSocialUserInput = {
@@ -25065,6 +27066,7 @@ export namespace Prisma {
     keyword: string
     visitorId: string
     ip: string
+    guestUserId?: string | null
     resultCount?: number
     userAgent?: string | null
     createdAt?: Date | string
@@ -25141,21 +27143,6 @@ export namespace Prisma {
   export type SearchLogUpdateManyWithWhereWithoutSocialUserInput = {
     where: SearchLogScalarWhereInput
     data: XOR<SearchLogUpdateManyMutationInput, SearchLogUncheckedUpdateManyWithoutSocialUserInput>
-  }
-
-  export type SearchLogScalarWhereInput = {
-    AND?: SearchLogScalarWhereInput | SearchLogScalarWhereInput[]
-    OR?: SearchLogScalarWhereInput[]
-    NOT?: SearchLogScalarWhereInput | SearchLogScalarWhereInput[]
-    id?: StringFilter<"SearchLog"> | string
-    source?: EnumSearchSourceFilter<"SearchLog"> | $Enums.SearchSource
-    keyword?: StringFilter<"SearchLog"> | string
-    visitorId?: StringFilter<"SearchLog"> | string
-    ip?: StringFilter<"SearchLog"> | string
-    socialUserId?: StringNullableFilter<"SearchLog"> | string | null
-    resultCount?: IntFilter<"SearchLog"> | number
-    userAgent?: StringNullableFilter<"SearchLog"> | string | null
-    createdAt?: DateTimeFilter<"SearchLog"> | Date | string
   }
 
   export type PostCreateWithoutCommentsInput = {
@@ -25657,6 +27644,39 @@ export namespace Prisma {
     create: XOR<SocialUserCreateWithoutSearchLogsInput, SocialUserUncheckedCreateWithoutSearchLogsInput>
   }
 
+  export type GuestUserCreateWithoutSearchLogsInput = {
+    id?: string
+    publicId: string
+    secretKeyHash: string
+    searchBonus?: number
+    registerIp?: string | null
+    lastLoginIp?: string | null
+    lastLoginAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    referrer?: GuestUserCreateNestedOneWithoutReferralsInput
+    referrals?: GuestUserCreateNestedManyWithoutReferrerInput
+  }
+
+  export type GuestUserUncheckedCreateWithoutSearchLogsInput = {
+    id?: string
+    publicId: string
+    secretKeyHash: string
+    referrerId?: string | null
+    searchBonus?: number
+    registerIp?: string | null
+    lastLoginIp?: string | null
+    lastLoginAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    referrals?: GuestUserUncheckedCreateNestedManyWithoutReferrerInput
+  }
+
+  export type GuestUserCreateOrConnectWithoutSearchLogsInput = {
+    where: GuestUserWhereUniqueInput
+    create: XOR<GuestUserCreateWithoutSearchLogsInput, GuestUserUncheckedCreateWithoutSearchLogsInput>
+  }
+
   export type SocialUserUpsertWithoutSearchLogsInput = {
     update: XOR<SocialUserUpdateWithoutSearchLogsInput, SocialUserUncheckedUpdateWithoutSearchLogsInput>
     create: XOR<SocialUserCreateWithoutSearchLogsInput, SocialUserUncheckedCreateWithoutSearchLogsInput>
@@ -25696,6 +27716,145 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     comments?: CommentUncheckedUpdateManyWithoutAuthorNestedInput
     pageVisits?: PageVisitUncheckedUpdateManyWithoutSocialUserNestedInput
+  }
+
+  export type GuestUserUpsertWithoutSearchLogsInput = {
+    update: XOR<GuestUserUpdateWithoutSearchLogsInput, GuestUserUncheckedUpdateWithoutSearchLogsInput>
+    create: XOR<GuestUserCreateWithoutSearchLogsInput, GuestUserUncheckedCreateWithoutSearchLogsInput>
+    where?: GuestUserWhereInput
+  }
+
+  export type GuestUserUpdateToOneWithWhereWithoutSearchLogsInput = {
+    where?: GuestUserWhereInput
+    data: XOR<GuestUserUpdateWithoutSearchLogsInput, GuestUserUncheckedUpdateWithoutSearchLogsInput>
+  }
+
+  export type GuestUserUpdateWithoutSearchLogsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    publicId?: StringFieldUpdateOperationsInput | string
+    secretKeyHash?: StringFieldUpdateOperationsInput | string
+    searchBonus?: IntFieldUpdateOperationsInput | number
+    registerIp?: NullableStringFieldUpdateOperationsInput | string | null
+    lastLoginIp?: NullableStringFieldUpdateOperationsInput | string | null
+    lastLoginAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    referrer?: GuestUserUpdateOneWithoutReferralsNestedInput
+    referrals?: GuestUserUpdateManyWithoutReferrerNestedInput
+  }
+
+  export type GuestUserUncheckedUpdateWithoutSearchLogsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    publicId?: StringFieldUpdateOperationsInput | string
+    secretKeyHash?: StringFieldUpdateOperationsInput | string
+    referrerId?: NullableStringFieldUpdateOperationsInput | string | null
+    searchBonus?: IntFieldUpdateOperationsInput | number
+    registerIp?: NullableStringFieldUpdateOperationsInput | string | null
+    lastLoginIp?: NullableStringFieldUpdateOperationsInput | string | null
+    lastLoginAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    referrals?: GuestUserUncheckedUpdateManyWithoutReferrerNestedInput
+  }
+
+  export type GuestUserCreateManyReferrerInput = {
+    id?: string
+    publicId: string
+    secretKeyHash: string
+    searchBonus?: number
+    registerIp?: string | null
+    lastLoginIp?: string | null
+    lastLoginAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type SearchLogCreateManyGuestUserInput = {
+    id?: string
+    source?: $Enums.SearchSource
+    keyword: string
+    visitorId: string
+    ip: string
+    socialUserId?: string | null
+    resultCount?: number
+    userAgent?: string | null
+    createdAt?: Date | string
+  }
+
+  export type GuestUserUpdateWithoutReferrerInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    publicId?: StringFieldUpdateOperationsInput | string
+    secretKeyHash?: StringFieldUpdateOperationsInput | string
+    searchBonus?: IntFieldUpdateOperationsInput | number
+    registerIp?: NullableStringFieldUpdateOperationsInput | string | null
+    lastLoginIp?: NullableStringFieldUpdateOperationsInput | string | null
+    lastLoginAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    referrals?: GuestUserUpdateManyWithoutReferrerNestedInput
+    searchLogs?: SearchLogUpdateManyWithoutGuestUserNestedInput
+  }
+
+  export type GuestUserUncheckedUpdateWithoutReferrerInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    publicId?: StringFieldUpdateOperationsInput | string
+    secretKeyHash?: StringFieldUpdateOperationsInput | string
+    searchBonus?: IntFieldUpdateOperationsInput | number
+    registerIp?: NullableStringFieldUpdateOperationsInput | string | null
+    lastLoginIp?: NullableStringFieldUpdateOperationsInput | string | null
+    lastLoginAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    referrals?: GuestUserUncheckedUpdateManyWithoutReferrerNestedInput
+    searchLogs?: SearchLogUncheckedUpdateManyWithoutGuestUserNestedInput
+  }
+
+  export type GuestUserUncheckedUpdateManyWithoutReferrerInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    publicId?: StringFieldUpdateOperationsInput | string
+    secretKeyHash?: StringFieldUpdateOperationsInput | string
+    searchBonus?: IntFieldUpdateOperationsInput | number
+    registerIp?: NullableStringFieldUpdateOperationsInput | string | null
+    lastLoginIp?: NullableStringFieldUpdateOperationsInput | string | null
+    lastLoginAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type SearchLogUpdateWithoutGuestUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    source?: EnumSearchSourceFieldUpdateOperationsInput | $Enums.SearchSource
+    keyword?: StringFieldUpdateOperationsInput | string
+    visitorId?: StringFieldUpdateOperationsInput | string
+    ip?: StringFieldUpdateOperationsInput | string
+    resultCount?: IntFieldUpdateOperationsInput | number
+    userAgent?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    socialUser?: SocialUserUpdateOneWithoutSearchLogsNestedInput
+  }
+
+  export type SearchLogUncheckedUpdateWithoutGuestUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    source?: EnumSearchSourceFieldUpdateOperationsInput | $Enums.SearchSource
+    keyword?: StringFieldUpdateOperationsInput | string
+    visitorId?: StringFieldUpdateOperationsInput | string
+    ip?: StringFieldUpdateOperationsInput | string
+    socialUserId?: NullableStringFieldUpdateOperationsInput | string | null
+    resultCount?: IntFieldUpdateOperationsInput | number
+    userAgent?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type SearchLogUncheckedUpdateManyWithoutGuestUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    source?: EnumSearchSourceFieldUpdateOperationsInput | $Enums.SearchSource
+    keyword?: StringFieldUpdateOperationsInput | string
+    visitorId?: StringFieldUpdateOperationsInput | string
+    ip?: StringFieldUpdateOperationsInput | string
+    socialUserId?: NullableStringFieldUpdateOperationsInput | string | null
+    resultCount?: IntFieldUpdateOperationsInput | number
+    userAgent?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type PostCreateManyCategoryInput = {
@@ -25927,6 +28086,7 @@ export namespace Prisma {
     keyword: string
     visitorId: string
     ip: string
+    guestUserId?: string | null
     resultCount?: number
     userAgent?: string | null
     createdAt?: Date | string
@@ -26000,6 +28160,7 @@ export namespace Prisma {
     resultCount?: IntFieldUpdateOperationsInput | number
     userAgent?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    guestUser?: GuestUserUpdateOneWithoutSearchLogsNestedInput
   }
 
   export type SearchLogUncheckedUpdateWithoutSocialUserInput = {
@@ -26008,6 +28169,7 @@ export namespace Prisma {
     keyword?: StringFieldUpdateOperationsInput | string
     visitorId?: StringFieldUpdateOperationsInput | string
     ip?: StringFieldUpdateOperationsInput | string
+    guestUserId?: NullableStringFieldUpdateOperationsInput | string | null
     resultCount?: IntFieldUpdateOperationsInput | number
     userAgent?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -26019,6 +28181,7 @@ export namespace Prisma {
     keyword?: StringFieldUpdateOperationsInput | string
     visitorId?: StringFieldUpdateOperationsInput | string
     ip?: StringFieldUpdateOperationsInput | string
+    guestUserId?: NullableStringFieldUpdateOperationsInput | string | null
     resultCount?: IntFieldUpdateOperationsInput | number
     userAgent?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string

@@ -12,6 +12,7 @@ const routes: { test: (p: string) => boolean; title: string; subtitle: string }[
   { test: (p) => matchesAdminRoute(p, "/search-analytics"), title: "搜索统计", subtitle: "首页与 VIP 搜索明细、每日/每周热搜" },
   { test: (p) => matchesAdminRoute(p, "/comments"), title: "评论管理", subtitle: "审核与清理用户评论" },
   { test: (p) => matchesAdminRoute(p, "/social-users"), title: "登录用户", subtitle: "OAuth 用户与访问行为" },
+  { test: (p) => matchesAdminRoute(p, "/users"), title: "用户", subtitle: "匿名加密身份（GUA 自动注册）" },
   { test: (p) => matchesAdminRoute(p, "/media"), title: "媒体库", subtitle: "上传与管理图片、视频资源" },
   { test: (p) => matchesAdminRoute(p, "/storage"), title: "存储监控", subtitle: "R2 与本地 uploads 用量、图片/视频数量" },
   { test: (p) => matchesAdminRoute(p, "/taxonomy"), title: "分类与标签", subtitle: "维护栏目与话题标签" },

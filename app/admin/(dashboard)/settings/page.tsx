@@ -81,6 +81,33 @@ export default async function AdminSettingsPage({
             />
           </div>
 
+          <h2 style={{ margin: "22px 0 12px" }}>匿名身份与搜索配额</h2>
+          <p style={{ margin: "0 0 12px", color: "var(--muted)", fontSize: 13, lineHeight: 1.55 }}>
+            前台用户需先获取 GUA 匿名身份方可搜索。每日搜索次数 = 基础配额 + 邀请奖励累计次数。
+          </p>
+          <div className="field">
+            <label htmlFor="dailySearchLimit">每日基础搜索次数</label>
+            <input
+              id="dailySearchLimit"
+              name="dailySearchLimit"
+              type="number"
+              min={0}
+              max={999}
+              defaultValue={settings.dailySearchLimit}
+            />
+          </div>
+          <div className="field" style={{ marginBottom: 20 }}>
+            <label htmlFor="referralSearchBonus">每成功邀请一位额外次数</label>
+            <input
+              id="referralSearchBonus"
+              name="referralSearchBonus"
+              type="number"
+              min={0}
+              max={99}
+              defaultValue={settings.referralSearchBonus}
+            />
+          </div>
+
           <h2 style={{ margin: "0 0 16px" }}>评论</h2>
           <div className="field" style={{ marginBottom: 0 }}>
             <label style={{ display: "flex", alignItems: "center", gap: 12, cursor: "pointer" }}>

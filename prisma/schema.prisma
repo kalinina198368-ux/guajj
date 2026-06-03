@@ -52,7 +52,36 @@ model SiteSettings {
   homeFeedMode           String   @default("manual") @db.VarChar(16)
   /** 前台屏蔽关键词，每行一个；标题/摘要/正文命中则不在首页与搜索中展示 */
   blockedKeywords        String?  @db.LongText
+  /** 匿名用户每日搜索次数上限（基础值，不含邀请奖励） */
+  dailySearchLimit       Int      @default(3)
+  /** 每成功邀请一位新用户，邀请人额外获得的搜索次数 */
+  referralSearchBonus    Int      @default(1)
   updatedAt              DateTime @updatedAt
+}
+
+/** 前台匿名加密身份（GUA-xxx），用于搜索配额与裂变推广 */
+model GuestUser {
+  id              String      @id @default(cuid()) @db.VarChar(30)
+  publicId        String      @unique @db.VarChar(32)
+  secretKeyHash   String      @db.VarChar(255)
+  referrerId      String?     @db.VarChar(30)
+  referrer        GuestUser?  @relation("GuestReferral", fields: [referrerId], references: [id], onDelete: SetNull)
+  referrals       GuestUser[] @relation("GuestReferral")
+  /** 邀请奖励累计获得的额外搜索次数 */
+  searchBonus     Int         @default(0)
+  /** 注册时的客户端 IP */
+  registerIp      String?     @db.VarChar(45)
+  /** 最近一次登录/恢复会话时的 IP */
+  lastLoginIp     String?     @db.VarChar(45)
+  /** 最近一次登录/恢复会话时间 */
+  lastLoginAt     DateTime?
+  searchLogs      SearchLog[]
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+
+  @@index([referrerId])
+  @@index([createdAt])
+  @@index([lastLoginAt])
 }
 
 model Category {
@@ -290,6 +319,8 @@ model SearchLog {
   ip           String       @db.VarChar(45)
   socialUserId String?      @db.VarChar(30)
   socialUser   SocialUser?  @relation(fields: [socialUserId], references: [id], onDelete: SetNull)
+  guestUserId  String?      @db.VarChar(30)
+  guestUser    GuestUser?   @relation(fields: [guestUserId], references: [id], onDelete: SetNull)
   resultCount  Int          @default(0)
   userAgent    String?      @db.VarChar(512)
   createdAt    DateTime     @default(now())
@@ -299,6 +330,7 @@ model SearchLog {
   @@index([createdAt])
   @@index([visitorId, createdAt])
   @@index([socialUserId, createdAt])
+  @@index([guestUserId, createdAt])
 }
 
 /** 按日汇总的全站访问统计 */

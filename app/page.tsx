@@ -4,6 +4,7 @@ import { H5HomeShell } from "@/components/h5-home-shell";
 import { H5HeroCarousel } from "@/components/h5-hero-carousel";
 import { H5SiteBottomNav } from "@/components/h5-site-bottom-nav";
 import { H5StoryListCard } from "@/components/h5-story-list-card";
+import { SearchQuotaBlocked } from "@/components/search-quota-blocked";
 import {
   getHomeChannelFilterOptions,
   getHomeFeedItems,
@@ -12,6 +13,7 @@ import {
 } from "@/lib/home-feed";
 import { formatRelativeTime } from "@/lib/format-relative-time";
 import { recordSearchLogFromServer, SearchSource } from "@/lib/search-analytics";
+import { assertSearchAllowed } from "@/lib/search-quota";
 
 function formatDate(date?: Date | null) {
   if (!date) return "刚刚";
@@ -38,14 +40,17 @@ export default async function HomePage({
   const hasChannelFilter = channelIds.length > 0;
   const hasFilter = hasQuery || hasChannelFilter;
 
+  const quotaCheck = hasQuery ? await assertSearchAllowed() : null;
+  const searchBlocked = Boolean(hasQuery && quotaCheck && !quotaCheck.allowed);
+
   const [items, channelOptions] = await Promise.all([
-    hasFilter ? searchHomeFeed(q, channelIds) : getHomeFeedItems(),
+    hasFilter && !searchBlocked ? searchHomeFeed(q, channelIds) : !hasFilter ? getHomeFeedItems() : Promise.resolve([]),
     getHomeChannelFilterOptions()
   ]);
 
   const selectedChannelLabels = channelOptions.filter((c) => channelIds.includes(c.id)).map((c) => c.label);
 
-  if (hasQuery) {
+  if (hasQuery && !searchBlocked) {
     await recordSearchLogFromServer(SearchSource.HOME, q, items.length);
   }
 
@@ -105,7 +110,9 @@ export default async function HomePage({
                   清空
                 </Link>
               </div>
-              {items.length === 0 ? (
+              {searchBlocked && quotaCheck ? (
+                <SearchQuotaBlocked quota={quotaCheck.quota} variant="home" />
+              ) : items.length === 0 ? (
                 <p className="h5-empty">没有找到相关内容，换个关键词或频道试试。</p>
               ) : (
                 <div className="h5-story-grid">

@@ -1,7 +1,9 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { recordSearchLogFromServer, SearchSource } from "@/lib/search-analytics";
+import { assertSearchAllowed } from "@/lib/search-quota";
 import { VipBottomNav } from "@/components/vip-bottom-nav";
+import { SearchQuotaBlocked } from "@/components/search-quota-blocked";
 import { VipHotKeywords } from "@/components/vip-hot-keywords";
 import { VipLatestFeed } from "@/components/vip-latest-feed";
 import { VipSearchFilterTabs } from "@/components/vip-search-filter-tabs";
@@ -37,8 +39,10 @@ export default async function VipSearchPage({
   const hasQuery = q.length > 0;
   const page = parsePage(params.page);
   const tab = parseVipSearchTab(params.tab);
-  const result = hasQuery ? await searchIndexedMessages(q, page, undefined, tab) : null;
-  if (hasQuery && result && page === 1 && tab === "all") {
+  const quotaCheck = hasQuery && page === 1 ? await assertSearchAllowed() : null;
+  const searchBlocked = Boolean(hasQuery && page === 1 && quotaCheck && !quotaCheck.allowed);
+  const result = hasQuery && !searchBlocked ? await searchIndexedMessages(q, page, undefined, tab) : null;
+  if (hasQuery && result && page === 1 && tab === "all" && !searchBlocked) {
     await recordSearchLogFromServer(SearchSource.VIP, q, result.total);
   }
   const [hotKeywords, latestItems] = hasQuery
@@ -87,9 +91,9 @@ export default async function VipSearchPage({
                 </div>
                 <p className="h5-brand-sub">全网吃瓜 · 尽在VIP搜索</p>
               </Link>
-              <Link href="/vip" prefetch={false} className="vip-member-pill">
+              <Link href="/my" prefetch={false} className="vip-member-pill">
                 <span aria-hidden>👑</span>
-                VIP会员
+                我的身份
               </Link>
             </div>
             <form className="vip-search-bar" method="get" action="/vip">
@@ -118,6 +122,10 @@ export default async function VipSearchPage({
             <VipHotKeywords keywords={hotKeywords} />
             <VipLatestFeed items={latestItems} />
           </section>
+        ) : null}
+
+        {hasQuery && searchBlocked && quotaCheck ? (
+          <SearchQuotaBlocked quota={quotaCheck.quota} variant="vip" />
         ) : null}
 
         {hasQuery && result ? (

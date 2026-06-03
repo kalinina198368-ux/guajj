@@ -4,6 +4,7 @@ import {
   getRecentVisits,
   getTopPaths
 } from "@/lib/analytics";
+import { getGuestUserStatsOverview } from "@/lib/guest-user";
 
 function formatDateTime(value: Date) {
   return new Intl.DateTimeFormat("zh-CN", {
@@ -17,11 +18,12 @@ function formatDateTime(value: Date) {
 }
 
 export default async function AdminAnalyticsPage() {
-  const [overview, trend, topPaths, recentVisits] = await Promise.all([
+  const [overview, trend, topPaths, recentVisits, guestStats] = await Promise.all([
     getAnalyticsOverview(),
     getDailyTrend(14),
     getTopPaths(10),
-    getRecentVisits(50)
+    getRecentVisits(50),
+    getGuestUserStatsOverview()
   ]);
 
   return (
@@ -37,6 +39,15 @@ export default async function AdminAnalyticsPage() {
           今日登录访问<strong>{overview.today.loggedInPageViews}</strong>
         </div>
         <div className="admin-card admin-stat-card">
+          今日新增用户<strong>{guestStats.todayNew}</strong>
+        </div>
+        <div className="admin-card admin-stat-card">
+          匿名用户总数<strong>{guestStats.total}</strong>
+        </div>
+        <div className="admin-card admin-stat-card">
+          近 7 天新增用户<strong>{guestStats.weekNew}</strong>
+        </div>
+        <div className="admin-card admin-stat-card">
           近 7 天 PV<strong>{overview.week.pageViews}</strong>
         </div>
         <div className="admin-card admin-stat-card">
@@ -49,7 +60,8 @@ export default async function AdminAnalyticsPage() {
 
       <p className="admin-page-note" style={{ marginTop: 0 }}>
         昨日 PV {overview.yesterday.pageViews} · UV {overview.yesterday.uniqueVisitors} · 登录访问{" "}
-        {overview.yesterday.loggedInPageViews}。统计范围：全部前台页面（首页、文章、VIP 等），不含后台与 API。
+        {overview.yesterday.loggedInPageViews} · 新增用户 {guestStats.yesterdayNew}。统计范围：全部前台页面（首页、文章、VIP
+        等），不含后台与 API。「新增用户」为 GUA 匿名自动注册数。
       </p>
 
       <div className="admin-panel" style={{ marginBottom: 24 }}>

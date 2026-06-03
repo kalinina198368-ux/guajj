@@ -1,5 +1,6 @@
 import { cookies, headers } from "next/headers";
 import { isDocumentNavigation, readSocialUserIdFromCookieHeader } from "@/lib/analytics";
+import { readGuestUserIdFromCookieHeader } from "@/lib/guest-auth";
 import { getClientIpFromHeaders } from "@/lib/client-ip";
 import { SearchSource } from "@/lib/generated/prisma";
 import { prisma } from "@/lib/prisma";
@@ -15,6 +16,7 @@ export type RecordSearchLogInput = {
   visitorId: string;
   ip: string;
   socialUserId?: string | null;
+  guestUserId?: string | null;
   resultCount: number;
   userAgent?: string | null;
 };
@@ -59,6 +61,7 @@ export async function recordSearchLog(input: RecordSearchLogInput) {
       visitorId: truncate(input.visitorId, 64) ?? "unknown",
       ip: truncate(input.ip, 45) ?? "unknown",
       socialUserId: input.socialUserId ?? null,
+      guestUserId: input.guestUserId ?? null,
       resultCount: Math.max(0, input.resultCount),
       userAgent: truncate(input.userAgent, MAX_TEXT_LEN)
     }
@@ -78,6 +81,7 @@ export async function recordSearchLogFromServer(source: SearchSource, keyword: s
     visitorId,
     ip: getClientIpFromHeaders(hdrs),
     socialUserId: readSocialUserIdFromCookieHeader(cookieHeader),
+    guestUserId: readGuestUserIdFromCookieHeader(cookieHeader),
     resultCount,
     userAgent: hdrs.get("user-agent")
   });

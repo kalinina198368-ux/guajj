@@ -114,6 +114,17 @@ function IconUsers() {
   );
 }
 
+function IconGuestUser() {
+  return (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden>
+      <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+      <circle cx="12" cy="7" r="4" />
+      <rect x="15" y="11" width="8" height="10" rx="1" />
+      <path d="M17 15h4" />
+    </svg>
+  );
+}
+
 function isActive(pathname: string, item: NavItem) {
   if (item.end) return pathname === item.href;
   return pathname === item.href || pathname.startsWith(`${item.href}/`);
@@ -131,7 +142,8 @@ export default function AdminSidebar({ username }: { username: string }) {
       { href: path("/posts"), label: "内容", icon: <IconDoc /> },
       { href: path("/index-messages"), label: "索引内容", icon: <IconDoc /> },
       { href: path("/comments"), label: "评论", icon: <IconChat /> },
-      { href: path("/social-users"), label: "登录用户", icon: <IconUsers /> },
+      // { href: path("/social-users"), label: "登录用户", icon: <IconUsers /> },
+      { href: path("/users"), label: "用户", icon: <IconGuestUser /> },
       { href: path("/media"), label: "媒体", icon: <IconImage /> },
       { href: path("/storage"), label: "存储监控", icon: <IconStorage /> },
       { href: path("/taxonomy"), label: "分类标签", icon: <IconTags /> },

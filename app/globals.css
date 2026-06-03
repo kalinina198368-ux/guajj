@@ -3017,6 +3017,10 @@ textarea {
   grid-template-columns: 1fr 1fr !important;
 }
 
+.h5-site-bottom-nav--3 {
+  grid-template-columns: 1fr 1fr 1fr !important;
+}
+
 .h5-site-bottom-nav .h5-bottom-tab {
   display: flex;
   flex-direction: column;
@@ -4356,4 +4360,432 @@ button.h5-detail-img-cell:active {
   margin-top: 28px;
   font-size: 11px;
   color: #616161;
+}
+
+/* ---------- 匿名身份弹窗 ---------- */
+.guest-id-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  background: rgba(0, 0, 0, 0.72);
+  backdrop-filter: blur(6px);
+}
+
+.guest-id-modal {
+  position: relative;
+  width: min(100%, 400px);
+  max-height: min(92vh, 680px);
+  overflow-y: auto;
+  padding: 24px 20px 20px;
+  border-radius: 20px;
+  background: linear-gradient(165deg, #141820 0%, #0d1117 55%, #12151c 100%);
+  border: 1px solid rgba(255, 87, 34, 0.35);
+  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.55), 0 0 40px rgba(255, 87, 34, 0.08);
+  color: #e8eaed;
+}
+
+.guest-id-glow {
+  position: absolute;
+  top: -40px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 200px;
+  height: 80px;
+  background: radial-gradient(ellipse, rgba(255, 87, 34, 0.35) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.guest-id-head {
+  text-align: center;
+  margin-bottom: 18px;
+}
+
+.guest-id-badge {
+  display: inline-flex;
+  font-size: 32px;
+  margin-bottom: 8px;
+}
+
+.guest-id-title {
+  margin: 0 0 8px;
+  font-size: 22px;
+  font-weight: 900;
+  letter-spacing: 0.02em;
+  background: linear-gradient(90deg, #ff8a65, #ffd54f);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.guest-id-sub {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.55;
+  color: #9aa0a6;
+}
+
+.guest-id-loading {
+  text-align: center;
+  padding: 32px 0;
+  color: #9aa0a6;
+}
+
+.guest-id-spinner {
+  display: inline-block;
+  width: 28px;
+  height: 28px;
+  border: 3px solid rgba(255, 87, 34, 0.2);
+  border-top-color: #ff5722;
+  border-radius: 50%;
+  animation: guest-id-spin 0.8s linear infinite;
+  margin-bottom: 12px;
+}
+
+@keyframes guest-id-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.guest-id-card {
+  padding: 16px;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  margin-bottom: 14px;
+}
+
+.guest-id-card-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 14px;
+}
+
+.guest-id-card-logo {
+  font-size: 13px;
+  font-weight: 800;
+  color: #ffab91;
+}
+
+.guest-id-card-tag {
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  color: #5f6368;
+}
+
+.guest-id-field {
+  margin-bottom: 12px;
+}
+
+.guest-id-label {
+  display: block;
+  font-size: 11px;
+  font-weight: 700;
+  color: #9aa0a6;
+  margin-bottom: 4px;
+}
+
+.guest-id-value {
+  display: block;
+  font-size: 20px;
+  font-weight: 800;
+  font-family: ui-monospace, monospace;
+  color: #ffd54f;
+  word-break: break-all;
+}
+
+.guest-id-value--secret {
+  font-size: 15px;
+  color: #80cbc4;
+}
+
+.guest-id-card-foot {
+  margin: 12px 0 0;
+  font-size: 11px;
+  line-height: 1.5;
+  color: #80868b;
+}
+
+.guest-id-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.guest-id-btn {
+  display: block;
+  width: 100%;
+  padding: 12px 14px;
+  border-radius: 12px;
+  border: 0;
+  font-size: 14px;
+  font-weight: 800;
+  font-family: inherit;
+  cursor: pointer;
+  transition: opacity 0.15s, transform 0.15s;
+}
+
+.guest-id-btn--outline {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: #e8eaed;
+}
+
+.guest-id-btn--primary {
+  background: #424242;
+  color: #9e9e9e;
+}
+
+.guest-id-btn--primary.is-ready {
+  background: linear-gradient(135deg, #ff5722, #ff8a65);
+  color: #fff;
+  box-shadow: 0 8px 24px rgba(255, 87, 34, 0.35);
+}
+
+.guest-id-btn--enter {
+  margin-top: 4px;
+}
+
+.guest-id-btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.85;
+}
+
+.guest-id-error,
+.guest-id-inline-err {
+  color: #ff8a80;
+  font-size: 13px;
+  text-align: center;
+}
+
+/* ---------- 我的页面 ---------- */
+.my-page.site-shell {
+  padding-bottom: max(76px, calc(62px + env(safe-area-inset-bottom, 0px)));
+}
+
+.my-no-session {
+  text-align: center;
+  padding: 40px 16px;
+  color: #757575;
+  font-weight: 600;
+}
+
+.my-quota-banner {
+  margin: 16px 0 20px;
+  padding: 18px 16px;
+  border-radius: 16px;
+  background: linear-gradient(135deg, rgba(255, 87, 34, 0.12), rgba(255, 193, 7, 0.08));
+  border: 1px solid rgba(255, 87, 34, 0.25);
+}
+
+.my-quota-title {
+  margin: 0 0 6px;
+  font-size: 13px;
+  font-weight: 700;
+  color: #757575;
+}
+
+.my-quota-numbers {
+  margin: 0 0 8px;
+  font-size: 15px;
+  color: #424242;
+}
+
+.my-quota-numbers strong {
+  font-size: 32px;
+  font-weight: 900;
+  color: #ff5722;
+}
+
+.my-quota-tip {
+  margin: 0;
+  font-size: 12px;
+  line-height: 1.55;
+  color: #616161;
+}
+
+.my-identity-table {
+  margin-bottom: 20px;
+  border-radius: 14px;
+  overflow: hidden;
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  background: #fff;
+}
+
+.my-identity-table table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.my-identity-table th {
+  width: 88px;
+  padding: 12px 12px 12px 14px;
+  text-align: left;
+  vertical-align: top;
+  font-weight: 800;
+  color: #757575;
+  background: #fafafa;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.my-identity-table td {
+  padding: 10px 12px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+  vertical-align: top;
+}
+
+.my-cell-value {
+  display: block;
+  word-break: break-all;
+  color: #212121;
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+.my-cell-btn {
+  display: inline-block;
+  margin-right: 8px;
+  padding: 4px 10px;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 87, 34, 0.35);
+  background: rgba(255, 87, 34, 0.08);
+  color: #ff5722;
+  font-size: 11px;
+  font-weight: 800;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.my-recover-card {
+  padding: 16px;
+  border-radius: 14px;
+  background: #fafafa;
+  border: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+.my-recover-title {
+  margin: 0 0 6px;
+  font-size: 15px;
+  font-weight: 800;
+}
+
+.my-recover-desc {
+  margin: 0 0 12px;
+  font-size: 12px;
+  color: #757575;
+  line-height: 1.5;
+}
+
+.my-recover-fields {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.my-recover-input {
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  font-size: 14px;
+  font-family: ui-monospace, monospace;
+}
+
+.my-recover-btn {
+  width: 100%;
+  padding: 12px;
+  border-radius: 12px;
+  border: 0;
+  background: #ff5722;
+  color: #fff;
+  font-weight: 800;
+  font-size: 14px;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.my-recover-msg {
+  margin: 10px 0 0;
+  font-size: 13px;
+  color: #ff5722;
+  font-weight: 600;
+}
+
+/* ---------- 搜索配额拦截 ---------- */
+.search-quota-blocked {
+  margin: 20px 0;
+}
+
+.search-quota-blocked-inner {
+  padding: 24px 18px;
+  border-radius: 16px;
+  text-align: center;
+}
+
+.search-quota-blocked--home .search-quota-blocked-inner {
+  background: rgba(255, 87, 34, 0.06);
+  border: 1px dashed rgba(255, 87, 34, 0.35);
+}
+
+.search-quota-blocked--vip .search-quota-blocked-inner {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px dashed rgba(255, 87, 34, 0.35);
+}
+
+.search-quota-blocked-icon {
+  font-size: 36px;
+  display: block;
+  margin-bottom: 10px;
+}
+
+.search-quota-blocked-title {
+  margin: 0 0 8px;
+  font-size: 18px;
+  font-weight: 900;
+}
+
+.search-quota-blocked--home .search-quota-blocked-title {
+  color: #424242;
+}
+
+.search-quota-blocked--vip .search-quota-blocked-title {
+  color: #fff;
+}
+
+.search-quota-blocked-desc {
+  margin: 0 0 12px;
+  font-size: 13px;
+  line-height: 1.55;
+}
+
+.search-quota-blocked--home .search-quota-blocked-desc {
+  color: #616161;
+}
+
+.search-quota-blocked--vip .search-quota-blocked-desc {
+  color: #bdbdbd;
+}
+
+.search-quota-blocked-link {
+  display: inline-block;
+  font-size: 14px;
+  font-weight: 800;
+  color: #ff5722;
+  text-decoration: none;
+}
+
+.search-quota-blocked-ref {
+  margin: 10px 0 0;
+  font-size: 11px;
+  color: #9e9e9e;
+  word-break: break-all;
 }

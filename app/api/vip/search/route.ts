@@ -1,5 +1,12 @@
 import { NextResponse } from "next/server";
 import { searchIndexedMessages, VIP_SEARCH_PAGE_SIZE } from "@/lib/tg-index-search";
+import { assertSearchAllowed } from "@/lib/search-quota";
+import { recordSearchLog } from "@/lib/search-analytics";
+import { SearchSource } from "@/lib/generated/prisma";
+import { cookies, headers } from "next/headers";
+import { getClientIpFromHeaders } from "@/lib/client-ip";
+import { readGuestUserIdFromCookieHeader } from "@/lib/guest-auth";
+import { readSocialUserIdFromCookieHeader } from "@/lib/analytics";
 
 export const dynamic = "force-dynamic";
 
@@ -20,7 +27,42 @@ export async function GET(request: Request) {
     return NextResponse.json({ ok: true, q: "", items: [], total: 0, page: 1, pageSize, totalPages: 0 });
   }
 
+  if (page === 1) {
+    const check = await assertSearchAllowed();
+    if (!check.allowed) {
+      return NextResponse.json(
+        {
+          ok: false,
+          error: "daily_limit",
+          quota: {
+            used: check.quota.used,
+            limit: check.quota.limit,
+            remaining: check.quota.remaining,
+            hasIdentity: check.quota.hasIdentity
+          }
+        },
+        { status: 429 }
+      );
+    }
+  }
+
   const result = await searchIndexedMessages(q, page, pageSize);
+
+  if (page === 1) {
+    const [cookieStore, hdrs] = await Promise.all([cookies(), headers()]);
+    const cookieHeader = hdrs.get("cookie") ?? "";
+    await recordSearchLog({
+      source: SearchSource.VIP,
+      keyword: q,
+      visitorId: cookieStore.get("cg_vid")?.value?.trim() || "unknown",
+      ip: getClientIpFromHeaders(hdrs),
+      socialUserId: readSocialUserIdFromCookieHeader(cookieHeader),
+      guestUserId: readGuestUserIdFromCookieHeader(cookieHeader),
+      resultCount: result.total,
+      userAgent: hdrs.get("user-agent")
+    });
+  }
+
   return NextResponse.json({
     ok: true,
     q,
