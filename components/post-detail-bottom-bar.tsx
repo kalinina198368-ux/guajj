@@ -2,7 +2,7 @@
 
 import { useCallback } from "react";
 
-export function PostDetailBottomBar({ heat }: { heat: number }) {
+export function PostDetailBottomBar() {
   const goComment = useCallback(() => {
     document.getElementById("comments")?.scrollIntoView({ behavior: "smooth", block: "start" });
     window.setTimeout(() => {
@@ -18,12 +18,6 @@ export function PostDetailBottomBar({ heat }: { heat: number }) {
         </span>
         说点什么…
       </button>
-      <div className="h5-detail-dock-actions">
-        <span className="h5-detail-dock-stat" title="热度">
-          <span aria-hidden>🔥</span>
-          {heat}
-        </span>
-      </div>
     </div>
   );
 }

@@ -70,7 +70,7 @@ export default async function HomePage({
 
   const filterMetaParts: string[] = [];
   if (hasQuery) filterMetaParts.push(`「${q}」`);
-  if (hasChannelFilter) filterMetaParts.push(`频道：${selectedChannelLabels.join("、") || `${channelIds.length} 个`}`);
+  if (hasChannelFilter) filterMetaParts.push(`类型：${selectedChannelLabels.join("、") || `${channelIds.length} 个`}`);
 
   return (
     <main className="site-shell h5-home">
@@ -101,7 +101,7 @@ export default async function HomePage({
             <section className="h5-section h5-search-results" aria-labelledby="search-results-title">
               <div className="h5-search-result-head">
                 <h2 id="search-results-title" className="h5-section-title">
-                  {hasQuery ? "搜索结果" : "频道筛选"}
+                  {hasQuery ? "搜索结果" : "类型筛选"}
                   <span className="h5-search-meta">
                     {filterMetaParts.join(" · ")} · 共 {items.length} 条
                   </span>
@@ -113,7 +113,7 @@ export default async function HomePage({
               {searchBlocked && quotaCheck ? (
                 <SearchQuotaBlocked quota={quotaCheck.quota} variant="home" />
               ) : items.length === 0 ? (
-                <p className="h5-empty">没有找到相关内容，换个关键词或频道试试。</p>
+                <p className="h5-empty">没有找到相关内容，换个关键词或类型试试。</p>
               ) : (
                 <div className="h5-story-grid">
                   {items.map((item) => (
@@ -125,7 +125,6 @@ export default async function HomePage({
                       summary={item.summary}
                       categoryName={item.categoryName}
                       timeLabel={formatRelativeTime(item.publishedAt)}
-                      views={item.views}
                       tiles={item.tiles}
                       tagToneClass={tagToneClass(item.categoryName)}
                     />
@@ -161,7 +160,6 @@ export default async function HomePage({
                     summary={item.summary}
                     categoryName={item.categoryName}
                     timeLabel={formatDate(item.publishedAt)}
-                    views={item.views}
                     tiles={item.tiles}
                     tagToneClass={tagToneClass(item.categoryName)}
                   />

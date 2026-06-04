@@ -116,8 +116,18 @@ export default function IndexMessageForm({
         <input id="idx-duration" name="durationSec" type="number" min={0} defaultValue={item.durationSec ?? ""} />
       </div>
       <div className="field">
-        <label htmlFor="idx-heat">热度 heat（首页热榜排序）</label>
+        <label htmlFor="idx-views">浏览量</label>
+        <input id="idx-views" name="views" type="number" min={0} step={1} defaultValue={item.views} />
+        <span style={{ color: "var(--muted)", fontSize: 12, display: "block", marginTop: 4 }}>
+          访客打开索引详情会自动累加，可在此手工修正。仅后台可见，前台不展示。
+        </span>
+      </div>
+      <div className="field">
+        <label htmlFor="idx-heat">排序热度 heat</label>
         <input id="idx-heat" name="heat" type="number" min={0} defaultValue={item.heat} />
+        <span style={{ color: "var(--muted)", fontSize: 12, display: "block", marginTop: 4 }}>
+          用于后台列表排序权重，与浏览量独立。
+        </span>
       </div>
 
       <div className="field">

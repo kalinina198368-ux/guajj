@@ -1,7 +1,7 @@
 import Link from "next/link";
 import type { TgIndexedMessage } from "@/lib/generated/prisma";
 import { buildVipDetailHref, formatMessageDate } from "@/lib/tg-index-display";
-import { formatHeat, vipSourceLabel, vipTextBadgeTone } from "@/lib/vip-result-display";
+import { vipSourceLabel, vipTextBadgeTone } from "@/lib/vip-result-display";
 
 export function VipLatestFeed({ items }: { items: TgIndexedMessage[] }) {
   if (items.length === 0) return null;
@@ -27,10 +27,6 @@ export function VipLatestFeed({ items }: { items: TgIndexedMessage[] }) {
                 <span className="vip-latest-foot">
                   <span className="vip-latest-meta">
                     来自：{vipSourceLabel(item)} · {formatMessageDate(item.messageDate)}
-                  </span>
-                  <span className="vip-result-heat">
-                    <span aria-hidden>🔥</span>
-                    {formatHeat(item.heat)}
                   </span>
                 </span>
               </span>

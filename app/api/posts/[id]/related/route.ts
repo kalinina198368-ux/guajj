@@ -22,7 +22,6 @@ export async function GET(_request: Request, { params }: { params: Promise<{ id:
     select: {
       id: true,
       title: true,
-      views: true,
       category: { select: { name: true } }
     }
   });

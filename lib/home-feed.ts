@@ -31,7 +31,6 @@ export type HomeFeedItem = {
   summary: string;
   categoryName: string;
   publishedAt: Date | null;
-  views: number;
   isPinned: boolean;
   coverUrl: string;
   tiles: HomeListTile[];
@@ -50,7 +49,6 @@ function mapPost(post: Post & { category: { name: string } }): HomeFeedItem {
     summary: stripRepostAttributionFromText(post.summary),
     categoryName: post.category.name,
     publishedAt: post.publishedAt,
-    views: post.views,
     isPinned: post.isPinned,
     coverUrl: post.coverUrl,
     tiles: extractListMediaTiles(post)
@@ -65,7 +63,6 @@ function mapIndex(item: TgIndexedMessage): HomeFeedItem {
     summary: stripRepostAttributionFromText(item.snippet),
     categoryName: indexCategoryLabel(item),
     publishedAt: item.messageDate,
-    views: item.heat,
     isPinned: item.isPinned,
     coverUrl: indexCoverUrl(item),
     tiles: extractListMediaTilesFromIndex(item)

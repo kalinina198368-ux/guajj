@@ -41,7 +41,8 @@ export default async function AdminIndexMessagePreviewPage({ params }: { params:
           <span className="chip">{item.sourceTitle || item.sourceUsername || "频道"}</span>
           <h1>{item.title}</h1>
           <div className="story-meta">
-            <span>热度 {item.heat}</span>
+            <span>浏览量 {item.views}</span>
+            <span>排序热度 {item.heat}</span>
             {item.isPinned ? <span>👑 置顶</span> : null}
           </div>
           {summaryDisplay.trim() ? (

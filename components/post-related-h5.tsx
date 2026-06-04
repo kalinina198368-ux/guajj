@@ -6,7 +6,6 @@ import { useCallback, useState } from "react";
 export type RelatedItem = {
   id: string;
   title: string;
-  views: number;
   category: { name: string };
 };
 
@@ -45,10 +44,6 @@ export function PostRelatedH5({ postId, initialItems }: { postId: string; initia
                 <span className={`h5-related-tag h5-related-tag--${index % 4}`} title={item.category.name}>
                   {item.category.name}
                 </span>
-              </span>
-              <span className="h5-related-heat" title="热度">
-                <span aria-hidden>🔥</span>
-                {item.views}
               </span>
             </Link>
           </li>

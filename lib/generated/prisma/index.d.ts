@@ -16494,12 +16494,14 @@ export namespace Prisma {
     messageId: number | null
     durationSec: number | null
     heat: number | null
+    views: number | null
   }
 
   export type TgIndexedMessageSumAggregateOutputType = {
     messageId: number | null
     durationSec: number | null
     heat: number | null
+    views: number | null
   }
 
   export type TgIndexedMessageMinAggregateOutputType = {
@@ -16521,6 +16523,7 @@ export namespace Prisma {
     mediaGroupId: string | null
     isPinned: boolean | null
     heat: number | null
+    views: number | null
     createdAt: Date | null
   }
 
@@ -16543,6 +16546,7 @@ export namespace Prisma {
     mediaGroupId: string | null
     isPinned: boolean | null
     heat: number | null
+    views: number | null
     createdAt: Date | null
   }
 
@@ -16565,6 +16569,7 @@ export namespace Prisma {
     mediaGroupId: number
     isPinned: number
     heat: number
+    views: number
     createdAt: number
     _all: number
   }
@@ -16574,12 +16579,14 @@ export namespace Prisma {
     messageId?: true
     durationSec?: true
     heat?: true
+    views?: true
   }
 
   export type TgIndexedMessageSumAggregateInputType = {
     messageId?: true
     durationSec?: true
     heat?: true
+    views?: true
   }
 
   export type TgIndexedMessageMinAggregateInputType = {
@@ -16601,6 +16608,7 @@ export namespace Prisma {
     mediaGroupId?: true
     isPinned?: true
     heat?: true
+    views?: true
     createdAt?: true
   }
 
@@ -16623,6 +16631,7 @@ export namespace Prisma {
     mediaGroupId?: true
     isPinned?: true
     heat?: true
+    views?: true
     createdAt?: true
   }
 
@@ -16645,6 +16654,7 @@ export namespace Prisma {
     mediaGroupId?: true
     isPinned?: true
     heat?: true
+    views?: true
     createdAt?: true
     _all?: true
   }
@@ -16754,6 +16764,7 @@ export namespace Prisma {
     mediaGroupId: string | null
     isPinned: boolean
     heat: number
+    views: number
     createdAt: Date
     _count: TgIndexedMessageCountAggregateOutputType | null
     _avg: TgIndexedMessageAvgAggregateOutputType | null
@@ -16795,6 +16806,7 @@ export namespace Prisma {
     mediaGroupId?: boolean
     isPinned?: boolean
     heat?: boolean
+    views?: boolean
     createdAt?: boolean
   }, ExtArgs["result"]["tgIndexedMessage"]>
 
@@ -16819,10 +16831,11 @@ export namespace Prisma {
     mediaGroupId?: boolean
     isPinned?: boolean
     heat?: boolean
+    views?: boolean
     createdAt?: boolean
   }
 
-  export type TgIndexedMessageOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "chatId" | "messageId" | "messageDate" | "contentType" | "title" | "snippet" | "rawText" | "sourceTitle" | "sourceUsername" | "durationSec" | "mediaUrl" | "galleryImageUrls" | "galleryVideoUrls" | "contentBlocks" | "mediaGroupId" | "isPinned" | "heat" | "createdAt", ExtArgs["result"]["tgIndexedMessage"]>
+  export type TgIndexedMessageOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "chatId" | "messageId" | "messageDate" | "contentType" | "title" | "snippet" | "rawText" | "sourceTitle" | "sourceUsername" | "durationSec" | "mediaUrl" | "galleryImageUrls" | "galleryVideoUrls" | "contentBlocks" | "mediaGroupId" | "isPinned" | "heat" | "views" | "createdAt", ExtArgs["result"]["tgIndexedMessage"]>
 
   export type $TgIndexedMessagePayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "TgIndexedMessage"
@@ -16858,6 +16871,7 @@ export namespace Prisma {
       mediaGroupId: string | null
       isPinned: boolean
       heat: number
+      views: number
       createdAt: Date
     }, ExtArgs["result"]["tgIndexedMessage"]>
     composites: {}
@@ -17246,6 +17260,7 @@ export namespace Prisma {
     readonly mediaGroupId: FieldRef<"TgIndexedMessage", 'String'>
     readonly isPinned: FieldRef<"TgIndexedMessage", 'Boolean'>
     readonly heat: FieldRef<"TgIndexedMessage", 'Int'>
+    readonly views: FieldRef<"TgIndexedMessage", 'Int'>
     readonly createdAt: FieldRef<"TgIndexedMessage", 'DateTime'>
   }
     
@@ -20788,6 +20803,7 @@ export namespace Prisma {
     mediaGroupId: 'mediaGroupId',
     isPinned: 'isPinned',
     heat: 'heat',
+    views: 'views',
     createdAt: 'createdAt'
   };
 
@@ -22208,6 +22224,7 @@ export namespace Prisma {
     mediaGroupId?: StringNullableFilter<"TgIndexedMessage"> | string | null
     isPinned?: BoolFilter<"TgIndexedMessage"> | boolean
     heat?: IntFilter<"TgIndexedMessage"> | number
+    views?: IntFilter<"TgIndexedMessage"> | number
     createdAt?: DateTimeFilter<"TgIndexedMessage"> | Date | string
   }
 
@@ -22230,6 +22247,7 @@ export namespace Prisma {
     mediaGroupId?: SortOrderInput | SortOrder
     isPinned?: SortOrder
     heat?: SortOrder
+    views?: SortOrder
     createdAt?: SortOrder
     _relevance?: TgIndexedMessageOrderByRelevanceInput
   }
@@ -22257,6 +22275,7 @@ export namespace Prisma {
     mediaGroupId?: StringNullableFilter<"TgIndexedMessage"> | string | null
     isPinned?: BoolFilter<"TgIndexedMessage"> | boolean
     heat?: IntFilter<"TgIndexedMessage"> | number
+    views?: IntFilter<"TgIndexedMessage"> | number
     createdAt?: DateTimeFilter<"TgIndexedMessage"> | Date | string
   }, "id" | "chatId_messageId">
 
@@ -22279,6 +22298,7 @@ export namespace Prisma {
     mediaGroupId?: SortOrderInput | SortOrder
     isPinned?: SortOrder
     heat?: SortOrder
+    views?: SortOrder
     createdAt?: SortOrder
     _count?: TgIndexedMessageCountOrderByAggregateInput
     _avg?: TgIndexedMessageAvgOrderByAggregateInput
@@ -22309,6 +22329,7 @@ export namespace Prisma {
     mediaGroupId?: StringNullableWithAggregatesFilter<"TgIndexedMessage"> | string | null
     isPinned?: BoolWithAggregatesFilter<"TgIndexedMessage"> | boolean
     heat?: IntWithAggregatesFilter<"TgIndexedMessage"> | number
+    views?: IntWithAggregatesFilter<"TgIndexedMessage"> | number
     createdAt?: DateTimeWithAggregatesFilter<"TgIndexedMessage"> | Date | string
   }
 
@@ -23696,6 +23717,7 @@ export namespace Prisma {
     mediaGroupId?: string | null
     isPinned?: boolean
     heat?: number
+    views?: number
     createdAt?: Date | string
   }
 
@@ -23718,6 +23740,7 @@ export namespace Prisma {
     mediaGroupId?: string | null
     isPinned?: boolean
     heat?: number
+    views?: number
     createdAt?: Date | string
   }
 
@@ -23740,6 +23763,7 @@ export namespace Prisma {
     mediaGroupId?: NullableStringFieldUpdateOperationsInput | string | null
     isPinned?: BoolFieldUpdateOperationsInput | boolean
     heat?: IntFieldUpdateOperationsInput | number
+    views?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
@@ -23762,6 +23786,7 @@ export namespace Prisma {
     mediaGroupId?: NullableStringFieldUpdateOperationsInput | string | null
     isPinned?: BoolFieldUpdateOperationsInput | boolean
     heat?: IntFieldUpdateOperationsInput | number
+    views?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
@@ -23784,6 +23809,7 @@ export namespace Prisma {
     mediaGroupId?: string | null
     isPinned?: boolean
     heat?: number
+    views?: number
     createdAt?: Date | string
   }
 
@@ -23806,6 +23832,7 @@ export namespace Prisma {
     mediaGroupId?: NullableStringFieldUpdateOperationsInput | string | null
     isPinned?: BoolFieldUpdateOperationsInput | boolean
     heat?: IntFieldUpdateOperationsInput | number
+    views?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
@@ -23828,6 +23855,7 @@ export namespace Prisma {
     mediaGroupId?: NullableStringFieldUpdateOperationsInput | string | null
     isPinned?: BoolFieldUpdateOperationsInput | boolean
     heat?: IntFieldUpdateOperationsInput | number
+    views?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
@@ -25082,6 +25110,7 @@ export namespace Prisma {
     mediaGroupId?: SortOrder
     isPinned?: SortOrder
     heat?: SortOrder
+    views?: SortOrder
     createdAt?: SortOrder
   }
 
@@ -25089,6 +25118,7 @@ export namespace Prisma {
     messageId?: SortOrder
     durationSec?: SortOrder
     heat?: SortOrder
+    views?: SortOrder
   }
 
   export type TgIndexedMessageMaxOrderByAggregateInput = {
@@ -25110,6 +25140,7 @@ export namespace Prisma {
     mediaGroupId?: SortOrder
     isPinned?: SortOrder
     heat?: SortOrder
+    views?: SortOrder
     createdAt?: SortOrder
   }
 
@@ -25132,6 +25163,7 @@ export namespace Prisma {
     mediaGroupId?: SortOrder
     isPinned?: SortOrder
     heat?: SortOrder
+    views?: SortOrder
     createdAt?: SortOrder
   }
 
@@ -25139,6 +25171,7 @@ export namespace Prisma {
     messageId?: SortOrder
     durationSec?: SortOrder
     heat?: SortOrder
+    views?: SortOrder
   }
 
   export type EnumTgIndexContentTypeWithAggregatesFilter<$PrismaModel = never> = {

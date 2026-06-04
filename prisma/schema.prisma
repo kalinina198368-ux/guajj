@@ -279,6 +279,7 @@ model TgIndexedMessage {
   mediaGroupId    String?            @db.VarChar(64)
   isPinned        Boolean            @default(false)
   heat            Int                @default(100)
+  views           Int                @default(0)
   createdAt       DateTime           @default(now())
 
   @@unique([chatId, messageId])

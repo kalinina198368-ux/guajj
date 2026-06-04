@@ -24,7 +24,6 @@ export function H5StoryListCard({
   summary,
   categoryName,
   timeLabel,
-  views,
   tiles,
   tagToneClass
 }: {
@@ -34,7 +33,6 @@ export function H5StoryListCard({
   summary: string;
   categoryName: string;
   timeLabel: string;
-  views: number;
   tiles: HomeListTile[];
   tagToneClass: string;
 }) {
@@ -84,7 +82,6 @@ export function H5StoryListCard({
         <div className="h5-story-meta">
           <span className={`h5-rank-tag ${tagToneClass}`}>{categoryName}</span>
           <span>{timeLabel}</span>
-          <span className="h5-story-heat">🔥 {views}</span>
         </div>
         <h3 className="h5-story-heading">{title}</h3>
         <p className="h5-story-sum">{summary}</p>

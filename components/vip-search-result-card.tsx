@@ -1,12 +1,7 @@
 import Link from "next/link";
 import type { TgIndexedMessage } from "@/lib/generated/prisma";
 import { formatDuration, formatMessageDate } from "@/lib/tg-index-display";
-import {
-  formatHeat,
-  resolveVipResultThumbnail,
-  vipSourceLabel,
-  vipTextBadgeTone
-} from "@/lib/vip-result-display";
+import { resolveVipResultThumbnail, vipSourceLabel, vipTextBadgeTone } from "@/lib/vip-result-display";
 import { videoSrcForListThumbnail } from "@/lib/video-tile-preview";
 import { VipHighlightText } from "@/components/vip-highlight-text";
 
@@ -83,10 +78,6 @@ export function VipSearchResultCard({
           <span className="vip-result-foot">
             <span className="vip-result-meta">
               来自：{source} · {formatMessageDate(item.messageDate)}
-            </span>
-            <span className="vip-result-heat" aria-label={`热度 ${item.heat}`}>
-              <span aria-hidden>🔥</span>
-              {formatHeat(item.heat)}
             </span>
           </span>
         </span>

@@ -126,7 +126,8 @@ export default function IndexMessageTable({
               <th>标题</th>
               <th>类型</th>
               <th>来源</th>
-              <th>热度</th>
+              <th>浏览量</th>
+              <th>排序热度</th>
               <th>消息时间</th>
               <th>操作</th>
             </tr>
@@ -134,7 +135,7 @@ export default function IndexMessageTable({
           <tbody>
             {rows.length === 0 ? (
               <tr>
-                <td colSpan={7} style={{ color: "var(--muted)", textAlign: "center", padding: "28px 12px" }}>
+                <td colSpan={8} style={{ color: "var(--muted)", textAlign: "center", padding: "28px 12px" }}>
                   {listQuery || selectedChatIds.length ? "没有匹配的索引。" : "暂无索引数据，请先运行采集服务。"}
                 </td>
               </tr>
@@ -162,6 +163,7 @@ export default function IndexMessageTable({
                   </td>
                   <td>{typeLabel[row.contentType] ?? row.contentType}</td>
                   <td style={{ fontSize: 13 }}>{row.sourceTitle || row.sourceUsername || "—"}</td>
+                  <td>{row.views}</td>
                   <td>{row.heat}</td>
                   <td style={{ whiteSpace: "nowrap", fontSize: 13 }}>{formatDate(row.messageDate)}</td>
                   <td>

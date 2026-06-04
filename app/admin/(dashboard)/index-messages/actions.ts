@@ -24,7 +24,8 @@ function readIndexForm(formData: FormData) {
     sourceUsername: String(formData.get("sourceUsername") || "").trim() || null,
     durationSec: Math.max(0, Math.floor(Number(formData.get("durationSec")) || 0)) || null,
     isPinned: formData.get("isPinned") === "on",
-    heat: Math.max(0, Math.floor(Number(formData.get("heat")) || 0))
+    heat: Math.max(0, Math.floor(Number(formData.get("heat")) || 0)),
+    views: Math.max(0, Math.floor(Number(formData.get("views")) || 0))
   };
 }
 
@@ -52,7 +53,8 @@ export async function updateIndexMessageAction(id: string, formData: FormData) {
       sourceUsername: data.sourceUsername,
       durationSec: data.durationSec,
       isPinned: data.isPinned,
-      heat: data.heat
+      heat: data.heat,
+      views: data.views
     }
   });
 

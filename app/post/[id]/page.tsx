@@ -40,12 +40,6 @@ function formatDetailTime(d: Date) {
   return `${d.getFullYear()}-${pad2(d.getMonth() + 1)}-${pad2(d.getDate())} ${pad2(d.getHours())}:${pad2(d.getMinutes())}`;
 }
 
-function formatBrowseCount(n: number) {
-  if (n >= 10000) return `${(n / 10000).toFixed(1)}万浏览`;
-  if (n >= 1000) return `${(n / 1000).toFixed(1)}k浏览`;
-  return `${n}浏览`;
-}
-
 export default async function PostDetailPage({
   params,
   searchParams
@@ -77,7 +71,6 @@ export default async function PostDetailPage({
 
   await prisma.post.update({ where: { id: post.id }, data: { views: { increment: 1 } } });
 
-  const heatDisplay = post.views + 1;
   const timeSource = post.publishedAt ?? post.createdAt;
   const timeLabel = formatDetailTime(timeSource);
 
@@ -89,7 +82,6 @@ export default async function PostDetailPage({
       select: {
         id: true,
         title: true,
-        views: true,
         category: { select: { name: true } }
       }
     }),
@@ -128,13 +120,7 @@ export default async function PostDetailPage({
             <h1 className="h5-detail-title">{post.title}</h1>
 
             <div className="h5-detail-meta">
-              {/* <span className="h5-detail-meta-heat">
-                <span aria-hidden>🔥</span> 热度 {heatDisplay}
-              </span> */}
               <span className="h5-detail-meta-time">{timeLabel}</span>
-              <span className="h5-detail-meta-views">
-                <span aria-hidden>👁</span> {formatBrowseCount(heatDisplay)}
-              </span>
             </div>
 
             {bodyDisplay.trim() ? (
@@ -172,7 +158,7 @@ export default async function PostDetailPage({
               </div>
             ) : null}
 
-            <PostDetailInteractRow heat={heatDisplay} commentCount={commentRows.length} />
+            <PostDetailInteractRow commentCount={commentRows.length} />
           </div>
         </article>
 
@@ -191,7 +177,7 @@ export default async function PostDetailPage({
         </div>
       </div>
 
-      <PostDetailBottomBar heat={heatDisplay} />
+      <PostDetailBottomBar />
     </main>
   );
 }

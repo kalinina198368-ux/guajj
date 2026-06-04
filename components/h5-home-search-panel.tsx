@@ -37,7 +37,7 @@ export function H5HomeSearchPanel({
 
   return (
     <details className="h5-search-details">
-      <summary className="h5-search-trigger" aria-label="搜索与频道筛选">
+      <summary className="h5-search-trigger" aria-label="搜索与类型筛选">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" aria-hidden>
           <circle cx="11" cy="11" r="7" />
           <path d="M20 20l-4.2-4.2" />
@@ -64,12 +64,12 @@ export function H5HomeSearchPanel({
         {channels.length > 0 ? (
           <div className="h5-search-channels">
             <div className="h5-search-channels-head">
-              <span className="h5-search-channels-title">频道筛选</span>
+              <span className="h5-search-channels-title">类型筛选</span>
               <button type="button" className="h5-search-channels-clear" onClick={clearChannels} disabled={selected.length === 0}>
                 清空
               </button>
             </div>
-            <div className="h5-search-channel-list" role="group" aria-label="选择频道">
+            <div className="h5-search-channel-list" role="group" aria-label="选择类型">
               {channels.map((ch) => {
                 const checked = selected.includes(ch.id);
                 return (
@@ -82,15 +82,14 @@ export function H5HomeSearchPanel({
                     <span className="h5-search-channel-label" title={ch.label}>
                       {ch.label}
                     </span>
-                    <span className="h5-search-channel-count">{ch.count}</span>
                   </label>
                 );
               })}
             </div>
-            <p className="h5-search-channels-hint">可多选或单选，不选则搜索全部频道</p>
+            <p className="h5-search-channels-hint">可多选或单选，不选则搜索全部类型</p>
           </div>
         ) : (
-          <p className="h5-search-channels-empty">暂无频道数据</p>
+          <p className="h5-search-channels-empty">暂无类型数据</p>
         )}
       </form>
     </details>

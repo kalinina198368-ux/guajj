@@ -15,6 +15,7 @@ import {
   formatDuration,
   formatMessageDate
 } from "@/lib/tg-index-display";
+import { prisma } from "@/lib/prisma";
 import { getPublicIndexedMessage } from "@/lib/tg-index-search";
 import { stripRepostAttributionFromText } from "@/lib/strip-repost-attribution";
 
@@ -52,6 +53,8 @@ export default async function VipDetailPage({
 
   const item = await getPublicIndexedMessage(id);
   if (!item) notFound();
+
+  await prisma.tgIndexedMessage.update({ where: { id: item.id }, data: { views: { increment: 1 } } });
 
   const duration = formatDuration(item.durationSec);
   const sourceLabel =
@@ -92,7 +95,7 @@ export default async function VipDetailPage({
           </h1>
 
           <p className="vip-detail-meta h5-detail-meta">
-            {sourceLabel ? <span>来源：{sourceLabel}</span> : null}
+            {sourceLabel ? <span>类型：{sourceLabel}</span> : null}
             <span>发布时间：{formatMessageDate(item.messageDate)}</span>
           </p>
 

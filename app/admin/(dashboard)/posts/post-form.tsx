@@ -122,7 +122,7 @@ export default function PostForm({
           <label>浏览量</label>
           <input name="views" type="number" min={0} step={1} defaultValue={post?.views ?? 0} />
           <span style={{ color: "var(--muted)", fontSize: 12, display: "block", marginTop: 4 }}>
-            与前台「热度」展示一致；访客打开文章会自动累加浏览，可在此手工修正。
+            访客打开文章会自动累加浏览，可在此手工修正。仅后台可见，前台不展示。
           </span>
         </div>
       </div>
